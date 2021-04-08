@@ -16,10 +16,12 @@ function initMap() {
   	map = new google.maps.Map(document.getElementById('map'), options);
   	
  	// We crate and array of markers
+
+ 	
 	var markerArray = [
 		{
-		coords:{lat:32.496600263535846,lng:-116.96271654107},
-		content:'<h1>Asalto a mano armada</h1>'
+		coords:{lat:32.45849968609627,lng:-116.96405351357521},
+		content:createCrimeInformation(),
 		},
 		{
 		coords:{lat:32.50947562858828,lng:-117.03839447402427},
@@ -142,4 +144,28 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
       : "Error: Your browser doesn't support geolocation."
   );
   infoWindow.open(map);
+}
+
+
+function createCrimeInformation(){
+	 
+	//we are going to create the information so we can display to the user
+	//the crime commited
+	var contentString = 
+	'<div id="content">' +
+    '<div id="siteNotice">' +
+    "</div>" +
+    '<h1 id="firstHeading" class="firstHeading">Asesinan a mujer</h1>' +
+    '<div id="bodyContent">' +
+    "<p>Una mujer fue asesinada a tiros, minutos después del mediodía sobre" +
+    "la vía pública en <b>Tijuana</b>" +
+    "Los hechos se reportaron alrededor de las 12:20 horas." +
+    '<p>status:No se reportan personas detenidas por este hecho</p>'+
+    '<p>referencia:<a href="https://www.elimparcial.com/tijuana/policiaca/Asesinan-a-mujer-a-tiros-en-via-publica-de-Tijuana-20210407-0024.html"> ' +
+    "https://www.elimparcial.com/tijuana/policiaca</a> " +
+    "(fecha del crimen  07 de Abril).</p>" +
+    "</div>" +
+    "</div>";
+
+    return contentString;
 }
