@@ -148,7 +148,7 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
 
 
 function createCrimeInformation(){
-	 
+	 console.log("key point")
 	//we are going to create the information so we can display to the user
 	//the crime commited
 	var contentString = 
