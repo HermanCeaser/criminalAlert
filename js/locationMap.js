@@ -16,7 +16,10 @@ function initMap() {
   	map = new google.maps.Map(document.getElementById('map'), options);
   	
  	// We crate and array of markers
-
+ 	const geocoder = new google.maps.Geocoder();
+  		document.getElementById("submit").addEventListener("click", () => {
+    	geocodeAddress(geocoder, map);
+  	});
  	
 	var markerArray = [
 		{
@@ -168,4 +171,20 @@ function createCrimeInformation(){
     "</div>";
 
     return contentString;
+}
+
+
+function geocodeAddress(geocoder, resultsMap) {
+  const address = document.getElementById("address").value;
+  geocoder.geocode({ address: address }, (results, status) => {
+    if (status === "OK") {
+      resultsMap.setCenter(results[0].geometry.location);
+      new google.maps.Marker({
+        map: resultsMap,
+        position: results[0].geometry.location,
+      });
+    } else {
+      alert("Geocode was not successful for the following reason: " + status);
+    }
+  });
 }
