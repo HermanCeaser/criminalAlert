@@ -1,0 +1,406 @@
+<template>
+  <div id="report">
+    <div id="gradientBackground" class="gradient-custom"></div>
+    <div id="avatarPick" class="">
+      <b-avatar id="avatarID" src="" size="17rem">
+        <img v-bind:src="userAvatar" class="avatar" />
+      </b-avatar>
+    </div>
+    <div class="formContainer">
+      <b-row>
+        <b-col></b-col>
+        <b-col md="6">
+          <b-card
+            id="criminalCard"
+            header="featured"
+            header-tag="header"
+            footer=""
+            footer-tag="footer"
+            title="Reporte"
+          >
+            <br />
+            <b-form @submit.prevent="handleFormSubmit">
+              <b-row>
+                <b-col>
+                  <b-form-group
+                    class="nameCriminal"
+                    label="Nombre  del criminal"
+                  >
+                    <b-form-input
+                      placeholder="nombre criminal"
+                      v-model="formData.nameCri"
+                    ></b-form-input>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+
+              <b-row>
+                <b-col>
+                  <b-form-group class="crimenStyle" label="Crimen cometido">
+                    <b-form-textarea
+                      id="textarea"
+                      v-model="formData.descripcion"
+                      placeholder="describir crimen..."
+                      rows="3"
+                      max-rows="6"
+                    ></b-form-textarea>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+
+              <b-row>
+                <b-col>
+                  <b-form-group class="fechaHoraStyle" label="Fecha y hora">
+                    <b-form-datepicker
+                      id="example-datepicker"
+                      v-model="formData.fecha"
+                      class="mb-2"
+                    ></b-form-datepicker>
+                    <b-form-timepicker
+                      v-model="formData.hora"
+                      locale="en"
+                    ></b-form-timepicker>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+
+              <b-row>
+                <b-col>
+                  <b-form-group
+                    class="direccionStyle"
+                    label="Direccion"
+                    description="Si no se cuenta con el numero o codigo postal ingresar 0"
+                  >
+                    <b-form-input
+                      placeholder="colonia "
+                      v-model="formData.colonia"
+                    ></b-form-input>
+                    <b-form-input
+                      placeholder="calle"
+                      v-model="formData.calle"
+                    ></b-form-input>
+                    <b-form-input
+                      placeholder="#numero"
+                      v-model="formData.numero"
+                    ></b-form-input>
+                    <b-form-input
+                      placeholder="codigo postal"
+                      v-model="formData.postal"
+                    ></b-form-input>
+                  </b-form-group>
+                  <b-button v-on:click="checkMap" variant="outline-primary"
+                    >Buscar</b-button
+                  >
+                  <GmapMap
+                    id="mapID"
+                    :center="{ lat: 32.513, lng: -117.05 }"
+                    :zoom="11"
+                    map-type-id="roadmap"
+                  >
+                    <div v-if="savedLocations.length > 0">
+                      <GmapMarker
+                        :key="index"
+                        v-for="(l, index) in savedLocations"
+                        :position="{
+                          lat: l.geoPoint.latitude,
+                          lng: l.geoPoint.longitude,
+                        }"
+                      />
+                    </div>
+                  </GmapMap>
+                </b-col>
+              </b-row>
+              <br />
+              <b-row>
+                <b-col>
+                  <b-form-group class="estatusStyle" label="Estatus">
+                    <b-form-select
+                      v-model="selected"
+                      :options="options"
+                    ></b-form-select>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col>
+                  <b-form-group class="referenciaStyle" label="Referencia">
+                    <b-form-input
+                      placeholder="link de la noticia o referencia"
+                      v-model="formData.referencia"
+                    ></b-form-input>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col>
+                  <b-button type="submit" variant="danger">Reportar</b-button>
+                </b-col>
+              </b-row>
+            </b-form>
+          </b-card>
+        </b-col>
+        <b-col></b-col>
+      </b-row>
+    </div>
+  </div>
+</template>
+
+<script>
+import axios from "axios";
+import { db } from "../main";
+import firebase from "firebase";
+require("firebase/auth");
+
+export default {
+  name: "checkDirrecion",
+  data: () => ({
+    userTag: null,
+    savedLocations: [],
+    user: null,
+    userAvatar:
+      "https://media.istockphoto.com/vectors/default-avatar-profile-icon-grey-photo-placeholder-hand-drawn-modern-vector-id1273297997?b=1&k=6&m=1273297997&s=612x612&w=0&h=W0mwZseX1YEUPH8BJ9ra2Y-VeaUOi0nSLfQJWExiLsQ=",
+    formData: {
+      nameCri: "",
+      descripcion: "",
+      fecha: "",
+      hora: "",
+      colonia: "",
+      calle: "",
+      numero: "",
+      postal: "",
+      selected: "",
+      referencia: "",
+    },
+    selected: null,
+    options: [
+      { value: null, text: "Seleccione una opcion" },
+      { value: "sin detenidos", text: "sin detenidos" },
+      { value: "en proceso", text: "en proceso" },
+      { value: "en carcel", text: "en carcel" },
+    ],
+  }),
+  beforeMount() {
+    this.user = firebase.auth().currentUser;
+    if (this.user != null) {
+      var email = this.user.email;
+      let userSepatator = email.split("@");
+      console.log(userSepatator[1]);
+      this.userTag = userSepatator[0];
+    }
+    const userRef = db.collection("user").doc(this.user.uid);
+    userRef.get().then(async (docSnapshot) => {
+      if (docSnapshot.exists) {
+        console.log("existe!");
+        this.userAvatar = docSnapshot.data().avatar;
+      } else {
+        console.log("no existe!");
+      }
+    });
+  },
+  methods: {
+    checkMap: async function (event) {
+      this.savedLocations = []; // we empty the array
+      if (
+        !this.formData.colonia ||
+        !this.formData.calle ||
+        !this.formData.numero ||
+        !this.formData.postal
+      ) {
+        alert("Debe ingresar todos los datos de la direccion ");
+        return;
+      }
+      //Will make the request
+      let address = `${this.formData.colonia} ${this.formData.calle} ${this.formData.numero},Tijuana, MX, ${this.formData.postal}`;
+      let { data } = await axios.post(
+        "https://us-central1-criminalalertdb.cloudfunctions.net/criminalGetLocation",
+        {
+          address: address,
+        }
+      );
+      if (data === "No Results") {
+        alert("No hay resultados de la direccion");
+        return;
+      }
+      console.log("test recive query: " + data.address);
+      //Will massage data
+      let obj = {
+        address: data.address,
+        geoPoint: {
+          latitude: data.geoPoint._latitude,
+          longitude: data.geoPoint._longitude,
+        },
+      };
+      //add to saved locations to update map
+      this.savedLocations.push(obj);
+    },
+    async handleFormSubmit() {
+      console.log("insertar datos ");
+      if (
+        !this.formData.colonia ||
+        !this.formData.calle ||
+        !this.formData.numero ||
+        !this.formData.postal ||
+        !this.formData.nameCri ||
+        !this.formData.descripcion ||
+        !this.formData.fecha ||
+        !this.formData.hora ||
+        !this.selected ||
+        !this.formData.referencia
+      ) {
+        alert("Debe ingresar todos los datos del formulario ");
+        return;
+      }
+
+      var uid = this.user.uid;
+
+      let { data } = await axios.post(
+        "https://us-central1-criminalalertdb.cloudfunctions.net/criminalFormData",
+        {
+          criminalName: this.formData.nameCri,
+          descripcion: this.formData.descripcion,
+          fecha: this.formData.fecha,
+          hora: this.formData.hora,
+          status: this.selected,
+          referencia: this.formData.referencia,
+          latitude: this.savedLocations[0].geoPoint.latitude,
+          longitude: this.savedLocations[0].geoPoint.longitude,
+          currentUserID: uid,
+        }
+      );
+
+      if (data === "No Results") {
+        alert("Problemas al ingresar los datos a la base de datos");
+        return;
+      } else if (data === "TERROR") {
+        alert("Problema con la busqueda de  user criminal ");
+      } else {
+        //increment te report's from the user
+        const userRef = db.collection("user").doc(uid);
+        // Atomically increment the population of the city by 50.
+        const res = await userRef
+          .update({
+            reportes: firebase.firestore.FieldValue.increment(1),
+          })
+          .then(() => {
+            alert("Document successfully updated!");
+          })
+          .catch((error) => {
+            // The document probably doesn't exist.
+            console.error("Error updating document: ", error);
+          });
+      }
+
+      this.formData.colonia = "";
+      this.formData.calle = "";
+      this.formData.numero = "";
+      this.formData.postal = "";
+      this.formData.nameCri = "";
+      this.formData.descripcion = "";
+      this.formData.fecha = "";
+      this.formData.hora = "";
+      this.selected = "";
+      this.formData.referencia = "";
+      this.savedLocations = []; // we empty the array
+    },
+  },
+};
+</script>
+
+
+
+<style scoped lang="scss">
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap");
+
+.nameCriminal,
+.fechaHoraStyle,
+.direccionStyle,
+.estatusStyle,
+.referenciaStyle,
+.crimenStyle {
+  color: #ec407a;
+  font-family: "Roboto", sans-serif;
+  text-align: left;
+}
+
+header {
+  background-color: #ec407a;
+  color: #ec407a;
+}
+
+#criminalCard {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+  color: #ec407a;
+}
+
+#criminalCard:hover {
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
+#mapID {
+  width: 100%;
+  height: 400px;
+  margin-top: 30px;
+}
+
+#report {
+  overflow: hidden;
+}
+
+.formContainer {
+  margin-top: -5%;
+  margin-bottom: 3%;
+}
+
+#userName {
+  text-align: center;
+  font-size: 20px;
+}
+
+#avatarID {
+  z-index: 2;
+  border: 15px solid white;
+  background: #ec407a;
+}
+
+#avatarPick {
+  margin-top: 9%;
+  position: absolute;
+  right: 20%;
+  top: -0%;
+  left: 21%;
+}
+
+.avatar {
+  width: 100%;
+  height: 250px;
+}
+
+.gradient-custom {
+  width: 100%;
+  height: 400px;
+  /* fallback for old browsers */
+  background: #37ecba;
+
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: -webkit-linear-gradient(
+    to right,
+    rgba(55, 236, 186, 1),
+    rgba(114, 175, 211, 1)
+  );
+
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: linear-gradient(
+    to right,
+    rgba(55, 236, 186, 1),
+    rgba(114, 175, 211, 1)
+  );
+}
+
+@media screen and (max-width: 759px) {
+  #mapID {
+    width: 100%;
+    height: 400px;
+  }
+}
+</style>
