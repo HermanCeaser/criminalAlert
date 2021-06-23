@@ -13,7 +13,11 @@
               </b-card-text>
             </b-col>
             <b-col md="6"
-              ><b-avatar icon="people-fill" size="4em" variant="info "></b-avatar
+              ><b-avatar
+                icon="people-fill"
+                size="4em"
+                variant="info "
+              ></b-avatar
             ></b-col>
           </b-row>
         </b-card>
@@ -27,7 +31,11 @@
               </b-card-text>
             </b-col>
             <b-col md="6"
-              ><b-avatar icon="emoji-sunglasses-fill" size="4em" variant="info "></b-avatar
+              ><b-avatar
+                icon="emoji-sunglasses-fill"
+                size="4em"
+                variant="info "
+              ></b-avatar
             ></b-col>
           </b-row>
         </b-card>
@@ -41,7 +49,7 @@
               </b-card-text>
             </b-col>
             <b-col md="6"
-              ><b-avatar icon="star-fill" size="4em" variant="info "  ></b-avatar
+              ><b-avatar icon="star-fill" size="4em" variant="info "></b-avatar
             ></b-col>
           </b-row>
         </b-card>
@@ -104,6 +112,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import { db } from "../main";
 export default {
   name: "home",
@@ -121,19 +130,21 @@ export default {
     },
   }),
   async beforeMount() {
-    const snap = await db.collection("criminalInfo").get();
     const userSnap = await db.collection("user").get();
     const userCriminalSnap = await db.collection("userCriminalInfo").get();
 
-    if (snap.empty) {
-      console.log("No such document!");
-      return;
+    //get a request with the information of the criminals
+    let { data } = await axios.post(
+      "https://us-central1-criminalalertdb.cloudfunctions.net/criminalMapInfo"
+    );
+    if (data === "NO RESULTS") {
+      console.log("problem with map loading");
     }
+    this.savedLocations = data;
 
-    snap.docs.forEach((doc) => {
-      this.savedLocations.push(doc.data());
-    });
 
+
+    //Find out ho has reported the most criminals
     userCriminalSnap.docs.forEach((doc) => {
       const tempCriminalUserArray = doc.data();
       if (tempCriminalUserArray.criminalsID.length > this.totalReportUser) {
@@ -142,6 +153,8 @@ export default {
       }
     });
 
+    //Get all the  user register on the app, and get the email of the
+    //user ho has reported the most criminasl
     userSnap.docs.forEach((doc) => {
       if (this.userID === doc.id) {
         this.userStar = doc.data().correo;
@@ -149,6 +162,7 @@ export default {
       this.totalUsers++;
     });
 
+    //set a counter for all the criminals register
     this.regCriminals = this.savedLocations.length;
   },
   methods: {
@@ -213,9 +227,6 @@ p {
 h4 {
   color: #26418f;
 }
-
-
-
 
 .gradient-custom {
   width: 100%;

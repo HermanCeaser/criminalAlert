@@ -131,13 +131,13 @@ exports.criminalFormData = functions.https.onRequest(async (request, response) =
 
         //we are going to check is the user exist on the data base 
         const userRef = db.collection("userCriminalInfo").doc(userid);
-        userRef.get().then( async (docSnapshot) => {
+        userRef.get().then(async (docSnapshot) => {
             if (docSnapshot.exists) {
                 console.log("existe!");
                 userRef
                     .update({
-                        criminalsID:  admin.firestore.FieldValue.arrayUnion(criminalID),
-                        timestamp:  admin.firestore.FieldValue.serverTimestamp(),
+                        criminalsID: admin.firestore.FieldValue.arrayUnion(criminalID),
+                        timestamp: admin.firestore.FieldValue.serverTimestamp(),
                     })
                     .then(() => {
                         console.log("Document successfully updated!");
@@ -167,6 +167,37 @@ exports.criminalFormData = functions.https.onRequest(async (request, response) =
         return cors(request, response, () => {
             console.log(error);
             response.status(500).send(criminaldata);
+        });
+    }
+});
+
+
+exports.criminalMapInfo = functions.https.onRequest(async (request, response) => {
+
+    try {
+
+        const criminalSnap = await db.collection("criminalInfo").get();
+        let savedLocations = [];
+        if (criminalSnap.empty) {
+            //no results
+            return cors(request, response, () => {
+                response.status(200).send("NO RESULTS");
+            });
+        }
+
+        //save the data of the criminals in a que
+        criminalSnap.docs.forEach((doc) => {
+            savedLocations.push(doc.data());
+        });
+
+        return cors(request, response, () => {
+            response.status(200).send(savedLocations);
+        });
+
+    } catch (error) {
+        return cors(request, response, () => {
+            console.log(error);
+            response.status(500).send();
         });
     }
 });
