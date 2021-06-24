@@ -203,3 +203,45 @@ exports.criminalMapInfo = functions.https.onRequest(async (request, response) =>
 });
 
 
+exports.userCriminalInfo = functions.https.onRequest(async (request, response) => {
+
+    try {
+
+        const userCriminalSnap = await db.collection("userCriminalInfo").get();
+        let totalReportUser = 0;
+        let userID;
+
+        userCriminalSnap.get().then(async (docSnapshot) => {
+            if (docSnapshot.exists) {
+                console.log("existe!");
+                return cors(request, response, () => {
+                    response.status(200).send(docSnapshot);
+                });
+            } else {
+                console.log("no existe!");
+                
+            }
+        });
+
+        /*userCriminalSnap.docs.forEach((doc) => {
+            const tempCriminalUserArray = doc.data();
+            if (tempCriminalUserArray.criminalsID.length > this.totalReportUser) {
+                totalReportUser = tempCriminalUserArray.criminalsID.length;
+                userID = doc.id;
+            }
+        });*/
+        return cors(request, response, () => {
+            response.status(200).send(totalReportUser);
+        });
+
+    } catch (error) {
+        return cors(request, response, () => {
+            console.log(error);
+            response.status(500).send();
+        });
+    }
+});
+
+
+
+

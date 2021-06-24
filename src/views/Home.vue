@@ -131,36 +131,46 @@ export default {
   }),
   async beforeMount() {
     const userSnap = await db.collection("user").get();
-    const userCriminalSnap = await db.collection("userCriminalInfo").get();
+    //const userCriminalSnap = await db.collection("userCriminalInfo").get();
 
     //get a request with the information of the criminals
-    let { data } = await axios.post(
+    /*let { data } = await axios.post(
       "https://us-central1-criminalalertdb.cloudfunctions.net/criminalMapInfo"
     );
     if (data === "NO RESULTS") {
       console.log("problem with map loading");
     }
-    this.savedLocations = data;
-
+    this.savedLocations = data;*/
 
 
     //Find out ho has reported the most criminals
-    userCriminalSnap.docs.forEach((doc) => {
+    let { data }  = await axios.post(
+      "https://us-central1-criminalalertdb.cloudfunctions.net/userCriminalInfo"
+    );
+    if (data === "NO RESULTS") {
+      console.log("problem with map loading");
+    }
+
+    console.log(data)
+    
+
+    /*userCriminalSnap.docs.forEach((doc) => {
       const tempCriminalUserArray = doc.data();
       if (tempCriminalUserArray.criminalsID.length > this.totalReportUser) {
         this.totalReportUser = tempCriminalUserArray.criminalsID.length;
         this.userID = doc.id;
       }
-    });
+    });*/
 
     //Get all the  user register on the app, and get the email of the
     //user ho has reported the most criminasl
-    userSnap.docs.forEach((doc) => {
+
+    /*userSnap.docs.forEach((doc) => {
       if (this.userID === doc.id) {
         this.userStar = doc.data().correo;
       }
       this.totalUsers++;
-    });
+    });*/
 
     //set a counter for all the criminals register
     this.regCriminals = this.savedLocations.length;
@@ -176,7 +186,7 @@ export default {
         estatus,
         referencia,
       } = this.savedLocations[index];
-      console.log("test home data: " + referencia);
+
 
       this.infoWindow.position = {
         lat: geoPoint.latitude,
