@@ -208,30 +208,37 @@ exports.userCriminalInfo = functions.https.onRequest(async (request, response) =
     try {
 
         const userCriminalSnap = await db.collection("userCriminalInfo").get();
-        let totalReportUser = 0;
-        let userID;
+        const userSnap = await db.collection("user").get();
 
-        userCriminalSnap.get().then(async (docSnapshot) => {
-            if (docSnapshot.exists) {
-                console.log("existe!");
-                return cors(request, response, () => {
-                    response.status(200).send(docSnapshot);
-                });
-            } else {
-                console.log("no existe!");
-                
-            }
+        let totalReportUser = [];
+        let ids = [];
+        let regCriminals = 0;
+        let userID;
+        let userStar;
+        let totalUsers = 0;
+
+        userCriminalSnap.docs.forEach((doc) => {
+            totalReportUser.push(doc.data());
+            ids.push(doc.id);
         });
 
-        /*userCriminalSnap.docs.forEach((doc) => {
-            const tempCriminalUserArray = doc.data();
-            if (tempCriminalUserArray.criminalsID.length > this.totalReportUser) {
-                totalReportUser = tempCriminalUserArray.criminalsID.length;
-                userID = doc.id;
+        for (let index = 0; index < totalReportUser.length; index++) {
+            let tempCriminalUserArray = totalReportUser[index];
+            if (tempCriminalUserArray.criminalsID.length > regCriminals) {
+                regCriminals = tempCriminalUserArray.criminalsID.length;
+                userID = ids[index];
             }
-        });*/
+        }
+
+        userSnap.docs.forEach((doc) => {
+            if (userID === doc.id) {
+                userStar = doc.data().correo;
+            }
+            totalUsers++;
+        });
+
         return cors(request, response, () => {
-            response.status(200).send(totalReportUser);
+            response.status(200).send({ userID, regCriminals, userStar, totalUsers });
         });
 
     } catch (error) {
