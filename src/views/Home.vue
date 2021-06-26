@@ -45,8 +45,7 @@
           <b-row no-gutters>
             <b-col md="6">
               <b-card-text>
-                <b-spinner variant="success" type="grow" label="Spinning"><p>{{ userStar }}</p></b-spinner>
-                
+                <p>{{ userStar }}</p>
               </b-card-text>
             </b-col>
             <b-col md="6"
