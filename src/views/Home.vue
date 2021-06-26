@@ -45,7 +45,8 @@
           <b-row no-gutters>
             <b-col md="6">
               <b-card-text>
-                <p>{{ userStar }}</p>
+                <b-spinner variant="success" type="grow" label="Spinning"><p>{{ userStar }}</p></b-spinner>
+                
               </b-card-text>
             </b-col>
             <b-col md="6"
@@ -122,6 +123,7 @@ export default {
     totalUsers: 0,
     totalReportUser: 0,
     userID: null,
+    isBusy: false,
     userStar: "Don Puerko",
     infoWindow: {
       position: { lat: 0, lng: 0 },
@@ -160,7 +162,6 @@ export default {
       this.totalUsers = data.totalUsers;
       this.userStar = data.userStar;
       this.userID = data.userID;
-
     },
     openInfoWindowTemplate: function (index) {
       const {
@@ -188,7 +189,6 @@ export default {
       this.infoWindow.template = displayInfo;
 
       this.infoWindow.open = true;
-      //this.$refs.markers[index].$markerObject.setAnimation(google.maps.Animation.BOUNCE)
     },
   },
 };
