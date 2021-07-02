@@ -88,6 +88,28 @@
                       v-model="formData.postal"
                     ></b-form-input>
                   </b-form-group>
+                  <b-alert
+                    :show="dismissCountDown"
+                    dismissible
+                    variant="warning"
+                    @dismissed="dismissCountDown = 0"
+                    @dismiss-count-down="countDownChanged"
+                  >
+                    <p>
+                      Debe ingresar la colonia, calle, numero exterior y codigo
+                      postal para continuar con la busqueda.
+                    </p>
+                    <p>
+                      Esta alerta desaparecera dentro de
+                      {{ dismissCountDown }} seconds...
+                    </p>
+                    <b-progress
+                      variant="warning"
+                      :max="dismissSecs"
+                      :value="dismissCountDown"
+                      height="4px"
+                    ></b-progress>
+                  </b-alert>
                   <b-button v-on:click="checkMap" variant="outline-primary"
                     >Buscar</b-button
                   >
@@ -133,6 +155,13 @@
               </b-row>
               <b-row>
                 <b-col>
+                  <b-alert
+                    v-model="showDismissibleAlert"
+                    variant="danger"
+                    dismissible
+                  >
+                    Debe ingresar todos los datos del formulario, para poder realizar un reporte.
+                  </b-alert>
                   <b-button type="submit" variant="danger">Reportar</b-button>
                 </b-col>
               </b-row>
@@ -157,6 +186,9 @@ export default {
     userTag: null,
     savedLocations: [],
     user: null,
+    showDismissibleAlert: false,
+    dismissSecs: 10,
+    dismissCountDown: 0,
     userAvatar:
       "https://media.istockphoto.com/vectors/default-avatar-profile-icon-grey-photo-placeholder-hand-drawn-modern-vector-id1273297997?b=1&k=6&m=1273297997&s=612x612&w=0&h=W0mwZseX1YEUPH8BJ9ra2Y-VeaUOi0nSLfQJWExiLsQ=",
     formData: {
@@ -184,13 +216,11 @@ export default {
     if (this.user != null) {
       var email = this.user.email;
       let userSepatator = email.split("@");
-      console.log(userSepatator[1]);
       this.userTag = userSepatator[0];
     }
     const userRef = db.collection("user").doc(this.user.uid);
     userRef.get().then(async (docSnapshot) => {
       if (docSnapshot.exists) {
-        console.log("existe!");
         this.userAvatar = docSnapshot.data().avatar;
       } else {
         console.log("no existe!");
@@ -206,7 +236,7 @@ export default {
         !this.formData.numero ||
         !this.formData.postal
       ) {
-        alert("Debe ingresar todos los datos de la direccion ");
+        this.dismissCountDown = this.dismissSecs;
         return;
       }
       //Will make the request
@@ -247,7 +277,7 @@ export default {
         !this.selected ||
         !this.formData.referencia
       ) {
-        alert("Debe ingresar todos los datos del formulario ");
+        this.showDismissibleAlert = true;
         return;
       }
 
@@ -301,6 +331,9 @@ export default {
       this.selected = "";
       this.formData.referencia = "";
       this.savedLocations = []; // we empty the array
+    },
+    countDownChanged(dismissCountDown) {
+      this.dismissCountDown = dismissCountDown;
     },
   },
 };
