@@ -160,7 +160,8 @@
                     variant="danger"
                     dismissible
                   >
-                    Debe ingresar todos los datos del formulario, para poder realizar un reporte.
+                    Debe ingresar todos los datos del formulario, para poder
+                    realizar un reporte.
                   </b-alert>
                   <b-button type="submit" variant="danger">Reportar</b-button>
                 </b-col>
@@ -170,6 +171,16 @@
         </b-col>
         <b-col></b-col>
       </b-row>
+    </div>
+    <div>
+      <b-modal
+        id="modal-center"
+        centered
+        title="BootstrapVue"
+        v-model="loadingData"
+      >
+        <p class="my-4">Vertically centered modal!</p>
+      </b-modal>
     </div>
   </div>
 </template>
@@ -187,6 +198,7 @@ export default {
     savedLocations: [],
     user: null,
     showDismissibleAlert: false,
+    loadingData: false,
     dismissSecs: 10,
     dismissCountDown: 0,
     userAvatar:
@@ -278,8 +290,12 @@ export default {
         !this.formData.referencia
       ) {
         this.showDismissibleAlert = true;
+        this.loadingData = true;
         return;
       }
+
+      //Will show a message, to let knmow the user the data
+      //is  bieng loadded
 
       var uid = this.user.uid;
 
