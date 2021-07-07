@@ -20,150 +20,145 @@
           >
             <br />
             <b-form @submit.prevent="handleFormSubmit">
-              <b-row>
-                <b-col>
-                  <b-form-group
-                    class="nameCriminal"
-                    label="Nombre  del criminal"
-                  >
-                    <b-form-input
-                      placeholder="nombre criminal"
-                      v-model="formData.nameCri"
-                    ></b-form-input>
-                  </b-form-group>
-                </b-col>
-              </b-row>
-
-              <b-row>
-                <b-col>
-                  <b-form-group class="crimenStyle" label="Crimen cometido">
-                    <b-form-textarea
-                      id="textarea"
-                      v-model="formData.descripcion"
-                      placeholder="describir crimen..."
-                      rows="3"
-                      max-rows="6"
-                    ></b-form-textarea>
-                  </b-form-group>
-                </b-col>
-              </b-row>
-
-              <b-row>
-                <b-col>
-                  <b-form-group class="fechaHoraStyle" label="Fecha y hora">
-                    <b-form-datepicker
-                      id="example-datepicker"
-                      v-model="formData.fecha"
-                      class="mb-2"
-                    ></b-form-datepicker>
-                    <b-form-timepicker
-                      v-model="formData.hora"
-                      locale="en"
-                    ></b-form-timepicker>
-                  </b-form-group>
-                </b-col>
-              </b-row>
-
-              <b-row>
-                <b-col>
-                  <b-form-group
-                    class="direccionStyle"
-                    label="Direccion"
-                    description="Si no se cuenta con el numero o codigo postal ingresar 0"
-                  >
-                    <b-form-input
-                      placeholder="colonia "
-                      v-model="formData.colonia"
-                    ></b-form-input>
-                    <b-form-input
-                      placeholder="calle"
-                      v-model="formData.calle"
-                    ></b-form-input>
-                    <b-form-input
-                      placeholder="#numero"
-                      v-model="formData.numero"
-                    ></b-form-input>
-                    <b-form-input
-                      placeholder="codigo postal"
-                      v-model="formData.postal"
-                    ></b-form-input>
-                  </b-form-group>
-                  <b-alert
-                    :show="dismissCountDown"
-                    dismissible
-                    variant="warning"
-                    @dismissed="dismissCountDown = 0"
-                    @dismiss-count-down="countDownChanged"
-                  >
-                    <p>
-                      Debe ingresar la colonia, calle, numero exterior y codigo
-                      postal para continuar con la busqueda.
-                    </p>
-                    <p>
-                      Esta alerta desaparecera dentro de
-                      {{ dismissCountDown }} seconds...
-                    </p>
-                    <b-progress
+              <b-overlay :show="loadingData" rounded="sm">
+                <b-row>
+                  <b-col>
+                    <b-form-group
+                      class="nameCriminal"
+                      label="Nombre  del criminal"
+                    >
+                      <b-form-input
+                        placeholder="nombre criminal"
+                        v-model="formData.nameCri"
+                      ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col>
+                    <b-form-group class="crimenStyle" label="Crimen cometido">
+                      <b-form-textarea
+                        id="textarea"
+                        v-model="formData.descripcion"
+                        placeholder="describir crimen..."
+                        rows="3"
+                        max-rows="6"
+                      ></b-form-textarea>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col>
+                    <b-form-group class="fechaHoraStyle" label="Fecha y hora">
+                      <b-form-datepicker
+                        id="example-datepicker"
+                        v-model="formData.fecha"
+                        class="mb-2"
+                      ></b-form-datepicker>
+                      <b-form-timepicker
+                        v-model="formData.hora"
+                        locale="en"
+                      ></b-form-timepicker>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col>
+                    <b-form-group
+                      class="direccionStyle"
+                      label="Direccion"
+                      description="Si no se cuenta con el numero o codigo postal ingresar 0"
+                    >
+                      <b-form-input
+                        placeholder="colonia "
+                        v-model="formData.colonia"
+                      ></b-form-input>
+                      <b-form-input
+                        placeholder="calle"
+                        v-model="formData.calle"
+                      ></b-form-input>
+                      <b-form-input
+                        placeholder="#numero"
+                        v-model="formData.numero"
+                      ></b-form-input>
+                      <b-form-input
+                        placeholder="codigo postal"
+                        v-model="formData.postal"
+                      ></b-form-input>
+                    </b-form-group>
+                    <b-alert
+                      :show="dismissCountDown"
+                      dismissible
                       variant="warning"
-                      :max="dismissSecs"
-                      :value="dismissCountDown"
-                      height="4px"
-                    ></b-progress>
-                  </b-alert>
-                  <b-button v-on:click="checkMap" variant="outline-primary"
-                    >Buscar</b-button
-                  >
-                  <GmapMap
-                    id="mapID"
-                    :center="{ lat: 32.513, lng: -117.05 }"
-                    :zoom="11"
-                    map-type-id="roadmap"
-                  >
-                    <div v-if="savedLocations.length > 0">
-                      <GmapMarker
-                        :key="index"
-                        v-for="(l, index) in savedLocations"
-                        :position="{
-                          lat: l.geoPoint.latitude,
-                          lng: l.geoPoint.longitude,
-                        }"
-                      />
-                    </div>
-                  </GmapMap>
-                </b-col>
-              </b-row>
-              <br />
-              <b-row>
-                <b-col>
-                  <b-form-group class="estatusStyle" label="Estatus">
-                    <b-form-select
-                      v-model="selected"
-                      :options="options"
-                    ></b-form-select>
-                  </b-form-group>
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col>
-                  <b-form-group class="referenciaStyle" label="Referencia">
-                    <b-form-input
-                      placeholder="link de la noticia o referencia"
-                      v-model="formData.referencia"
-                    ></b-form-input>
-                  </b-form-group>
-                </b-col>
-              </b-row>
+                      @dismissed="dismissCountDown = 0"
+                      @dismiss-count-down="countDownChanged"
+                    >
+                      <p>
+                        Debe ingresar la colonia, calle, numero exterior y
+                        codigo postal para continuar con la busqueda.
+                      </p>
+                    </b-alert>
+                    <b-button v-on:click="checkMap" variant="outline-primary"
+                      >Buscar</b-button
+                    >
+                    <GmapMap
+                      id="mapID"
+                      :center="{ lat: 32.513, lng: -117.05 }"
+                      :zoom="11"
+                      map-type-id="roadmap"
+                    >
+                      <div v-if="savedLocations.length > 0">
+                        <GmapMarker
+                          :key="index"
+                          v-for="(l, index) in savedLocations"
+                          :position="{
+                            lat: l.geoPoint.latitude,
+                            lng: l.geoPoint.longitude,
+                          }"
+                        />
+                      </div>
+                    </GmapMap>
+                  </b-col>
+                </b-row>
+                <br />
+                <b-row>
+                  <b-col>
+                    <b-form-group class="estatusStyle" label="Estatus">
+                      <b-form-select
+                        v-model="selected"
+                        :options="options"
+                      ></b-form-select>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col>
+                    <b-form-group class="referenciaStyle" label="Referencia">
+                      <b-form-input
+                        placeholder="link de la noticia o referencia"
+                        v-model="formData.referencia"
+                      ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+              </b-overlay>
               <b-row>
                 <b-col>
                   <b-alert
-                    v-model="showDismissibleAlert"
-                    variant="danger"
+                    :show="dismissFormCount"
                     dismissible
+                    variant="danger"
+                    @dismissed="dismissFormCount = 0"
+                    @dismiss-count-down="countDownFormChanged"
                   >
-                    Debe ingresar todos los datos del formulario, para poder
-                    realizar un reporte.
+                    <p>
+                      Debe ingresar todos los datos del formulario, para poder
+                      realizar un reporte.
+                    </p>
                   </b-alert>
-                  <b-button type="submit" variant="danger">Reportar</b-button>
+                  <b-button type="submit" variant="danger"  
+                    >Reportar</b-button
+                  >
                 </b-col>
               </b-row>
             </b-form>
@@ -171,16 +166,6 @@
         </b-col>
         <b-col></b-col>
       </b-row>
-    </div>
-    <div>
-      <b-modal
-        id="modal-center"
-        centered
-        title="BootstrapVue"
-        v-model="loadingData"
-      >
-        <p class="my-4">Vertically centered modal!</p>
-      </b-modal>
     </div>
   </div>
 </template>
@@ -199,8 +184,9 @@ export default {
     user: null,
     showDismissibleAlert: false,
     loadingData: false,
-    dismissSecs: 10,
+    dismissSecs: 5,
     dismissCountDown: 0,
+    dismissFormCount: 0,
     userAvatar:
       "https://media.istockphoto.com/vectors/default-avatar-profile-icon-grey-photo-placeholder-hand-drawn-modern-vector-id1273297997?b=1&k=6&m=1273297997&s=612x612&w=0&h=W0mwZseX1YEUPH8BJ9ra2Y-VeaUOi0nSLfQJWExiLsQ=",
     formData: {
@@ -276,7 +262,6 @@ export default {
       this.savedLocations.push(obj);
     },
     async handleFormSubmit() {
-      console.log("insertar datos ");
       if (
         !this.formData.colonia ||
         !this.formData.calle ||
@@ -289,16 +274,14 @@ export default {
         !this.selected ||
         !this.formData.referencia
       ) {
-        this.showDismissibleAlert = true;
-        this.loadingData = true;
+        this.dismissFormCount = this.dismissSecs;
+        this.loadingData = false;
         return;
       }
-
+      this.loadingData = true;
       //Will show a message, to let knmow the user the data
       //is  bieng loadded
-
       var uid = this.user.uid;
-
       let { data } = await axios.post(
         "https://us-central1-criminalalertdb.cloudfunctions.net/criminalFormData",
         {
@@ -329,6 +312,7 @@ export default {
           })
           .then(() => {
             alert("Document successfully updated!");
+            this.loadingData = false;
           })
           .catch((error) => {
             // The document probably doesn't exist.
@@ -351,6 +335,10 @@ export default {
     countDownChanged(dismissCountDown) {
       this.dismissCountDown = dismissCountDown;
     },
+    countDownFormChanged(dismissFormCount) {
+      this.dismissFormCount = dismissFormCount;
+    },
+   
   },
 };
 </script>
