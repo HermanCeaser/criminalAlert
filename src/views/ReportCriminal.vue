@@ -141,26 +141,24 @@
                     </b-form-group>
                   </b-col>
                 </b-row>
+                <b-row>
+                  <b-col>
+                    <b-alert
+                      :show="dismissFormCount"
+                      dismissible
+                      variant="danger"
+                      @dismissed="dismissFormCount = 0"
+                      @dismiss-count-down="countDownFormChanged"
+                    >
+                      <p>
+                        Debe ingresar todos los datos del formulario, para poder
+                        realizar un reporte.
+                      </p>
+                    </b-alert>
+                    <b-button type="submit" variant="danger">Reportar</b-button>
+                  </b-col>
+                </b-row>
               </b-overlay>
-              <b-row>
-                <b-col>
-                  <b-alert
-                    :show="dismissFormCount"
-                    dismissible
-                    variant="danger"
-                    @dismissed="dismissFormCount = 0"
-                    @dismiss-count-down="countDownFormChanged"
-                  >
-                    <p>
-                      Debe ingresar todos los datos del formulario, para poder
-                      realizar un reporte.
-                    </p>
-                  </b-alert>
-                  <b-button type="submit" variant="danger"  
-                    >Reportar</b-button
-                  >
-                </b-col>
-              </b-row>
             </b-form>
           </b-card>
         </b-col>
@@ -187,6 +185,7 @@ export default {
     dismissSecs: 5,
     dismissCountDown: 0,
     dismissFormCount: 0,
+    count: 0,
     userAvatar:
       "https://media.istockphoto.com/vectors/default-avatar-profile-icon-grey-photo-placeholder-hand-drawn-modern-vector-id1273297997?b=1&k=6&m=1273297997&s=612x612&w=0&h=W0mwZseX1YEUPH8BJ9ra2Y-VeaUOi0nSLfQJWExiLsQ=",
     formData: {
@@ -311,7 +310,7 @@ export default {
             reportes: firebase.firestore.FieldValue.increment(1),
           })
           .then(() => {
-            alert("Document successfully updated!");
+            this.showToast();
             this.loadingData = false;
           })
           .catch((error) => {
@@ -338,7 +337,35 @@ export default {
     countDownFormChanged(dismissFormCount) {
       this.dismissFormCount = dismissFormCount;
     },
-   
+    showToast() {
+      // Use a shorter name for this.$createElement
+      const h = this.$createElement;
+      // Increment the toast count
+      this.count++;
+      // Create the message
+      const vNodesMsg = h("p", { class: ["text-center", "mb-0"] }, [
+        h("b-spinner", { props: { type: "grow", small: true } }),
+        " Registro ",
+        h("strong", "exitoso!"),
+        ` # ${this.count} `,
+        h("b-spinner", { props: { type: "grow", small: true } }),
+      ]);
+      // Create the title
+      const vNodesTitle = h(
+        "div",
+        { class: ["d-flex", "flex-grow-1", "align-items-baseline", "mr-2"] },
+        [
+          h("strong", { class: "mr-2" }, "The Title"),
+          h("small", { class: "ml-auto text-italics" }, "42 seconds ago"),
+        ]
+      );
+      // Pass the VNodes as an array for message and title
+      this.$bvToast.toast([vNodesMsg], {
+        title: [vNodesTitle],
+        solid: true,
+        variant: "info",
+      });
+    },
   },
 };
 </script>
