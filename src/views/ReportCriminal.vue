@@ -101,23 +101,25 @@
                     <b-button v-on:click="checkMap" variant="outline-primary"
                       >Buscar</b-button
                     >
-                    <GmapMap
-                      id="mapID"
-                      :center="{ lat: 32.513, lng: -117.05 }"
-                      :zoom="11"
-                      map-type-id="roadmap"
-                    >
-                      <div v-if="savedLocations.length > 0">
-                        <GmapMarker
-                          :key="index"
-                          v-for="(l, index) in savedLocations"
-                          :position="{
-                            lat: l.geoPoint.latitude,
-                            lng: l.geoPoint.longitude,
-                          }"
-                        />
-                      </div>
-                    </GmapMap>
+                    <b-overlay :show="mapSearch" rounded="sm">
+                      <GmapMap
+                        id="mapID"
+                        :center="{ lat: 32.513, lng: -117.05 }"
+                        :zoom="11"
+                        map-type-id="roadmap"
+                      >
+                        <div v-if="savedLocations.length > 0">
+                          <GmapMarker
+                            :key="index"
+                            v-for="(l, index) in savedLocations"
+                            :position="{
+                              lat: l.geoPoint.latitude,
+                              lng: l.geoPoint.longitude,
+                            }"
+                          />
+                        </div>
+                      </GmapMap>
+                    </b-overlay>
                   </b-col>
                 </b-row>
                 <br />
@@ -182,6 +184,7 @@ export default {
     user: null,
     showDismissibleAlert: false,
     loadingData: false,
+    mapSearch: false,
     dismissSecs: 5,
     dismissCountDown: 0,
     dismissFormCount: 0,
@@ -236,6 +239,7 @@ export default {
         this.dismissCountDown = this.dismissSecs;
         return;
       }
+      this.mapSearch = true;
       //Will make the request
       let address = `${this.formData.colonia} ${this.formData.calle} ${this.formData.numero},Tijuana, MX, ${this.formData.postal}`;
       let { data } = await axios.post(
@@ -247,8 +251,10 @@ export default {
       if (data === "No Results") {
         alert("No hay resultados de la direccion");
         return;
+      } else {
+        this.mapSearch = false;
       }
-      console.log("test recive query: " + data.address);
+
       //Will massage data
       let obj = {
         address: data.address,
