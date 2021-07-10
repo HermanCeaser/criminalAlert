@@ -61,49 +61,51 @@
       <b-col></b-col>
       <b-col md="10">
         <div id="" class="shadow p-2 mb-5 bg-white rounded">
-          <GmapMap
-            id="mapID"
-            :center="{ lat: 32.513, lng: -117.05 }"
-            :zoom="12"
-            map-type-id="roadmap"
-            :options="{
-              zoomControl: true,
-              mapTypeControl: true,
-              scaleControl: false,
-              streetViewControl: true,
-              rotateControl: false,
-              fullscreenControl: false,
-              disableDefaultUI: false,
-            }"
-          >
-            <div v-if="savedLocations.length > 0">
-              <GmapMarker
-                :key="index"
-                v-for="(l, index) in savedLocations"
-                :position="{
-                  lat: l.geoPoint.latitude,
-                  lng: l.geoPoint.longitude,
-                }"
-                :clickable="true"
-                :draggable="false"
-                @click="openInfoWindowTemplate(index)"
-                :animation="2"
-                ref="markers"
-                :icon="{ url: require('../assets/criIcon.png') }"
-              />
-              <gmap-info-window
-                :options="{
-                  maxWidth: 300,
-                  pixelOffset: { width: 0, height: -35 },
-                }"
-                :position="infoWindow.position"
-                :opened="infoWindow.open"
-                @closeclick="infoWindow.open = false"
-              >
-                <div v-html="infoWindow.template"></div>
-              </gmap-info-window>
-            </div>
-          </GmapMap>
+          <b-overlay :show="mapLoading" rounded="sm">
+            <GmapMap
+              id="mapID"
+              :center="{ lat: 32.513, lng: -117.05 }"
+              :zoom="12"
+              map-type-id="roadmap"
+              :options="{
+                zoomControl: true,
+                mapTypeControl: true,
+                scaleControl: false,
+                streetViewControl: true,
+                rotateControl: false,
+                fullscreenControl: false,
+                disableDefaultUI: false,
+              }"
+            >
+              <div v-if="savedLocations.length > 0">
+                <GmapMarker
+                  :key="index"
+                  v-for="(l, index) in savedLocations"
+                  :position="{
+                    lat: l.geoPoint.latitude,
+                    lng: l.geoPoint.longitude,
+                  }"
+                  :clickable="true"
+                  :draggable="false"
+                  @click="openInfoWindowTemplate(index)"
+                  :animation="2"
+                  ref="markers"
+                  :icon="{ url: require('../assets/criIcon.png') }"
+                />
+                <gmap-info-window
+                  :options="{
+                    maxWidth: 300,
+                    pixelOffset: { width: 0, height: -35 },
+                  }"
+                  :position="infoWindow.position"
+                  :opened="infoWindow.open"
+                  @closeclick="infoWindow.open = false"
+                >
+                  <div v-html="infoWindow.template"></div>
+                </gmap-info-window>
+              </div>
+            </GmapMap>
+          </b-overlay>
         </div>
       </b-col>
       <b-col></b-col>
@@ -123,6 +125,7 @@ export default {
     totalReportUser: 0,
     userID: null,
     isBusy: false,
+    mapLoading:false,
     userStar: "Don Puerko",
     infoWindow: {
       position: { lat: 0, lng: 0 },
@@ -132,11 +135,14 @@ export default {
   }),
   async beforeMount() {
     //get a request with the information of the criminals
+    this.mapLoading = true;
     let { data } = await axios.post(
       "https://us-central1-criminalalertdb.cloudfunctions.net/criminalMapInfo"
     );
     if (data === "NO RESULTS") {
       console.log("problem with map loading");
+    }else{
+      this.mapLoading = false;
     }
     this.savedLocations = data;
 
