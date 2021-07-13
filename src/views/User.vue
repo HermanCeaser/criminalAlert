@@ -76,12 +76,13 @@
         <b-col md="8">
           <b-row>
             <b-table
-              class="tableCriminals"
+              sticky-header
               :items="items"
               :busy="isBusy"
               hover
-              outlined
               responsive
+              head-variant="light"
+              class="tableCriminals"
             >
               <template #table-busy>
                 <div class="text-left text-danger my-2">
@@ -93,48 +94,6 @@
           </b-row>
         </b-col>
         <b-col md="1"></b-col>
-      </b-row>
-      <b-row>
-        <b-col></b-col>
-        <b-col></b-col>
-        <b-col>
-          <b-card>
-            <b-icon
-              icon="exclamation-circle-fill"
-              variant="warning"
-              font-scale="4"
-            ></b-icon>
-            <b-card-text>
-              <p>Registros criminales en proceso {{ chart.enProceso }}</p>
-            </b-card-text>
-          </b-card>
-        </b-col>
-        <b-col>
-          <b-card>
-            <b-icon
-              icon="exclamation-circle-fill"
-              variant="danger"
-              font-scale="4"
-            ></b-icon>
-            <b-card-text>
-              <p>Registros criminales sin detenidos {{ chart.sinDetenidos }}</p>
-            </b-card-text>
-          </b-card>
-        </b-col>
-        <b-col>
-          <b-card>
-            <b-icon
-              icon="exclamation-circle-fill"
-              variant="success"
-              font-scale="4"
-            ></b-icon>
-            <b-card-text>
-              <p>Registros criminales detenidos {{ chart.enCarcel }}</p>
-            </b-card-text>
-          </b-card>
-        </b-col>
-        <b-col></b-col>
-        <b-col></b-col>
       </b-row>
     </div>
     <div id="logOut">
@@ -422,7 +381,7 @@ export default {
   );
 }
 
-#logOut{
+#logOut {
   position: absolute;
   top: 60px;
   right: 150px;
