@@ -3,7 +3,9 @@
     <div id="gradientBackground" class="gradient-custom"></div>
     <div id="avatarPick" class="">
       <b-avatar id="avatarID" src="" size="17rem">
-        <img v-bind:src="userAvatar" class="avatar" />
+        <b-overlay :show="avatarLoading" rounded="sm">
+          <img v-bind:src="userAvatar" class="avatar" />
+        </b-overlay>
       </b-avatar>
     </div>
     <div class="formContainer">
@@ -189,6 +191,7 @@ export default {
     dismissCountDown: 0,
     dismissFormCount: 0,
     count: 0,
+    avatarLoading: true,
     userAvatar:
       "https://media.istockphoto.com/vectors/default-avatar-profile-icon-grey-photo-placeholder-hand-drawn-modern-vector-id1273297997?b=1&k=6&m=1273297997&s=612x612&w=0&h=W0mwZseX1YEUPH8BJ9ra2Y-VeaUOi0nSLfQJWExiLsQ=",
     formData: {
@@ -222,6 +225,7 @@ export default {
     userRef.get().then(async (docSnapshot) => {
       if (docSnapshot.exists) {
         this.userAvatar = docSnapshot.data().avatar;
+        this.avatarLoading = false;
       } else {
         console.log("no existe!");
       }
@@ -372,11 +376,9 @@ export default {
         variant: "info",
       });
     },
-    showMapDisplay(){
+    showMapDisplay() {
       const h = this.$createElement;
-      
-
-    }
+    },
   },
 };
 </script>
