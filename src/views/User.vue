@@ -77,23 +77,75 @@
           <b-row>
             <b-table
               sticky-header
+              :fields="fields"
               :items="items"
-              :busy="isBusy"
+              ref="selectableTable"
+              selectable
+              @row-selected="onRowSelected"
               hover
               responsive
               head-variant="light"
               class="tableCriminals"
             >
-              <template #table-busy>
-                <div class="text-left text-danger my-2">
-                  <b-spinner class="align-middle"></b-spinner>
-                  <strong>Loading...</strong>
-                </div>
+              <template #cell(selected)="{ rowSelected }">
+                <template v-if="rowSelected">
+                  <span aria-hidden="true">&check;</span>
+                  <span class="sr-only">Selected</span>
+                </template>
+                <template v-else>
+                  <span aria-hidden="true">&nbsp;</span>
+                  <span class="sr-only">Not selected</span>
+                </template>
               </template>
             </b-table>
           </b-row>
+          <div>
+            <b-button
+              id="show-btn"
+              pill
+              block
+              variant="danger"
+              v-b-modal.modal-center
+              @click="showModal"
+              >Borrar</b-button
+            >
+            <b-modal
+              ref="my-modal"
+              hide-footer
+              id="modal-center"
+              centered
+              title="Reportes seran borados de la base de datos"
+            >
+              <div class="d-block text-center">
+                <div v-if="selected.length > 0">
+                  <div :key="index" v-for="(item, index) in selected">
+                    {{ index + 1 }} - {{ item.nombre }} fecha:
+                    {{ item.fecha }} estatus:
+                    {{ item.estatus }}
+                  </div>
+                </div>
+                <div v-else>
+                  <h4>Seleccione registros a borrar</h4>
+                </div>
+              </div>
+              <b-button
+                class="mt-3"
+                variant="outline-danger"
+                block
+                @click="deleteSelected"
+                >Continuar</b-button
+              >
+              <b-button
+                class="mt-2"
+                variant="outline-warning"
+                block
+                @click="closeModal"
+                >Cancelar</b-button
+              >
+            </b-modal>
+          </div>
         </b-col>
-        <b-col md="1"></b-col>
+        <b-col md="1"> </b-col>
       </b-row>
     </div>
     <div id="logOut">
@@ -126,6 +178,15 @@ export default {
       avatar:
         "https://media.istockphoto.com/vectors/default-avatar-profile-icon-grey-photo-placeholder-hand-drawn-modern-vector-id1273297997?b=1&k=6&m=1273297997&s=612x612&w=0&h=W0mwZseX1YEUPH8BJ9ra2Y-VeaUOi0nSLfQJWExiLsQ=",
     },
+    fields: [
+      "selected",
+      "nombre",
+      "descripcion",
+      "fecha",
+      "hora",
+      "estatus",
+      "referencia",
+    ],
     items: [
       {
         nombre: "",
@@ -134,8 +195,10 @@ export default {
         hora: "",
         estatus: "",
         referencia: "",
+        id: "",
       },
     ],
+    selected: [],
     chart: [
       {
         sinDetenidos: 0,
@@ -178,14 +241,11 @@ export default {
   methods: {
     checkUser() {
       //we are going to check is the user exist on the data base
-      console.log("id user: " + this.userID);
       this.userRef = db.collection("user").doc(this.userID);
       this.userRef.get().then(async (docSnapshot) => {
         if (docSnapshot.exists) {
-          console.log("existe!");
           this.setUserData();
         } else {
-          console.log("no existe!");
           let data = {
             nick: "",
             correo: this.userTemp.email,
@@ -208,10 +268,6 @@ export default {
             this.userData.correo = doc.data().correo;
             this.userData.reportes = doc.data().reportes;
             this.userData.avatar = doc.data().avatar;
-            console.log("Document exist!");
-          } else {
-            // doc.data() will be undefined in this case
-            console.log("No such document!");
           }
         })
         .catch((error) => {
@@ -302,20 +358,26 @@ export default {
         .get()
         .then((doc) => {
           if (doc.exists) {
-            console.log("Document exist para la tabla! ");
             let data = doc.data().criminalsID;
-
+            console.log(data[0]);
             for (let index = 0; index < data.length; index++) {
-              const criminalInfo = db
-                .collection("criminalInfo")
-                .doc(data[index]);
+              let criminalInfo = db.collection("criminalInfo").doc(data[index]);
               criminalInfo
                 .get()
                 .then((doc) => {
                   if (doc.exists) {
-                    console.log("Document exist!");
                     let data = doc.data();
-                    this.items.push(data);
+                    let id = doc.id;
+                    let schemeItems = {
+                      nombre: data.nombre,
+                      descripcion: data.descripcion,
+                      fecha: data.fecha,
+                      hora: data.hora,
+                      estatus: data.estatus,
+                      referencia: data.referencia,
+                      id: id,
+                    };
+                    this.items.push(schemeItems);
                     //will get the state  of the criminal en added to our chart
                     switch (doc.data().estatus) {
                       case "sin detenidos":
@@ -333,9 +395,6 @@ export default {
                       default:
                         break;
                     }
-                  } else {
-                    // doc.data() will be undefined in this case
-                    console.log("No such document!");
                   }
                 })
                 .catch((error) => {
@@ -343,14 +402,73 @@ export default {
                 });
             }
             this.isBusy = false;
-          } else {
-            // doc.data() will be undefined in this case
-            console.log("No such document!");
           }
         })
         .catch((error) => {
           console.log("Error getting document:", error);
         });
+    },
+    onRowSelected(items) {
+      this.selected = items;
+    },
+    closeModal() {
+      this.$refs.selectableTable.clearSelected();
+      this.$refs["my-modal"].hide();
+    },
+    deleteSelected() {
+      if(this.selected.length <= 0){
+        this.$refs["my-modal"].hide();
+        return;
+      }
+
+      let ids = [];
+      for (let index = 0; index < this.selected.length; index++) {
+        ids[index] = this.selected[index].id;
+      }
+      console.log("user id:" + this.userID);
+      for (let index = 0; index < ids.length; index++) {
+        console.log(" id " + index + " " + ids[index]);
+      }
+
+      //first  we're going to delete the id fonr tue user list
+      const criminalInfoIDs = db
+        .collection("userCriminalInfo")
+        .doc(this.userID);
+      for (let index = 0; index < ids.length; index++) {
+        criminalInfoIDs
+          .update({
+            criminalsID: firebase.firestore.FieldValue.arrayRemove(ids[index]),
+          })
+          .then(() => {
+            //second we are going to  decrement the user criminal count
+            this.userRef
+              .update({
+                reportes: firebase.firestore.FieldValue.increment(-1),
+              })
+              .then(() => {
+                //Third we are going to delete from the criminal databasse
+                let criminalInfo = db
+                  .collection("criminalInfo")
+                  .doc(ids[index]).delete();
+
+                alert("Document successfully updated!");
+                this.$refs["my-modal"].hide();
+                this.items = [];
+                //this.fillTable();
+              })
+              .catch((error) => {
+                // The document probably doesn't exist.
+                console.error("Error updating document: ", error);
+              });
+          })
+          .catch((error) => {
+            // The document probably doesn't exist.
+            console.error("Error updating document: ", error);
+          });
+      }
+    },
+    showModal() {
+      this.$refs["my-modal"].show();
     },
   },
 };
