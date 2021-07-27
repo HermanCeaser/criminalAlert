@@ -254,6 +254,7 @@ export default {
       );
       if (data === "No Results") {
         alert("No hay resultados de la direccion");
+        this.mapSearch = false;
         return;
       } else {
         this.mapSearch = false;
@@ -450,7 +451,7 @@ header {
 
 .avatar {
   width: 100%;
-  height: 250px;
+  height: 300px;
 }
 
 .gradient-custom {
