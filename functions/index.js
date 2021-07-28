@@ -232,7 +232,7 @@ exports.userCriminalInfo = functions.https.onRequest(async (request, response) =
 
         userSnap.docs.forEach((doc) => {
             if (userID === doc.id) {
-                userStar = doc.data().correo;
+                userStar = doc.data().nick;
             }
             totalUsers++;
         });

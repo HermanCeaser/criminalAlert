@@ -1,20 +1,7 @@
 <template>
   <div id="about">
     <div id="gradientBackground" class="gradient-custom">
-      <div>
-        <b-card
-          class="imgT"
-          overlay
-          img-src="https://firebasestorage.googleapis.com/v0/b/criminalalertdb.appspot.com/o/userProfilePic%2Fabout.png?alt=media&token=03ef7820-005d-44f8-a1d9-8ffc66e0cd4c"
-          img-alt="Card Image"
-          text-variant="white"
-          title=""
-          sub-title=""
-        >
-        </b-card>
-      </div>
     </div>
-    <br />
     <div>
       <b-row>
         <b-col>
@@ -25,13 +12,6 @@
         <b-col></b-col>
         <b-col>
           <h4>
-            Somos un pequeño grupo de desarrolladores, con ideas para cambiar al
-            mundo. Aunque todavia seamos estudiantes de informática, no es
-            impedimento para hacer realidad nuestros proyectos.
-          </h4>
-          <br />
-          <hr />
-          <h4>
             La idea de alerta criminal surgió de la necesidad de centralizar la
             información delictiva que vivimos en Tijuana. Esta información es
             desplegada en un mapa, donde el usuario podra observar la posición
@@ -40,7 +20,7 @@
         </b-col>
         <b-col></b-col>
       </b-row>
-      <b-row style="margin-top: 10%">
+      <b-row style="margin-top: 5%">
         <b-col></b-col>
         <b-col>
           <!--  container -->
@@ -85,180 +65,6 @@
           </div>
           <!-- end container -->
         </b-col>
-        <b-col>
-          <!--  container -->
-          <div class="container">
-            <div class="card">
-              <div class="card-heading">
-                <h4 class="name">Alan Fernando</h4>
-              </div>
-              <div class="card-content">
-                <div id="flip" class="flip-container">
-                  <div class="flipper">
-                    <div class="front">
-                      <img
-                        src="https://images.unsplash.com/photo-1605379399642-870262d3d051?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1081&q=80"
-                        alt=""
-                        class="background"
-                      />
-                      <div class="avatarBorder">
-                        <img
-                          src="https://firebasestorage.googleapis.com/v0/b/criminalalertdb.appspot.com/o/userProfilePic%2Ffer.jpg?alt=media&token=1c58ef6e-ada3-4c4e-b601-5c4b9250fcc5"
-                          alt=""
-                          class="avatar img-circle"
-                        />
-                      </div>
-                      <div class="card-caption">
-                        <h4 class="email truncate">
-                          fernando.cadenas@uabc.edu.mx
-                        </h4>
-                        <h4 class="email truncate">
-                         Implementacion
-                        </h4>
-                      </div>
-                    </div>
-                    <!-- end front -->
-                  </div>
-                  <!-- end flipper -->
-                </div>
-                <!-- end flip-container -->
-              </div>
-              <br />
-              <!-- end card-content -->
-            </div>
-            <!-- end card -->
-          </div>
-          <!-- end container -->
-        </b-col>
-        <b-col>
-          <!--  container -->
-          <div class="container">
-            <div class="card">
-              <div class="card-heading">
-                <h4 class="name">Ailyn Cid</h4>
-              </div>
-              <div class="card-content">
-                <div id="flip" class="flip-container">
-                  <div class="flipper">
-                    <div class="front">
-                      <img
-                        src="https://images.unsplash.com/photo-1581094651181-35942459ef62?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80"
-                        alt=""
-                        class="background"
-                      />
-                      <div class="avatarBorder">
-                        <img
-                          src="https://firebasestorage.googleapis.com/v0/b/criminalalertdb.appspot.com/o/userProfilePic%2Failyn.jpg?alt=media&token=54db2f75-568f-46bd-85ef-8f4c78eeed5f"
-                          alt=""
-                          class="avatar img-circle"
-                        />
-                      </div>
-                      <div class="card-caption">
-                        <h4 class="email truncate">ailyn.cid@uabc.edu.mx</h4>
-                        <h4 class="email truncate">Diseñador UX</h4>
-                      </div>
-                    </div>
-                    <!-- end front -->
-                  </div>
-                  <!-- end flipper -->
-                </div>
-                <!-- end flip-container -->
-              </div>
-              <br />
-              <!-- end card-content -->
-            </div>
-            <!-- end card -->
-          </div>
-          <!-- end container -->
-        </b-col>
-        <b-col>
-          <!--  container -->
-          <div class="container">
-            <div class="card">
-              <div class="card-heading">
-                <h4 class="name">Cesar Hernandez</h4>
-              </div>
-              <div class="card-content">
-                <div id="flip" class="flip-container">
-                  <div class="flipper">
-                    <div class="front">
-                      <img
-                        src="https://images.unsplash.com/photo-1544256718-3bcf237f3974?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1051&q=80"
-                        alt=""
-                        class="background"
-                      />
-                      <div class="avatarBorder">
-                        <img
-                          src="https://firebasestorage.googleapis.com/v0/b/criminalalertdb.appspot.com/o/userProfilePic%2Fcesar.png?alt=media&token=761d13da-0fd5-446f-8d7e-863bf1051509"
-                          alt=""
-                          class="avatar img-circle"
-                        />
-                      </div>
-                      <div class="card-caption">
-                        <h4 class="email truncate">
-                          cesar.adrian.hernandez.torres@uabc.edu.mx
-                        </h4>
-                        <h4 class="email truncate">Pruebas</h4>
-                      </div>
-                    </div>
-                    <!-- end front -->
-                  </div>
-                  <!-- end flipper -->
-                </div>
-                <!-- end flip-container -->
-              </div>
-              <br />
-              <!-- end card-content -->
-            </div>
-            <!-- end card -->
-          </div>
-          <!-- end container -->
-        </b-col>
-        <b-col>
-          <!--  container -->
-          <div class="container">
-            <div class="card">
-              <div class="card-heading">
-                <h4 class="name">Mike Gamboa</h4>
-              </div>
-              <div class="card-content">
-                <div id="flip" class="flip-container">
-                  <div class="flipper">
-                    <div class="front">
-                      <img
-                        src="https://images.unsplash.com/photo-1573496528736-cf543ba57104?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80"
-                        alt=""
-                        class="background"
-                      />
-                      <div class="avatarBorder">
-                        <img
-                          src="https://firebasestorage.googleapis.com/v0/b/criminalalertdb.appspot.com/o/userProfilePic%2Fmike.PNG?alt=media&token=8160bd0f-27e0-4b60-9a13-e9739442ed23"
-                          alt=""
-                          class="avatar img-circle"
-                        />
-                      </div>
-                      <div class="card-caption">
-                        <h4 class="email truncate">
-                          miguel.eduardo.gamboa.vargas@uabc.edu.mx
-                        </h4>
-                        <h4 class="email truncate">Planificacion</h4>
-                      </div>
-                    </div>
-                    <!-- end front -->
-                  </div>
-                  <!-- end flipper -->
-                </div>
-                <!-- end flip-container -->
-              </div>
-              <br />
-              <!-- end card-content -->
-
-              <!-- end footer -->
-            </div>
-            <!-- end card -->
-          </div>
-          <!-- end container -->
-        </b-col>
         <b-col></b-col>
       </b-row>
       <br /><br />
@@ -295,7 +101,7 @@ h4 {
 
 .gradient-custom {
   width: 100%;
-  height: 480px;
+  height: 400px;
   /* fallback for old browsers */
   background: #37ecba;
 
