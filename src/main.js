@@ -61,8 +61,3 @@ firebase.auth().onAuthStateChanged(user => {
   }
 });
 
-
-/*new Vue({
-  router,
-  render: h => h(App)
-}).$mount('#app')*/

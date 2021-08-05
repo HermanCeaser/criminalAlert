@@ -3,6 +3,7 @@
     <div id="gradientBackground" class="gradient-custom"></div>
 
     <div class="warginCard">
+
       <b-row>
         <b-col></b-col>
         <b-col md="5">
@@ -112,6 +113,10 @@ export default {
       password: "",
     },
   }),
+  beforeMount() {
+    this.showDismissibleAlert = this.dismissSecs;
+    this.alertMsm = "Para poder reportar criminales o ingresar a usuario, tienes que estar registrado"
+  },
   computed: {
     stateEmail() {
       return this.formData.correo.length >= 4;
@@ -222,7 +227,6 @@ p {
   overflow: hidden;
   font-family: "Roboto", sans-serif;
 }
-
 
 .gradient-custom {
   width: 100%;

@@ -144,8 +144,14 @@ export default {
         )
         .then(() => {
           this.$router.replace({ name: "user" });
+          let user = firebase.auth().currentUser;
+          user
+            .sendEmailVerification()
+            .then(() => {})
+            .catch((error) => (this.error = error));
         })
         .catch((error) => (this.error = error));
+      
     },
   },
 };

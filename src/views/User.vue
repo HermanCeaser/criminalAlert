@@ -151,6 +151,15 @@
     <div id="logOut">
       <b-button @click="signOut" variant="info">Sign out</b-button>
     </div>
+    <b-alert
+      v-model="showTop"
+      class="position-fixed fixed-top m-0 rounded-0"
+      style="z-index: 2000"
+      variant="danger"
+      dismissible
+    >
+      {{ verificationMsm }}
+    </b-alert>
   </div>
 </template>
 
@@ -171,6 +180,8 @@ export default {
     userRef: null,
     userTemp: null,
     isBusy: true,
+    showTop: false,
+    verificationMsm: "",
     userData: {
       nick: "Nicholas",
       correo: "nicholas.cage@theone.com",
@@ -255,6 +266,9 @@ export default {
           };
           db.collection("user").doc(this.userID).set(data);
           this.userRef = db.collection("user").doc(this.userID);
+          this.showTop = true;
+          this.verificationMsm =
+            "Se ha enviado un correo para verificar su email, revise su bandeja de entrada para activar su cuenta.";
           this.setUserData();
         }
       });
@@ -268,6 +282,9 @@ export default {
             this.userData.correo = doc.data().correo;
             this.userData.reportes = doc.data().reportes;
             this.userData.avatar = doc.data().avatar;
+            if (!this.showTop && !this.userTemp.emailVerified) {
+              this.showToast();
+            }
           }
         })
         .catch((error) => {
@@ -416,7 +433,7 @@ export default {
       this.$refs["my-modal"].hide();
     },
     deleteSelected() {
-      if(this.selected.length <= 0){
+      if (this.selected.length <= 0) {
         this.$refs["my-modal"].hide();
         return;
       }
@@ -449,7 +466,8 @@ export default {
                 //Third we are going to delete from the criminal databasse
                 let criminalInfo = db
                   .collection("criminalInfo")
-                  .doc(ids[index]).delete();
+                  .doc(ids[index])
+                  .delete();
 
                 alert("Document successfully updated!");
                 this.$refs["my-modal"].hide();
@@ -469,6 +487,38 @@ export default {
     },
     showModal() {
       this.$refs["my-modal"].show();
+    },
+    showToast() {
+      const h = this.$createElement;
+
+      const vNodesTitle = h(
+        "div",
+        { class: ["d-flex", "flex-grow-1", "align-items-baseline", "mr-2"] },
+        [h("strong", { class: "mr-2" }, "Su correo aún no ha sido verificado!")]
+      );
+
+      // Create the custom  button
+      const $closeButton = h(
+        "b-button",
+        {
+          on: { click: () => this.sendEmail() },
+        },
+        [h("strong", { class: "mr-2" }, "Enviar correo de verificación")],
+        "enviar"
+      );
+      // Create the toast
+      this.$bvToast.toast([$closeButton], {
+        title: [vNodesTitle],
+        solid: true,
+        variant: "danger",
+      });
+    },
+    sendEmail() {
+      let user = firebase.auth().currentUser;
+      user
+        .sendEmailVerification()
+        .then(() => {})
+        .catch((error) => (this.error = error));
     },
   },
 };
