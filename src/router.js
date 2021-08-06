@@ -56,6 +56,14 @@ const router = new Router({
         component: () => { return import('./views/Register.vue') }
     },
     {
+        path: '/resetCredentials',
+        name: 'resetCredentials',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => { return import('./views/ResetCredentials.vue') }
+    },
+    {
         path: '/user',
         name: 'user',
         meta: { requiresAuth: true },

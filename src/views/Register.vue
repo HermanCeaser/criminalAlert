@@ -151,7 +151,6 @@ export default {
             .catch((error) => (this.error = error));
         })
         .catch((error) => (this.error = error));
-      
     },
   },
 };

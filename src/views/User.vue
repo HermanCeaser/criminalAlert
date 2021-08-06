@@ -181,6 +181,7 @@ export default {
     userTemp: null,
     isBusy: true,
     showTop: false,
+    toastId: "-1",
     verificationMsm: "",
     userData: {
       nick: "Nicholas",
@@ -490,7 +491,7 @@ export default {
     },
     showToast() {
       const h = this.$createElement;
-
+      const id = this.toastId;
       const vNodesTitle = h(
         "div",
         { class: ["d-flex", "flex-grow-1", "align-items-baseline", "mr-2"] },
@@ -508,12 +509,23 @@ export default {
       );
       // Create the toast
       this.$bvToast.toast([$closeButton], {
+        id: id,
         title: [vNodesTitle],
         solid: true,
         variant: "danger",
       });
     },
     sendEmail() {
+      this.$bvToast.hide(this.toastId);
+      const h = this.$createElement;
+      const vNodesMsg = h('p', { class: ['text-center', 'mb-0'] }, [
+         h('strong', 'Correo enviado!'),
+      ]);
+      this.$bvToast.toast([vNodesMsg], {
+        title:'Estatus',
+        solid: true,
+        variant: 'success',
+      });
       let user = firebase.auth().currentUser;
       user
         .sendEmailVerification()

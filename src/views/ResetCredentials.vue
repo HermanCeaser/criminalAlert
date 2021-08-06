@@ -1,12 +1,10 @@
 <template>
   <div id="login" class="">
     <div id="gradientBackground" class="gradient-custom"></div>
-
     <div class="warginCard">
-
       <b-row>
         <b-col></b-col>
-        <b-col md="5">
+        <b-col md="4">
           <b-card no-body class="sesionCard shadow p-3 mb-5 bg-white rounded">
             <b-card-body>
               <b-card-text>
@@ -20,9 +18,17 @@
                 >
                   {{ alertMsm }}
                 </b-alert>
-                <h1>Iniciar sesion</h1>
+                <h1>Olvidaste tu contraseña?</h1>
               </b-card-text>
               <b-form @submit.prevent="pressed">
+                <b-row>
+                  <b-col>
+                    <p>
+                      Por favor ingrese su correo electrónico y le enviaremos
+                      información para recuperar su cuenta.
+                    </p>
+                  </b-col>
+                </b-row>
                 <b-row>
                   <b-col>
                     <b-form-group
@@ -40,23 +46,6 @@
                     </b-form-group>
                   </b-col>
                 </b-row>
-                <b-row>
-                  <b-col>
-                    <b-form-group
-                      id="fieldset-2"
-                      label="Contraseña"
-                      label-for="input-1"
-                      valid-feedback="Thank you!"
-                    >
-                      <b-form-input
-                        id="input-1"
-                        type="password"
-                        v-model="formData.password"
-                        trim
-                      ></b-form-input>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
                 <br />
                 <b-row>
                   <b-col>
@@ -65,34 +54,41 @@
                       type="submit"
                       block
                       variant="danger"
-                      >ingresar</b-button
+                      >Restablecer contraseña</b-button
                     >
                   </b-col>
                 </b-row>
               </b-form>
-              <br />
-              <b-row>
-                <b-col>
-                  <p>
-                    Olvidaste <router-link class="routerClass" to="/resetCredentials">contreaseña?</router-link>
-                  </p>
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col>
-                  <router-link to="/register">Registrate</router-link>
-                </b-col>
-              </b-row>
-              <b-row><br /></b-row>
-              <b-row>
-                <b-col> </b-col>
-              </b-row>
             </b-card-body>
           </b-card>
         </b-col>
         <b-col></b-col>
       </b-row>
     </div>
+    <b-modal
+      ref="my-modal"
+      hide-footer
+      id="modal-center"
+      centered
+      title="Confirmacion"
+    >
+      <div>
+        <h5>
+          <p>
+            Se ha enviado el correo exitosamente, revise su bandeja de entrada
+            para continuar.
+          </p>
+        </h5>
+      </div>
+      <b-button
+        class="mt-3"
+        variant="outline-success"
+        size="sm"
+        block
+        @click="continuar"
+        >Continuar</b-button
+      >
+    </b-modal>
   </div>
 </template>
 
@@ -109,56 +105,46 @@ export default {
     dismissSecs: 5,
     formData: {
       correo: "",
-      password: "",
     },
   }),
-  beforeMount() {
-    this.showDismissibleAlert = this.dismissSecs;
-    this.alertMsm = "Para poder reportar criminales o ingresar a usuario, tienes que estar registrado"
-  },
+  beforeMount() {},
   computed: {
     stateEmail() {
       return this.formData.correo.length >= 4;
-    },
-    statePassword() {
-      return this.formData.password.length >= 8;
-    },
-    invalidPassFeedback() {
-      if (this.formData.password.length > 0) {
-        return "Porfavor ingrese contraseña minimo 8 caracteres";
-      }
-      return "Porfavor ingrese  una conttraseña";
     },
     invalidFeedbackEmail() {
       if (this.formData.correo.length > 0) {
         return "";
       }
-      return "Porfavor ingrese  un correo ejemplo: flores@gmail.com";
+      return "Porfavor ingrese  un correo ejemplo: mail@gmail.com";
     },
   },
   methods: {
     pressed: async function () {
-      if (!this.formData.correo || !this.formData.password) {
+      if (!this.formData.correo) {
         this.showDismissibleAlert = this.dismissSecs;
-        this.alertMsm = "Debe ingresar usuario  y contraseña para continuar!";
+        this.alertMsm = "Debe ingresar su correo para continuar!";
+
         return;
       }
       firebase
         .auth()
-        .signInWithEmailAndPassword(
-          this.formData.correo,
-          this.formData.password
-        )
-        .then((data) => {
-          this.$router.replace({ name: "user" });
-          
+        .sendPasswordResetEmail(this.formData.correo)
+        .then(() => {
+          this.showModal();
         })
         .catch((error) => {
           this.showDismissibleAlert = this.dismissSecs;
           this.error = error;
-          this.alertMsm = "usuario o contraseña incorrectos!";
+          this.alertMsm = "Correo no se encunetra registrado.";
         });
     },
+    showModal() {
+      this.$refs["my-modal"].show();
+    },
+    continuar(){
+        this.$router.replace({ name: "login" });
+    }
   },
 };
 </script>
@@ -178,8 +164,8 @@ h1 {
   text-align: left;
 }
 
-#routerClass{
-   color: #ec407a;
+#routerClass {
+  color: #ec407a;
 }
 
 p {

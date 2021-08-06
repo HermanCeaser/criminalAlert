@@ -20,54 +20,6 @@
         </b-col>
         <b-col></b-col>
       </b-row>
-      <b-row style="margin-top: 5%">
-        <b-col></b-col>
-        <b-col>
-          <!--  container -->
-          <div class="container">
-            <div class="card">
-              <div class="card-heading">
-                <h4 class="name">Eduardo Flores</h4>
-              </div>
-              <div class="card-content">
-                <div id="flip" class="flip-container">
-                  <div class="flipper">
-                    <div class="front">
-                      <img
-                        src="https://images.unsplash.com/photo-1514428631868-a400b561ff44?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80"
-                        alt=""
-                        class="background"
-                      />
-                      <div class="avatarBorder">
-                        <img
-                          src="https://firebasestorage.googleapis.com/v0/b/criminalalertdb.appspot.com/o/userProfilePic%2FQqkjMggqtyQV6icGqMq9fA3y2Lj2_pedro.jpg?alt=media&token=6ba956f7-b291-4541-b26f-72e567b4a098"
-                          alt=""
-                          class="avatar img-circle"
-                        />
-                      </div>
-                      <div class="card-caption">
-                        <h4 class="email truncate">
-                          flores.guzman.pe@gmail.com
-                        </h4>
-                        <h4 class="email truncate">Documentacion</h4>
-                      </div>
-                    </div>
-                    <!-- end front -->
-                  </div>
-                  <!-- end flipper -->
-                </div>
-                <!-- end flip-container -->
-              </div>
-              <br />
-              <!-- end card-content -->
-            </div>
-            <!-- end card -->
-          </div>
-          <!-- end container -->
-        </b-col>
-        <b-col></b-col>
-      </b-row>
-      <br /><br />
       <b-row>
         <b-col> </b-col>
       </b-row>
