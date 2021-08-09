@@ -5,73 +5,72 @@
       <b-row>
         <b-col md="1"></b-col>
         <b-col md="2">
-          <div id="card" v-bind:class="cardStates" class="card">
-            <div class="card-info">
-              <div class="card-image">
-                <img
-                  v-bind:src="userData.avatar"
-                  class="card-avatar card-avatar--circle"
-                />
-              </div>
-              <div class="card-fields">
-                <h1 v-show="!isEditing" class="card-name">
-                  {{ userData.nick }}
-                </h1>
-                <input
-                  v-show="isEditing"
-                  type="file"
-                  @change="uploadImage"
-                  class="card-input card-input--inline"
-                  placeholder="change profile pic..."
-                />
-                <input
-                  v-show="isEditing"
-                  v-model="userData.nick"
-                  type="email"
-                  class="card-input"
-                  placeholder="Ingrese su nick"
-                />
-              </div>
-              <div class="card-fields">
-                <h2 v-show="!isEditing" class="card-email">
-                  {{ userData.correo }}
-                </h2>
-                <input
-                  v-show="isEditing"
-                  v-model="userData.correo"
-                  type="email"
-                  class="card-input"
-                  placeholder="Enter new email..."
-                />
-              </div>
-              <button
-                v-on:click="shelfToggle"
-                v-bind:disabled="isEditing"
-                v-bind:class="toggleOpen"
-                class="card-button card-expander"
-                aria-label="expand-shelf"
-              >
-                <i class="material-icons" aria-hidden="true">add</i>
-              </button>
-            </div>
-            <div class="card-shelf" v-bind:class="shelfIsOpen">
-              <div class="card-content">
+          <b-overlay :show="loadingData" rounded="sm">
+            <div id="card" v-bind:class="cardStates" class="card">
+              <div class="card-info">
+                <div class="card-image">
+                  <img
+                    v-bind:src="userData.avatar"
+                    class="card-avatar card-avatar--circle"
+                  />
+                </div>
                 <div class="card-fields">
-                  <p v-show="!isEditing" class="card-bio">
-                    Haz reportado a {{ userData.reportes }} criminales
-                  </p>
+                  <h1 v-show="!isEditing" class="card-name">
+                    {{ userData.nick }}
+                  </h1>
+                  <input
+                    v-show="isEditing"
+                    type="file"
+                    @change="uploadImage"
+                    class="card-input card-input--inline"
+                    placeholder="change profile pic..."
+                  />
+                  <input
+                    v-show="isEditing"
+                    type="text"
+                    v-model="userData.nick"
+                    class="card-input"
+                    placeholder="Ingrese su nick"
+                  />
+                </div>
+                <div class="card-fields">
+                  <input
+                    v-show="isEditing"
+                    v-model="userData.correo"
+                    type="email"
+                    class="card-input"
+                    placeholder="Enter new email..."
+                  />
+                </div>
+                <button
+                  v-on:click="shelfToggle"
+                  v-bind:disabled="isEditing"
+                  v-bind:class="toggleOpen"
+                  class="card-button card-expander"
+                  aria-label="expand-shelf"
+                >
+                  <i class="material-icons" aria-hidden="true">add</i>
+                </button>
+              </div>
+              <div class="card-shelf" v-bind:class="shelfIsOpen">
+                <div class="card-content">
+                  <div class="card-fields">
+                    <p v-show="!isEditing" class="card-bio">
+                      Haz reportado a {{ userData.reportes }} criminales
+                    </p>
+                  </div>
                 </div>
               </div>
+              <button v-on:click="editContent" class="card-button card-edit">
+                <i v-show="!isEditing" class="material-icons" aria-hidden="true"
+                  >create</i
+                >
+                <i v-show="isEditing" class="material-icons" aria-hidden="true"
+                  >save</i
+                >
+              </button>
             </div>
-            <button v-on:click="editContent" class="card-button card-edit">
-              <i v-show="!isEditing" class="material-icons" aria-hidden="true"
-                >create</i
-              >
-              <i v-show="isEditing" class="material-icons" aria-hidden="true"
-                >save</i
-              >
-            </button>
-          </div>
+          </b-overlay>
         </b-col>
         <b-col md="8">
           <b-row>
@@ -160,6 +159,21 @@
     >
       {{ verificationMsm }}
     </b-alert>
+    <b-toast id="my-toast" variant="success" solid>
+      <template #toast-title>
+        <div class="d-flex flex-grow-1 align-items-baseline">
+          <b-img
+            blank
+            blank-color="#81c784"
+            class="mr-2"
+            width="12"
+            height="12"
+          ></b-img>
+          <strong class="mr-auto">Notice!</strong>
+        </div>
+      </template>
+      Se ha actualizado su information de usuario
+    </b-toast>
   </div>
 </template>
 
@@ -183,8 +197,9 @@ export default {
     showTop: false,
     toastId: "-1",
     verificationMsm: "",
+    loadingData: false,
     userData: {
-      nick: "Nicholas",
+      nick: "",
       correo: "nicholas.cage@theone.com",
       reportes: "0",
       avatar:
@@ -321,12 +336,14 @@ export default {
       } else {
         this.isEditing = !this.isEditing;
         this.isShelfOpen = false;
+        this.loadingData = true;
         const res = this.userRef
           .update({
             nick: this.userData.nick,
           })
           .then(() => {
-            alert("Document successfully updated!");
+            this.$bvToast.show("my-toast");
+            this.loadingData = false;
           })
           .catch((error) => {
             // The document probably doesn't exist.
@@ -518,13 +535,13 @@ export default {
     sendEmail() {
       this.$bvToast.hide(this.toastId);
       const h = this.$createElement;
-      const vNodesMsg = h('p', { class: ['text-center', 'mb-0'] }, [
-         h('strong', 'Correo enviado!'),
+      const vNodesMsg = h("p", { class: ["text-center", "mb-0"] }, [
+        h("strong", "Correo enviado!"),
       ]);
       this.$bvToast.toast([vNodesMsg], {
-        title:'Estatus',
+        title: "Estatus",
         solid: true,
-        variant: 'success',
+        variant: "success",
       });
       let user = firebase.auth().currentUser;
       user
