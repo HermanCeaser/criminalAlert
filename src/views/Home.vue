@@ -92,6 +92,7 @@
                   ref="markers"
                   :icon="{ url: require('../assets/criIcon.png') }"
                 />
+
                 <gmap-info-window
                   :options="{
                     maxWidth: 300,
@@ -104,12 +105,53 @@
                   <div v-html="infoWindow.template"></div>
                 </gmap-info-window>
               </div>
+              <div v-if="userLocation.length > 0">
+                <GmapMarker
+                  :key="index"
+                  v-for="(l, index) in userLocation"
+                  :position="{
+                    lat: l.geoPoint.latitude,
+                    lng: l.geoPoint.longitude,
+                  }"
+                  :icon="{ url: require('../assets/user.png') }"
+                />
+              </div>
+              <div v-if="userLocation.length > 0">
+                <GmapCircle
+                  v-for="(l, index) in userLocation"
+                  :key="index"
+                  :center="
+                    (position = {
+                      lat: l.geoPoint.latitude,
+                      lng: l.geoPoint.longitude,
+                    })
+                  "
+                  :radius="2000"
+                  :visible="true"
+                  :options="{
+                    fillColor: 'red',
+                    fillOpacity: 0.3,
+                    strokeColor: 'red',
+                    zIndex: 0.0,
+                  }"
+                />
+              </div>
             </GmapMap>
           </b-overlay>
         </div>
       </b-col>
       <b-col></b-col>
     </b-row>
+    <b-row>
+      <b-col></b-col>
+      <b-col>
+        <b-button v-on:click="locatorButtonPressed" variant="danger">
+          Activar ubicación
+        </b-button>
+      </b-col>
+      <b-col></b-col>
+    </b-row>
+    <br /><br />
   </div>
 </template>
 
@@ -120,13 +162,18 @@ export default {
   name: "home",
   data: () => ({
     savedLocations: [],
+    userLocation: [],
+    criminalsNearUser: [],
     regCriminals: 0,
     totalUsers: 0,
     totalReportUser: 0,
     userID: null,
     isBusy: false,
-    mapLoading:false,
+    mapLoading: false,
+    warningMsm: "",
     userStar: "Don Puerko",
+    icon: "../assets/criIcon.png",
+    count: 0,
     infoWindow: {
       position: { lat: 0, lng: 0 },
       open: false,
@@ -141,7 +188,7 @@ export default {
     );
     if (data === "NO RESULTS") {
       console.log("problem with map loading");
-    }else{
+    } else {
       this.mapLoading = false;
     }
     this.savedLocations = data;
@@ -195,6 +242,109 @@ export default {
 
       this.infoWindow.open = true;
     },
+    locatorButtonPressed: function () {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            let obj = {
+              geoPoint: {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+              },
+            };
+            if (this.userLocation.length > 0) {
+              this.userLocation = [];
+            } else {
+              this.userLocation.push(obj);
+              this.haversine_distance();
+            }
+          },
+          (error) => {
+            console.log(error.message);
+          }
+        );
+      } else {
+        alert("Tu brower no soporta geolocalizacion API");
+      }
+    },
+    haversine_distance: function () {
+      //we dont have to look everytime, if there aren't any updates
+      //we are going to check if the criminalsNearUser is equal to 0
+      if (this.criminalsNearUser.length > 0) {
+        for (let index = 0; index < this.criminalsNearUser  .length; index++) {
+          this.craeteToast(this.criminalsNearUser[index].fecha, this.criminalsNearUser[index].hora);
+        }
+        return;
+      }
+
+      var R = 6371.071; // Radius of the Earth in kilometers
+      var rlat1 = this.userLocation[0].geoPoint.latitude * (Math.PI / 180); // Convert degrees to radians of the user location
+      for (let index = 0; index < this.savedLocations.length; index++) {
+        var rlat2 =
+          this.savedLocations[index].geoPoint.latitude * (Math.PI / 180); // Convert degrees to radians
+        var difflat = rlat2 - rlat1; // Radian difference (latitudes)
+        var difflon =
+          (this.savedLocations[index].geoPoint.longitude -
+            this.userLocation[0].geoPoint.longitude) *
+          (Math.PI / 180); // Radian difference (longitudes)
+        var d =
+          2 *
+          R *
+          Math.asin(
+            Math.sqrt(
+              Math.sin(difflat / 2) * Math.sin(difflat / 2) +
+                Math.cos(rlat1) *
+                  Math.cos(rlat2) *
+                  Math.sin(difflon / 2) *
+                  Math.sin(difflon / 2)
+            )
+          );
+        if (d <= 2) {
+          // if  the distance is equal or less than  2 kilometros we are going to let the user know
+          console.log(
+            "user distance from :" +
+              this.savedLocations[index].fecha +
+              " kilometros:" +
+              d.toFixed(2)
+          );
+          this.craeteToast(this.savedLocations[index].fecha, this.savedLocations[index].hora);
+          this.criminalsNearUser.push(this.savedLocations[index]);
+        }
+      }
+    },
+    craeteToast: function (fecha, hora) {
+      // Use a shorter name for this.$createElement
+      const h = this.$createElement;
+      // Increment the toast count
+      this.count++;
+      // Create the message
+      const vNodesMsg = h("div", { class: ["text-center", "mb-0" ] }, [
+        h("b-spinner", { props: { type: "grow", small: true, variant: "danger" } }),
+        " Se han localizado  ",
+        h("strong", " actividad "),
+         `delictiva  ` +
+          " fecha  de reporte " +
+          fecha +
+          " a las " +
+          hora,
+      ]);
+
+      // Create the title
+      const vNodesTitle = h(
+        "div",
+        { class: ["d-flex", "flex-grow-1", "align-items-baseline", "mr-2"] },
+        [
+          h("strong", { class: "mr-2" }, "Warning!"),
+          h("small", { class: "ml-auto text-italics" }, "5 seconds ago"),
+        ]
+      );
+      // Pass the VNodes as an array for message and title
+      this.$bvToast.toast([vNodesMsg], {
+        title: [vNodesTitle],
+        solid: true,
+        variant: "warning",
+      });
+    },
   },
 };
 </script>
@@ -214,6 +364,12 @@ export default {
 #home {
   overflow: hidden;
   font-family: "Roboto", sans-serif;
+}
+
+.ui.button,
+.dot.circle.icon {
+  background-color: #ff5a5f;
+  color: white;
 }
 
 #gradientBackground {

@@ -38,7 +38,10 @@
                 </b-row>
                 <b-row>
                   <b-col>
-                    <b-form-group class="crimenStyle" label="Crimen cometido">
+                    <b-form-group
+                      class="crimenStyle"
+                      label="Descripcion del crimen"
+                    >
                       <b-form-textarea
                         id="textarea"
                         v-model="formData.descripcion"
@@ -127,10 +130,33 @@
                 <br />
                 <b-row>
                   <b-col>
-                    <b-form-group class="estatusStyle" label="Estatus">
+                    <b-form-group class="estatusStyle" label="Estatus criminal">
                       <b-form-select
                         v-model="selected"
                         :options="options"
+                      ></b-form-select>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col>
+                    <b-form-group class="estatusStyle" label="Tipo de crimen">
+                      <b-form-select
+                        v-model="selectedType"
+                        :options="optionTypeCrime"
+                      ></b-form-select>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col>
+                    <b-form-group
+                      class="estatusStyle"
+                      label="Sexo de la victima"
+                    >
+                      <b-form-select
+                        v-model="selectedSex"
+                        :options="optionSex"
                       ></b-form-select>
                     </b-form-group>
                   </b-col>
@@ -155,8 +181,7 @@
                       @dismiss-count-down="countDownFormChanged"
                     >
                       <p>
-                        Debe ingresar todos los datos del formulario, para poder
-                        realizar un reporte.
+                        {{ inputMsm }}
                       </p>
                     </b-alert>
                     <b-button type="submit" variant="danger">Reportar</b-button>
@@ -192,6 +217,8 @@ export default {
     dismissFormCount: 0,
     count: 0,
     avatarLoading: true,
+    inputMsm:
+      " Debe ingresar todos los datos del formulario, para poder realizar un reporte.",
     userAvatar:
       "https://media.istockphoto.com/vectors/default-avatar-profile-icon-grey-photo-placeholder-hand-drawn-modern-vector-id1273297997?b=1&k=6&m=1273297997&s=612x612&w=0&h=W0mwZseX1YEUPH8BJ9ra2Y-VeaUOi0nSLfQJWExiLsQ=",
     formData: {
@@ -212,6 +239,24 @@ export default {
       { value: "sin detenidos", text: "sin detenidos" },
       { value: "en proceso", text: "en proceso" },
       { value: "en carcel", text: "en carcel" },
+    ],
+    selectedType: null,
+    optionTypeCrime: [
+      { value: null, text: "Seleccione una opcion" },
+      { value: "asesinato", text: "asesinato" },
+      { value: "violación", text: "violación" },
+      { value: "asalto", text: "asalto" },
+      { value: "agresión", text: "agresión" },
+      { value: "homicidio", text: "homicidio" },
+      { value: "asalto exual", text: "asalto sexual" },
+      { value: "violencia domestica", text: "violencia doméstica" },
+      { value: "robo", text: "robo" },
+    ],
+    selectedSex: null,
+    optionSex: [
+      { value: null, text: "Seleccione una opcion" },
+      { value: "hombre", text: "hombre" },
+      { value: "mujer", text: "mujer" },
     ],
   }),
   beforeMount() {
@@ -286,6 +331,18 @@ export default {
       ) {
         this.dismissFormCount = this.dismissSecs;
         this.loadingData = false;
+        this.inputMsm =
+          "Debe ingresar todos los datos del formulario, para poder realizar un reporte.";
+        return;
+      }
+      let res = this.formData.referencia.match(
+        /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
+      );
+      if (res === null) {
+        this.dismissFormCount = this.dismissSecs;
+        this.loadingData = false;
+        this.inputMsm =
+          "Debe ingresar  url valido para continuar ejemlo: www.google.com";
         return;
       }
       this.loadingData = true;
@@ -480,5 +537,30 @@ header {
     width: 100%;
     height: 400px;
   }
+
+  #avatarID {
+    z-index: 2;
+    border: 15px solid white;
+    background: #ffffff;
+  }
+
+  #avatarPick {
+    margin-top: 20%;
+    position: absolute;
+    right: 20%;
+    top: -0%;
+    left: 21%;
+  }
+
+  .avatar {
+    width: 100%;
+    height: 300px;
+  }
+
+  .formContainer {
+    margin-top: -40%;
+    margin-bottom: 3%;
+  }
+  
 }
 </style>

@@ -3,7 +3,6 @@
     <div id="gradientBackground" class="gradient-custom"></div>
 
     <div class="warginCard">
-
       <b-row>
         <b-col></b-col>
         <b-col md="5">
@@ -74,7 +73,10 @@
               <b-row>
                 <b-col>
                   <p>
-                    Olvidaste <router-link class="routerClass" to="/resetCredentials">contreaseña?</router-link>
+                    Olvidaste
+                    <router-link class="routerClass" to="/resetCredentials"
+                      >contreaseña?</router-link
+                    >
                   </p>
                 </b-col>
               </b-row>
@@ -114,7 +116,8 @@ export default {
   }),
   beforeMount() {
     this.showDismissibleAlert = this.dismissSecs;
-    this.alertMsm = "Para poder reportar criminales o ingresar a usuario, tienes que estar registrado"
+    this.alertMsm =
+      "Para poder reportar criminales o ingresar a usuario, tienes que estar registrado";
   },
   computed: {
     stateEmail() {
@@ -150,8 +153,14 @@ export default {
           this.formData.password
         )
         .then((data) => {
-          this.$router.replace({ name: "user" });
-          
+          const user = firebase.auth().currentUser.emailVerified;
+          if (!user) {
+            this.showDismissibleAlert = this.dismissSecs;
+            this.alertMsm =
+              "Su correo aún no ha sido verificado, por favor revise su bandeja de entrada";
+          } else {
+            this.$router.replace({ name: "user" });
+          }
         })
         .catch((error) => {
           this.showDismissibleAlert = this.dismissSecs;
@@ -178,8 +187,8 @@ h1 {
   text-align: left;
 }
 
-#routerClass{
-   color: #ec407a;
+#routerClass {
+  color: #ec407a;
 }
 
 p {

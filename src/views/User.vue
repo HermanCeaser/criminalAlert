@@ -33,15 +33,6 @@
                     placeholder="Ingrese su nick"
                   />
                 </div>
-                <div class="card-fields">
-                  <input
-                    v-show="isEditing"
-                    v-model="userData.correo"
-                    type="email"
-                    class="card-input"
-                    placeholder="Enter new email..."
-                  />
-                </div>
                 <button
                   v-on:click="shelfToggle"
                   v-bind:disabled="isEditing"
@@ -282,9 +273,11 @@ export default {
           };
           db.collection("user").doc(this.userID).set(data);
           this.userRef = db.collection("user").doc(this.userID);
-          this.showTop = true;
-          this.verificationMsm =
-            "Se ha enviado un correo para verificar su email, revise su bandeja de entrada para activar su cuenta.";
+          /*if (!this.userRef.emailVerified) {
+            this.showTop = true;
+            this.verificationMsm =
+              "Se ha enviado un correo para verificar su email, revise su bandeja de entrada para activar su cuenta.";
+          }*/
           this.setUserData();
         }
       });
@@ -353,6 +346,7 @@ export default {
     },
     uploadImage(e) {
       if (e.target.files[0]) {
+        this.loadingData = true;
         let file = e.target.files[0];
         var storageRef = firebase
           .storage()
@@ -374,7 +368,8 @@ export default {
                   avatar: this.userData.avatar,
                 })
                 .then(() => {
-                  alert("Document successfully updated!");
+                  this.$bvToast.show("my-toast");
+                  this.loadingData = false;
                 })
                 .catch((error) => {
                   // The document probably doesn't exist.
@@ -490,7 +485,7 @@ export default {
                 alert("Document successfully updated!");
                 this.$refs["my-modal"].hide();
                 this.items = [];
-                //this.fillTable();
+                this.fillTable();
               })
               .catch((error) => {
                 // The document probably doesn't exist.
@@ -773,5 +768,23 @@ p {
 
 #user {
   overflow: hidden;
+}
+
+@media screen and (max-width: 759px) {
+  #card {
+    position: absolute;
+    margin-top: -65%;
+    margin-left: 18%;
+    z-index: 100;
+  }
+
+  #logOut {
+    position: absolute;
+    top: 98%;
+    right: 0px;
+    width: 100%;
+    z-index: 100;
+    padding-bottom: 5%;
+  }
 }
 </style>

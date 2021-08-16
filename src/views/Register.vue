@@ -62,12 +62,31 @@
                   </b-row>
                   <b-row>
                     <b-col>
+                      <b-form-group
+                        id="fieldset-2"
+                        label="Confirmar contraseña"
+                        label-for="input-1"
+                        valid-feedback="Thank you!"
+                        :invalid-feedback="invalidConfirmPassFeedback"
+                      >
+                        <b-form-input
+                          id="input-1"
+                          type="password"
+                          v-model="formData.confirmPassword"
+                          :state="stateConfrimPassword"
+                          trim
+                        ></b-form-input>
+                      </b-form-group>
+                    </b-col>
+                  </b-row>
+                  <b-row>
+                    <b-col>
                       <b-button
                         class="colorBotton"
                         type="submit"
                         block
                         variant="danger"
-                        >Guardar</b-button
+                        >Registrar</b-button
                       >
                     </b-col>
                   </b-row>
@@ -87,6 +106,31 @@
         </b-col>
         <b-col></b-col>
       </b-row>
+      <div>
+        <b-modal
+          ref="my-modal"
+          hide-footer
+          id="modal-center"
+          centered
+          title="Confirmacion"
+        >
+          <div class="d-block text-center">
+            <h4>
+              <p>
+                Se ha enviado un correo, por favor revise su bandeja de entrada
+                para validar
+              </p>
+            </h4>
+          </div>
+          <b-button
+            class="mt-3"
+            variant="outline-primary"
+            block
+            @click="mesajeVerificacion"
+            >Continuar</b-button
+          >
+        </b-modal>
+      </div>
     </div>
   </div>
 </template>
@@ -107,14 +151,21 @@ export default {
     formData: {
       correo: "",
       password: "",
+      confirmPassword: "",
     },
   }),
   computed: {
     stateEmail() {
-      return this.formData.correo.length >= 4;
+      return this.validEmail(this.formData.correo);
     },
     statePassword() {
       return this.formData.password.length >= 8;
+    },
+    stateConfrimPassword() {
+      return (
+        this.formData.password === this.formData.confirmPassword &&
+        this.formData.password >= 8
+      );
     },
     invalidPassFeedback() {
       if (this.formData.password.length > 0) {
@@ -122,8 +173,12 @@ export default {
       }
       return "Porfavor ingrese  una conttraseña";
     },
+    invalidConfirmPassFeedback() {
+      return "Porfavor ingrese  la misna conttraseña";
+    },
+
     invalidFeedbackEmail() {
-      if (this.formData.correo.length > 0) {
+      if (this.formData.correo > 0) {
         return "";
       }
       return "Porfavor ingrese  un correo ejemplo: flores@gmail.com";
@@ -135,6 +190,14 @@ export default {
         this.showDismissibleAlert = this.dismissSecs;
         this.alertMsm = "Debe ingresar correo  y contraseña para continuar!";
         return;
+      } else if (this.formData.password !== this.formData.confirmPassword) {
+        this.showDismissibleAlert = this.dismissSecs;
+        this.alertMsm = "Las dos contraseñas deben coincidir ";
+        return;
+      } else if (!this.validEmail(this.formData.correo)) {
+        this.showDismissibleAlert = this.dismissSecs;
+        this.alertMsm = "Ingrese un correo valido";
+        return;
       }
       firebase
         .auth()
@@ -143,7 +206,7 @@ export default {
           this.formData.password
         )
         .then(() => {
-          this.$router.replace({ name: "user" });
+          this.$refs["my-modal"].show();
           let user = firebase.auth().currentUser;
           user
             .sendEmailVerification()
@@ -151,6 +214,14 @@ export default {
             .catch((error) => (this.error = error));
         })
         .catch((error) => (this.error = error));
+    },
+    validEmail: function (email) {
+      var re =
+        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(email);
+    },
+    mesajeVerificacion: function () {
+      this.$router.replace({ name: "login" });
     },
   },
 };
