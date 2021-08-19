@@ -1,157 +1,176 @@
 <template>
   <div id="home" class="">
-    <div id="gradientBackground" class="gradient-custom"></div>
-
-    <b-row id="mapContainer">
-      <b-col></b-col>
-      <b-col sm>
-        <b-card title="Criminales" sub-title="registrados">
-          <b-row no-gutters>
-            <b-col md="6">
-              <b-card-text>
-                <h4>{{ regCriminals }}</h4>
-              </b-card-text>
-            </b-col>
-            <b-col md="6"
-              ><b-avatar
-                icon="people-fill"
-                size="4em"
-                variant="info "
-              ></b-avatar
-            ></b-col>
-          </b-row>
-        </b-card>
-      </b-col>
-      <b-col sm>
-        <b-card title="Usuarios" sub-title="totales">
-          <b-row no-gutters>
-            <b-col md="6">
-              <b-card-text>
-                <h4 id="usuariosCount">{{ totalUsers }}</h4>
-              </b-card-text>
-            </b-col>
-            <b-col md="6"
-              ><b-avatar
-                icon="emoji-sunglasses-fill"
-                size="4em"
-                variant="info "
-              ></b-avatar
-            ></b-col>
-          </b-row>
-        </b-card>
-      </b-col>
-      <b-col sm>
-        <b-card title="Destacado" sub-title="usuario ">
-          <b-row no-gutters>
-            <b-col md="6">
-              <b-card-text>
-                <p>{{ userStar }}</p>
-              </b-card-text>
-            </b-col>
-            <b-col md="6"
-              ><b-avatar icon="star-fill" size="4em" variant="info "></b-avatar
-            ></b-col>
-          </b-row>
-        </b-card>
-      </b-col>
-      <b-col></b-col>
-    </b-row>
-    <br />
-    <b-row>
-      <b-col></b-col>
-      <b-col md="10">
-        <div id="" class="shadow p-2 mb-5 bg-white rounded">
-          <b-overlay :show="mapLoading" rounded="sm">
-            <GmapMap
-              id="mapID"
-              :center="{ lat: 32.513, lng: -117.05 }"
-              :zoom="12"
-              map-type-id="roadmap"
-              :options="{
-                zoomControl: true,
-                mapTypeControl: true,
-                scaleControl: false,
-                streetViewControl: true,
-                rotateControl: false,
-                fullscreenControl: false,
-                disableDefaultUI: false,
-              }"
-            >
-              <div v-if="savedLocations.length > 0">
-                <GmapMarker
-                  :key="index"
-                  v-for="(l, index) in savedLocations"
-                  :position="{
-                    lat: l.geoPoint.latitude,
-                    lng: l.geoPoint.longitude,
-                  }"
-                  :clickable="true"
-                  :draggable="false"
-                  @click="openInfoWindowTemplate(index)"
-                  :animation="2"
-                  ref="markers"
-                  :icon="{ url: require('../assets/criIcon.png') }"
-                />
-
-                <gmap-info-window
-                  :options="{
-                    maxWidth: 300,
-                    pixelOffset: { width: 0, height: -35 },
-                  }"
-                  :position="infoWindow.position"
-                  :opened="infoWindow.open"
-                  @closeclick="infoWindow.open = false"
-                >
-                  <div v-html="infoWindow.template"></div>
-                </gmap-info-window>
-              </div>
-              <div v-if="userLocation.length > 0">
-                <GmapMarker
-                  :key="index"
-                  v-for="(l, index) in userLocation"
-                  :position="{
-                    lat: l.geoPoint.latitude,
-                    lng: l.geoPoint.longitude,
-                  }"
-                  :icon="{ url: require('../assets/user.png') }"
-                />
-              </div>
-              <div v-if="userLocation.length > 0">
-                <GmapCircle
-                  v-for="(l, index) in userLocation"
-                  :key="index"
-                  :center="
-                    (position = {
+    <div id="gradientBackground">
+      <div class="gradient-custom"></div>
+    </div>
+    <div id="pageContainer">
+      <b-row id="mapContainer">
+        <b-col></b-col>
+        <b-col sm>
+          <b-card
+            title="Criminales"
+            sub-title="registrados"
+            class="animate__animated animate__backInUp delay-1"
+          >
+            <b-row no-gutters>
+              <b-col md="6">
+                <b-card-text>
+                  <h4>{{ regCriminals }}</h4>
+                </b-card-text>
+              </b-col>
+              <b-col md="6"
+                ><b-avatar
+                  icon="people-fill"
+                  size="4em"
+                  variant="info "
+                ></b-avatar
+              ></b-col>
+            </b-row>
+          </b-card>
+        </b-col>
+        <b-col sm>
+          <b-card
+            title="Usuarios"
+            sub-title="totales"
+            class="animate__animated animate__backInUp delay-2"
+          >
+            <b-row no-gutters>
+              <b-col md="6">
+                <b-card-text>
+                  <h4 id="usuariosCount">{{ totalUsers }}</h4>
+                </b-card-text>
+              </b-col>
+              <b-col md="6"
+                ><b-avatar
+                  icon="emoji-sunglasses-fill"
+                  size="4em"
+                  variant="info "
+                ></b-avatar
+              ></b-col>
+            </b-row>
+          </b-card>
+        </b-col>
+        <b-col sm>
+          <b-card
+            title="Destacado"
+            sub-title="usuario "
+            class="animate__animated animate__backInUp delay-3"
+          >
+            <b-row no-gutters>
+              <b-col md="6">
+                <b-card-text>
+                  <p>{{ userStar }}</p>
+                </b-card-text>
+              </b-col>
+              <b-col md="6"
+                ><b-avatar
+                  icon="star-fill"
+                  size="4em"
+                  variant="info "
+                ></b-avatar
+              ></b-col>
+            </b-row>
+          </b-card>
+        </b-col>
+        <b-col></b-col>
+      </b-row>
+      <br />
+      <b-row>
+        <b-col></b-col>
+        <b-col md="10">
+          <div id="" class="shadow p-2 mb-5 bg-white rounded">
+            <b-overlay :show="mapLoading" rounded="sm">
+              <GmapMap
+                id="mapID"
+                :center="{ lat: 32.513, lng: -117.05 }"
+                :zoom="12"
+                map-type-id="roadmap"
+                :options="{
+                  zoomControl: true,
+                  mapTypeControl: true,
+                  scaleControl: false,
+                  streetViewControl: true,
+                  rotateControl: false,
+                  fullscreenControl: false,
+                  disableDefaultUI: false,
+                }"
+              >
+                <div v-if="savedLocations.length > 0">
+                  <GmapMarker
+                    :key="index"
+                    v-for="(l, index) in savedLocations"
+                    :position="{
                       lat: l.geoPoint.latitude,
                       lng: l.geoPoint.longitude,
-                    })
-                  "
-                  :radius="2000"
-                  :visible="true"
-                  :options="{
-                    fillColor: 'red',
-                    fillOpacity: 0.3,
-                    strokeColor: 'red',
-                    zIndex: 0.0,
-                  }"
-                />
-              </div>
-            </GmapMap>
-          </b-overlay>
-        </div>
-      </b-col>
-      <b-col></b-col>
-    </b-row>
-    <b-row>
-      <b-col></b-col>
-      <b-col>
-        <b-button v-on:click="locatorButtonPressed" variant="danger">
-          Activar ubicación
-        </b-button>
-      </b-col>
-      <b-col></b-col>
-    </b-row>
-    <br /><br />
+                    }"
+                    :clickable="true"
+                    :draggable="false"
+                    @click="openInfoWindowTemplate(index)"
+                    :animation="2"
+                    ref="markers"
+                    :icon="{ url: require('../assets/criIcon.png') }"
+                  />
+
+                  <gmap-info-window
+                    :options="{
+                      maxWidth: 300,
+                      pixelOffset: { width: 0, height: -35 },
+                    }"
+                    :position="infoWindow.position"
+                    :opened="infoWindow.open"
+                    @closeclick="infoWindow.open = false"
+                  >
+                    <div v-html="infoWindow.template"></div>
+                  </gmap-info-window>
+                </div>
+                <div v-if="userLocation.length > 0">
+                  <GmapMarker
+                    :key="index"
+                    v-for="(l, index) in userLocation"
+                    :position="{
+                      lat: l.geoPoint.latitude,
+                      lng: l.geoPoint.longitude,
+                    }"
+                    :icon="{ url: require('../assets/user.png') }"
+                  />
+                </div>
+                <div v-if="userLocation.length > 0">
+                  <GmapCircle
+                    v-for="(l, index) in userLocation"
+                    :key="index"
+                    :center="
+                      (position = {
+                        lat: l.geoPoint.latitude,
+                        lng: l.geoPoint.longitude,
+                      })
+                    "
+                    :radius="2000"
+                    :visible="true"
+                    :options="{
+                      fillColor: 'red',
+                      fillOpacity: 0.3,
+                      strokeColor: 'red',
+                      zIndex: 0.0,
+                    }"
+                  />
+                </div>
+              </GmapMap>
+            </b-overlay>
+          </div>
+        </b-col>
+        <b-col></b-col>
+      </b-row>
+      <b-row>
+        <b-col></b-col>
+        <b-col>
+          <b-button v-on:click="locatorButtonPressed" variant="danger">
+            Activar ubicación
+          </b-button>
+        </b-col>
+        <b-col></b-col>
+      </b-row>
+      <br /><br />
+    </div>
   </div>
 </template>
 
@@ -170,6 +189,7 @@ export default {
     userID: null,
     isBusy: false,
     mapLoading: false,
+    markerAnimationState: 0,
     warningMsm: "",
     userStar: "Don Puerko",
     icon: "../assets/criIcon.png",
@@ -216,6 +236,30 @@ export default {
       this.userID = data.userID;
     },
     openInfoWindowTemplate: function (index) {
+      if (
+        this.$refs.markers[
+          this.markerAnimationState
+        ].$markerObject.getAnimation() !== null
+      ) {
+        this.$refs.markers[
+          this.markerAnimationState
+        ].$markerObject.setAnimation(null);
+      }
+
+      if (this.markerAnimationState === index) {
+        this.$refs.markers[
+          this.markerAnimationState
+        ].$markerObject.setAnimation(null);
+        this.markerAnimationState = 0;
+        console.log("repetido");
+        return;
+      }
+
+      this.markerAnimationState = index;
+      this.$refs.markers[index].$markerObject.setAnimation(
+        google.maps.Animation.BOUNCE
+      );
+
       const {
         nombre,
         descripcion,
@@ -239,7 +283,6 @@ export default {
           <a href="${referencia}" target="_blank">Referencia.</a>
         </div>`;
       this.infoWindow.template = displayInfo;
-
       this.infoWindow.open = true;
     },
     locatorButtonPressed: function () {
@@ -271,8 +314,11 @@ export default {
       //we dont have to look everytime, if there aren't any updates
       //we are going to check if the criminalsNearUser is equal to 0
       if (this.criminalsNearUser.length > 0) {
-        for (let index = 0; index < this.criminalsNearUser  .length; index++) {
-          this.craeteToast(this.criminalsNearUser[index].fecha, this.criminalsNearUser[index].hora);
+        for (let index = 0; index < this.criminalsNearUser.length; index++) {
+          this.craeteToast(
+            this.criminalsNearUser[index].fecha,
+            this.criminalsNearUser[index].hora
+          );
         }
         return;
       }
@@ -301,13 +347,10 @@ export default {
           );
         if (d <= 2) {
           // if  the distance is equal or less than  2 kilometros we are going to let the user know
-          console.log(
-            "user distance from :" +
-              this.savedLocations[index].fecha +
-              " kilometros:" +
-              d.toFixed(2)
+          this.craeteToast(
+            this.savedLocations[index].fecha,
+            this.savedLocations[index].hora
           );
-          this.craeteToast(this.savedLocations[index].fecha, this.savedLocations[index].hora);
           this.criminalsNearUser.push(this.savedLocations[index]);
         }
       }
@@ -318,15 +361,13 @@ export default {
       // Increment the toast count
       this.count++;
       // Create the message
-      const vNodesMsg = h("div", { class: ["text-center", "mb-0" ] }, [
-        h("b-spinner", { props: { type: "grow", small: true, variant: "danger" } }),
+      const vNodesMsg = h("div", { class: ["text-center", "mb-0"] }, [
+        h("b-spinner", {
+          props: { type: "grow", small: true, variant: "danger" },
+        }),
         " Se han localizado  ",
         h("strong", " actividad "),
-         `delictiva  ` +
-          " fecha  de reporte " +
-          fecha +
-          " a las " +
-          hora,
+        `delictiva  ` + " fecha  de reporte " + fecha + " a las " + hora,
       ]);
 
       // Create the title
@@ -351,6 +392,7 @@ export default {
 
 <style scoped lang="scss">
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap");
+@import url("https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css");
 #mapID {
   width: 100%;
   height: 600px;
@@ -373,7 +415,12 @@ export default {
 }
 
 #gradientBackground {
-  z-index: 1;
+  background-image: url("https://cdn.pixabay.com/photo/2015/04/20/13/17/work-731198_960_720.jpg");
+  /* Create the parallax scrolling effect */
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 p {
@@ -384,25 +431,37 @@ h4 {
   color: #26418f;
 }
 
+.delay-1 {
+  animation-delay: 0.25s;
+}
+.delay-2 {
+  animation-delay: 0.5s;
+}
+.delay-3 {
+  animation-delay: 0.75s;
+}
+
 .gradient-custom {
+  z-index: 1;
   width: 100%;
-  height: 400px;
+  height: 500px;
   /* fallback for old browsers */
   background: #37ecba;
-
   /* Chrome 10-25, Safari 5.1-6 */
   background: -webkit-linear-gradient(
     to right,
-    rgba(55, 236, 186, 1),
-    rgba(114, 175, 211, 1)
+    rgba(55, 236, 186, 0.4),
+    rgba(114, 175, 211, 0.4)
   );
-
   /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   background: linear-gradient(
     to right,
-    rgba(55, 236, 186, 1),
-    rgba(114, 175, 211, 1)
+    rgba(55, 236, 186, 0.4),
+    rgba(114, 175, 211, 0.4)
   );
+}
+
+.imgHome {
 }
 
 @media screen and (max-width: 759px) {

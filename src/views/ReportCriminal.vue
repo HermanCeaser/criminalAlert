@@ -495,7 +495,7 @@ header {
 #avatarID {
   z-index: 2;
   border: 15px solid white;
-  background: #ec407a;
+  background: #ffffff;
 }
 
 #avatarPick {
@@ -550,8 +550,9 @@ header {
     right: 20%;
     top: -0%;
     left: 21%;
-  }
 
+
+  }
   .avatar {
     width: 100%;
     height: 300px;

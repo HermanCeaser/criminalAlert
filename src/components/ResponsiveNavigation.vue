@@ -42,6 +42,7 @@ export default {
 
 <style scoped lang="scss">
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap");
+
 nav {
   height: 60px;
   width: 100%;
@@ -160,6 +161,5 @@ nav {
     font-family: "Roboto", sans-serif;
     display: inline;
   }
-
 }
 </style>
