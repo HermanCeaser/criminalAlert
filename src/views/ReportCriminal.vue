@@ -257,6 +257,7 @@ export default {
       { value: null, text: "Seleccione una opcion" },
       { value: "hombre", text: "hombre" },
       { value: "mujer", text: "mujer" },
+      { value: "otro", text: "otro" },
     ],
   }),
   beforeMount() {

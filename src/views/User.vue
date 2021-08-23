@@ -368,7 +368,6 @@ export default {
                   avatar: this.userData.avatar,
                 })
                 .then(() => {
-                  this.$bvToast.show("my-toast");
                   this.loadingData = false;
                 })
                 .catch((error) => {

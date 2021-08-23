@@ -170,6 +170,134 @@
         <b-col></b-col>
       </b-row>
       <br /><br />
+      <b-row>
+        <b-col md="1"></b-col>
+        <b-col sm>
+          <b-card no-body class="overflow-hidden shadow bg-white rounded">
+            <b-row no-gutters>
+              <b-col md="2">
+                <b-card-img
+                  src="https://images.unsplash.com/photo-1559581958-df379578606a?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=647&q=80"
+                  alt="Image"
+                  class="rounded-0"
+                ></b-card-img>
+              </b-col>
+              <b-col md="10">
+                <b-row>
+                  <b-col md="8">
+                    <b-card-body title="Tipos de crimenes mas reportados">
+                      <b-card-text>
+                        <canvas
+                          id="canvasGrapgh"
+                          style="border: 1px solid #bbb"
+                        ></canvas>
+                      </b-card-text>
+                    </b-card-body>
+                  </b-col>
+                  <b-col md="4">
+                    <b-card-body title="Datos">
+                      <b-card-text> hola desde la prueba </b-card-text>
+                    </b-card-body>
+                  </b-col>
+                </b-row>
+              </b-col>
+            </b-row>
+          </b-card>
+        </b-col>
+        <b-col md="1"></b-col>
+      </b-row>
+      <br />
+      <b-row>
+        <b-col md="1"></b-col>
+        <b-col sm>
+          <b-card no-body class="overflow-hidden shadow bg-white rounded">
+            <b-row no-gutters>
+              <b-col md="2">
+                <b-card-img
+                  src="https://cdn.pixabay.com/photo/2014/11/03/22/14/crime-515923_960_720.jpg"
+                  alt="Image"
+                  class="rounded-0"
+                ></b-card-img>
+              </b-col>
+              <b-col md="10">
+                <b-card-body title="Victimas">
+                  <b-card-text>
+                    This is a wider card with supporting text as a natural
+                    lead-in to additional content. This content is a little bit
+                    longer.
+                  </b-card-text>
+                  <b-row>
+                    <b-col>
+                      <b-card-body title="Hombre">
+                        <b-img-lazy
+                          src="https://image.flaticon.com/icons/png/512/265/265674.png"
+                          class="victimImg"
+                          thumbnail
+                          fluid
+                          rounded="circle"
+                          alt="Responsive image"
+                        ></b-img-lazy> </b-card-body
+                    ></b-col>
+                    <b-col>
+                      <b-card-body title="Mujer">
+                        <b-img-lazy
+                          src="https://image.flaticon.com/icons/png/512/3220/3220315.png"
+                          class="victimImg"
+                          thumbnail
+                          fluid
+                          rounded="circle"
+                          alt="Responsive image"
+                        ></b-img-lazy>
+                      </b-card-body>
+                    </b-col>
+                    <b-col>
+                      <b-card-body title="Otro">
+                        <b-img-lazy
+                          src="https://image.flaticon.com/icons/png/512/4696/4696345.png"
+                          class="victimImg"
+                          thumbnail
+                          fluid
+                          rounded="circle"
+                          alt="Responsive image"
+                        ></b-img-lazy>
+                      </b-card-body>
+                    </b-col>
+                  </b-row>
+                </b-card-body>
+              </b-col>
+            </b-row>
+          </b-card>
+        </b-col>
+        <b-col md="1"></b-col>
+      </b-row>
+      <br />
+      <b-row>
+        <b-col md="1"></b-col>
+        <b-col sm>
+          <b-card no-body class="overflow-hidden shadow bg-white rounded">
+            <b-row no-gutters>
+              <b-col md="2">
+                <b-card-img
+                  src="https://picsum.photos/400/400/?image=20"
+                  alt="Image"
+                  class="rounded-0"
+                ></b-card-img>
+              </b-col>
+              <b-col md="10">
+                <b-card-body title="Horizontal Card">
+                  <b-card-text>
+                    This is a wider card with supporting text as a natural
+                    lead-in to additional content. This content is a little bit
+                    longer.
+                  </b-card-text>
+                </b-card-body>
+              </b-col>
+            </b-row>
+          </b-card>
+        </b-col>
+        <b-col md="1"></b-col>
+      </b-row>
+      <br /><br />
     </div>
   </div>
 </template>
@@ -218,6 +346,9 @@ export default {
 
     //set a counter for all the criminals register
     this.regCriminals = this.savedLocations.length;
+
+    //we create a graph to show info about criminals
+    this.drawGraph();
   },
   methods: {
     getTotalReports: async function () {
@@ -383,8 +514,43 @@ export default {
       this.$bvToast.toast([vNodesMsg], {
         title: [vNodesTitle],
         solid: true,
-        variant: "warning",
+        variant: "danger",
       });
+    },
+    async drawGraph() {
+      let canvas = document.getElementById("canvasGrapgh");
+      let ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#008080";
+      var graphValues = [10, 20, 30, 40, 50, 60, 70, 100];
+
+      ctx.font = 14 + "px sans-serif"; // font for base label showing classes
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
+      ctx.fillStyle = "#008cf5";
+
+      let crimeLabels = [
+        "Asesinato",
+        "Violación",
+        "Asalto",
+        "Agresión",
+        "Homicidio",
+        "Asalto sexual",
+        "Violencia domestica",
+        "Robo",
+      ];
+
+      var i = 10;
+      for (let index = 0; index < crimeLabels.length; index++) {
+        ctx.fillText(crimeLabels[index], 10, i);
+        i += 18;
+      }
+
+      i = 5;
+      for (let index = 0; index < graphValues.length; index++) {
+        var w = graphValues[index];
+        ctx.fillRect(150, i, w, 10);
+        i += 19;
+      }
     },
   },
 };
@@ -403,9 +569,20 @@ export default {
   margin-top: -16%;
 }
 
+#canvasGrapgh {
+  width: 100%;
+  height: 290px;
+}
+
+.victimImg {
+  width: 50%;
+  height: auto;
+}
+
 #home {
   overflow: hidden;
   font-family: "Roboto", sans-serif;
+  background-color: white;
 }
 
 .ui.button,
@@ -415,7 +592,7 @@ export default {
 }
 
 #gradientBackground {
-  background-image: url("https://cdn.pixabay.com/photo/2015/04/20/13/17/work-731198_960_720.jpg");
+  background-image: url("https://images.unsplash.com/photo-1564163454719-e7c7d7aec95a?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80");
   /* Create the parallax scrolling effect */
   background-attachment: fixed;
   background-position: center;
@@ -459,9 +636,6 @@ h4 {
     rgba(55, 236, 186, 0.4),
     rgba(114, 175, 211, 0.4)
   );
-}
-
-.imgHome {
 }
 
 @media screen and (max-width: 759px) {

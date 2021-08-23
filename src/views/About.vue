@@ -1,6 +1,7 @@
 <template>
   <div id="about">
-    <div id="gradientBackground" class="gradient-custom">
+    <div id="gradientBackground">
+      <div class="gradient-custom"></div>
     </div>
     <div>
       <b-row>
@@ -51,24 +52,34 @@ h4 {
   font-family: "Quicksand", sans-serif;
 }
 
+#gradientBackground {
+  background-image: url("https://images.unsplash.com/photo-1585283580657-668b139b0c03?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80");
+  /* Create the parallax scrolling effect */
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
 .gradient-custom {
+  z-index: 1;
   width: 100%;
-  height: 400px;
+  height: 580px;
   /* fallback for old browsers */
   background: #37ecba;
 
   /* Chrome 10-25, Safari 5.1-6 */
   background: -webkit-linear-gradient(
     to right,
-    rgba(55, 236, 186, 1),
-    rgba(114, 175, 211, 1)
+    rgba(55, 236, 186, 0.1),
+    rgba(114, 175, 211,  0.1)
   );
 
   /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   background: linear-gradient(
     to right,
-    rgba(55, 236, 186, 1),
-    rgba(114, 175, 211, 1)
+    rgba(55, 236, 186,  0.1),
+    rgba(114, 175, 211,  0.1)
   );
 }
 
