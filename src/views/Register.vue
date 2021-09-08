@@ -4,7 +4,7 @@
     <div class="">
       <b-row>
         <b-col></b-col>
-        <b-col md="4">
+        <b-col md="5">
           <div class="regCard">
             <b-card id="cardID" class="shadow p-3 mb-5 bg-white rounded">
               <b-card-body>
@@ -229,57 +229,7 @@ export default {
 
 <style scoped lang="scss">
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap");
+@import '@/scss/credentialsPages.scss';
 
-h1 {
-  color: #ec407a;
-  font-family: "Roboto", sans-serif;
-}
 
-#fieldset-1,
-#fieldset-2 {
-  color: #ec407a;
-  font-family: "Roboto", sans-serif;
-  text-align: left;
-}
-
-.colorBotton {
-  background-color: #ec407a;
-}
-
-.colorBotton:hover {
-  background-color: #ce1a56;
-}
-
-.regCard {
-  margin-top: -25%;
-}
-
-p {
-  color: #ff99bb;
-}
-
-#register {
-  overflow: hidden;
-}
-
-.gradient-custom {
-  width: 100%;
-  height: 400px;
-  /* fallback for old browsers */
-  background: #37ecba;
-
-  /* Chrome 10-25, Safari 5.1-6 */
-  background: -webkit-linear-gradient(
-    to right,
-    rgba(55, 236, 186, 1),
-    rgba(114, 175, 211, 1)
-  );
-
-  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  background: linear-gradient(
-    to right,
-    rgba(55, 236, 186, 1),
-    rgba(114, 175, 211, 1)
-  );
-}
 </style>

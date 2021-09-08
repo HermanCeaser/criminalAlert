@@ -25,10 +25,7 @@
               <b-overlay :show="loadingData" rounded="sm">
                 <b-row>
                   <b-col>
-                    <b-form-group
-                      class="nameCriminal"
-                      label="Nombre  del criminal"
-                    >
+                    <b-form-group class="nameCriminal" label="Nombre">
                       <b-form-input
                         placeholder="nombre criminal"
                         v-model="formData.nameCri"
@@ -40,7 +37,7 @@
                   <b-col>
                     <b-form-group
                       class="crimenStyle"
-                      label="Descripcion del crimen"
+                      label="Descripcion del reporte"
                     >
                       <b-form-textarea
                         id="textarea"
@@ -54,7 +51,11 @@
                 </b-row>
                 <b-row>
                   <b-col>
-                    <b-form-group class="fechaHoraStyle" label="Fecha y hora">
+                    <b-form-group
+                      class="fechaHoraStyle"
+                      label="Fecha y hora"
+                      description="Ingresar fecha y hora de cuando ocurrió el suceso"
+                    >
                       <b-form-datepicker
                         id="example-datepicker"
                         v-model="formData.fecha"
@@ -130,7 +131,10 @@
                 <br />
                 <b-row>
                   <b-col>
-                    <b-form-group class="estatusStyle" label="Estatus criminal">
+                    <b-form-group
+                      class="estatusStyle"
+                      label="Estatus del reporte"
+                    >
                       <b-form-select
                         v-model="selected"
                         :options="options"
@@ -140,7 +144,7 @@
                 </b-row>
                 <b-row>
                   <b-col>
-                    <b-form-group class="estatusStyle" label="Tipo de crimen">
+                    <b-form-group class="estatusStyle" label="Tipo de caso">
                       <b-form-select
                         v-model="selectedType"
                         :options="optionTypeCrime"
@@ -248,9 +252,10 @@ export default {
       { value: "asalto", text: "asalto" },
       { value: "agresión", text: "agresión" },
       { value: "homicidio", text: "homicidio" },
-      { value: "asalto exual", text: "asalto sexual" },
-      { value: "violencia domestica", text: "violencia doméstica" },
+      { value: "asaltoSexual", text: "asalto sexual" },
+      { value: "violenciaDomestica", text: "violencia doméstica" },
       { value: "robo", text: "robo" },
+      { value: "otro", text: "otro" },
     ],
     selectedSex: null,
     optionSex: [
@@ -258,12 +263,15 @@ export default {
       { value: "hombre", text: "hombre" },
       { value: "mujer", text: "mujer" },
       { value: "otro", text: "otro" },
+      { value: "noIdentificado", text: "sin indetificar" },
+      { value: "ninguna", text: "ninguna victima" },
     ],
   }),
   beforeMount() {
+    //will get te currnet user , so we can get his avatar to display
     this.user = firebase.auth().currentUser;
     if (this.user != null) {
-      var email = this.user.email;
+      let email = this.user.email;
       let userSepatator = email.split("@");
       this.userTag = userSepatator[0];
     }
@@ -317,7 +325,7 @@ export default {
       //add to saved locations to update map
       this.savedLocations.push(obj);
     },
-    async handleFormSubmit() {
+    handleFormSubmit: async function () {
       if (
         !this.formData.colonia ||
         !this.formData.calle ||
@@ -327,8 +335,10 @@ export default {
         !this.formData.descripcion ||
         !this.formData.fecha ||
         !this.formData.hora ||
+        !this.formData.referencia ||
         !this.selected ||
-        !this.formData.referencia
+        !this.selectedType ||
+        !this.selectedSex
       ) {
         this.dismissFormCount = this.dismissSecs;
         this.loadingData = false;
@@ -336,6 +346,7 @@ export default {
           "Debe ingresar todos los datos del formulario, para poder realizar un reporte.";
         return;
       }
+      //Valite if the user ener a valid http address
       let res = this.formData.referencia.match(
         /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
       );
@@ -346,10 +357,9 @@ export default {
           "Debe ingresar  url valido para continuar ejemlo: www.google.com";
         return;
       }
-      this.loadingData = true;
-      //Will show a message, to let knmow the user the data
+      //Will show a message, to let know the user the data
       //is  bieng loadded
-      var uid = this.user.uid;
+      this.loadingData = true;
       let { data } = await axios.post(
         "https://us-central1-criminalalertdb.cloudfunctions.net/criminalFormData",
         {
@@ -361,33 +371,40 @@ export default {
           referencia: this.formData.referencia,
           latitude: this.savedLocations[0].geoPoint.latitude,
           longitude: this.savedLocations[0].geoPoint.longitude,
-          currentUserID: uid,
+          currentUserID: this.user.uid,
+          typeCrime: this.selectedType,
+          typeSex: this.selectedSex,
         }
       );
-
       if (data === "No Results") {
         alert("Problemas al ingresar los datos a la base de datos");
         return;
-      } else if (data === "TERROR") {
-        alert("Problema con la busqueda de  user criminal ");
-      } else {
-        //increment te report's from the user
-        const userRef = db.collection("user").doc(uid);
-        // Atomically increment the population of the city by 50.
-        const res = await userRef
-          .update({
-            reportes: firebase.firestore.FieldValue.increment(1),
-          })
-          .then(() => {
-            this.showToast();
-            this.loadingData = false;
-          })
-          .catch((error) => {
-            // The document probably doesn't exist.
-            console.error("Error updating document: ", error);
-          });
       }
+      //increment te report's from the user
+      const userRef = db.collection("user").doc(this.user.uid);
+      // Atomically increment the population of the city by 50.
+      const resTem = await userRef
+        .update({
+          reportes: firebase.firestore.FieldValue.increment(1),
+        })
+        .then(() => {
+          this.showToast();
+          this.loadingData = false;
+        })
+        .catch((error) => {
+          // The document probably doesn't exist.
+          console.error("Error updating document: ", error);
+        });
 
+      this.cleanForm();
+    },
+    countDownChanged: function (dismissCountDown) {
+      this.dismissCountDown = dismissCountDown;
+    },
+    countDownFormChanged: function (dismissFormCount) {
+      this.dismissFormCount = dismissFormCount;
+    },
+    cleanForm: function () {
       this.formData.colonia = "";
       this.formData.calle = "";
       this.formData.numero = "";
@@ -400,13 +417,7 @@ export default {
       this.formData.referencia = "";
       this.savedLocations = []; // we empty the array
     },
-    countDownChanged(dismissCountDown) {
-      this.dismissCountDown = dismissCountDown;
-    },
-    countDownFormChanged(dismissFormCount) {
-      this.dismissFormCount = dismissFormCount;
-    },
-    showToast() {
+    showToast: function () {
       // Use a shorter name for this.$createElement
       const h = this.$createElement;
       // Increment the toast count
@@ -435,7 +446,7 @@ export default {
         variant: "info",
       });
     },
-    showMapDisplay() {
+    showMapDisplay: function () {
       const h = this.$createElement;
     },
   },
@@ -446,92 +457,7 @@ export default {
 
 <style scoped lang="scss">
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap");
-
-.nameCriminal,
-.fechaHoraStyle,
-.direccionStyle,
-.estatusStyle,
-.referenciaStyle,
-.crimenStyle {
-  color: #ec407a;
-  font-family: "Roboto", sans-serif;
-  text-align: left;
-}
-
-header {
-  background-color: #ec407a;
-  color: #ec407a;
-}
-
-#criminalCard {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  transition: 0.3s;
-  color: #ec407a;
-}
-
-#criminalCard:hover {
-  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
-}
-
-#mapID {
-  width: 100%;
-  height: 400px;
-  margin-top: 30px;
-}
-
-#report {
-  overflow: hidden;
-}
-
-.formContainer {
-  margin-top: -5%;
-  margin-bottom: 3%;
-}
-
-#userName {
-  text-align: center;
-  font-size: 20px;
-}
-
-#avatarID {
-  z-index: 2;
-  border: 15px solid white;
-  background: #ffffff;
-}
-
-#avatarPick {
-  margin-top: 9%;
-  position: absolute;
-  right: 20%;
-  top: -0%;
-  left: 21%;
-}
-
-.avatar {
-  width: 100%;
-  height: 300px;
-}
-
-.gradient-custom {
-  width: 100%;
-  height: 400px;
-  /* fallback for old browsers */
-  background: #37ecba;
-
-  /* Chrome 10-25, Safari 5.1-6 */
-  background: -webkit-linear-gradient(
-    to right,
-    rgba(55, 236, 186, 1),
-    rgba(114, 175, 211, 1)
-  );
-
-  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  background: linear-gradient(
-    to right,
-    rgba(55, 236, 186, 1),
-    rgba(114, 175, 211, 1)
-  );
-}
+@import '@/scss/reportCriminal.scss';
 
 @media screen and (max-width: 759px) {
   #mapID {
@@ -551,8 +477,6 @@ header {
     right: 20%;
     top: -0%;
     left: 21%;
-
-
   }
   .avatar {
     width: 100%;
@@ -563,6 +487,5 @@ header {
     margin-top: -40%;
     margin-bottom: 3%;
   }
-  
 }
 </style>

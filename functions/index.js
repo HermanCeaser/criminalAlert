@@ -96,6 +96,8 @@ exports.criminalFormData = functions.https.onRequest(async (request, response) =
         let latitude = request.body.latitude;
         let longitude = request.body.longitude;
         let userid = request.body.currentUserID;
+        let typeCrime = request.body.typeCrime;
+        let typeSex = request.body.typeSex;
 
         if (
             nameCri === undefined ||
@@ -118,14 +120,24 @@ exports.criminalFormData = functions.https.onRequest(async (request, response) =
             fecha: fecha,
             hora: hora,
             estatus: status,
+            tipoCrimen: typeCrime,
+            tipoSexo: typeSex,
             referencia: referencia,
             geoPoint: {
                 latitude,
                 longitude
             }
         }
+        
+        let res;
 
-        const res = await db.collection('criminalInfo').add(criminaldata);
+        if(typeCrime !== "secuestro"){
+             res = await db.collection('criminalInfo').add(criminaldata);
+        }else{
+             res = await db.collection('lostPersondata').add(criminaldata);
+        }
+
+        
         console.log(res.id)
         let criminalID = res.id;
 
@@ -177,6 +189,36 @@ exports.criminalMapInfo = functions.https.onRequest(async (request, response) =>
     try {
 
         const criminalSnap = await db.collection("criminalInfo").get();
+        let savedLocations = [];
+        if (criminalSnap.empty) {
+            //no results
+            return cors(request, response, () => {
+                response.status(200).send("NO RESULTS");
+            });
+        }
+
+        //save the data of the criminals in a que
+        criminalSnap.docs.forEach((doc) => {
+            savedLocations.push(doc.data());
+        });
+
+        return cors(request, response, () => {
+            response.status(200).send(savedLocations);
+        });
+
+    } catch (error) {
+        return cors(request, response, () => {
+            console.log(error);
+            response.status(500).send();
+        });
+    }
+});
+
+exports.lostPersonMapInfo = functions.https.onRequest(async (request, response) => {
+
+    try {
+
+        const criminalSnap = await db.collection("lostPersondata").get();
         let savedLocations = [];
         if (criminalSnap.empty) {
             //no results

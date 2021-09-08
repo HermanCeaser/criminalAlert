@@ -1,0 +1,222 @@
+.gradient-custom {
+    width: 100%;
+    height: 400px;
+    /* fallback for old browsers */
+    background: #37ecba;
+  
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: -webkit-linear-gradient(
+      to right,
+      rgba(55, 236, 186, 1),
+      rgba(114, 175, 211, 1)
+    );
+  
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: linear-gradient(
+      to right,
+      rgba(55, 236, 186, 1),
+      rgba(114, 175, 211, 1)
+    );
+  }
+  
+  #logOut {
+    position: absolute;
+    top: 60px;
+    right: 150px;
+  }
+  
+  #cancel-label{
+    color: #ec376d;
+  }
+  
+  .card {
+    align-items: center;
+    background: #fff;
+    border-radius: 0.3em;
+    border: 0.0625em solid mix(#fff, #abbaab, 20%);
+    box-shadow: 0 0 1.7em 0 rgba(#abbaab, 0.55);
+    display: flex;
+    flex-direction: column;
+    max-width: 18em;
+    position: relative;
+    width: 100%;
+  }
+  
+  .tableCriminals {
+    background: #fff;
+    box-shadow: 0 0 1.7em 0 rgba(#abbaab, 0.55);
+  }
+  
+  .tableCard {
+    width: 700px;
+  }
+  
+  p {
+    color: #b6b6b6;
+  }
+  
+  .card-info {
+    padding: 1.2em 1em;
+    position: relative;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .card-image {
+    margin: auto;
+    max-width: ((128px/16px) * 1em);
+  }
+  
+  .card--is-edit .card-image {
+    margin-bottom: 1em;
+  }
+  
+  .card-avatar {
+    display: block;
+    height: 130px;
+    width: 100%;
+  }
+  
+  .card-avatar--circle {
+    border-radius: 50%;
+  }
+  
+  .card-name {
+    font-size: 1.8em;
+    margin-bottom: 0.2em;
+  }
+  
+  .card-email {
+    font-size: 1.2em;
+    font-weight: 400;
+    margin-top: 0;
+  }
+  
+  .card-button {
+    align-items: center;
+    border: 0;
+    cursor: pointer;
+    display: flex;
+    user-select: none;
+  
+    > .material-icons {
+      font-size: inherit;
+    }
+  }
+  
+  .card-button[disabled] {
+    cursor: stop;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  
+  .card-expander {
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 0.75em 0 rgba(#abbaab, 0.55);
+    bottom: 0;
+    color: coral;
+    font-size: 1.5em;
+    left: 50%;
+    padding: 0.5em;
+    position: absolute;
+    transform: translate3d(-50%, 50%, 0);
+    transition: all 0.175s ease-in-out;
+  
+    &:hover,
+    &:focus {
+      box-shadow: 0 0.3em 2em 0 rgba(#abbaab, 0.75);
+    }
+  }
+  
+  .card-expander--is-open {
+    background: coral;
+    color: white;
+    transform: translate3d(-50%, 50%, 0) rotate(-225deg);
+  
+    &:hover,
+    &:focus {
+      box-shadow: 0.15em -0.3em 2em 0 rgba(#abbaab, 0.75);
+    }
+  }
+  
+  .card-edit {
+    background: transparent;
+    border-radius: 0.2em;
+    color: #bbb;
+    padding: 0.25em;
+    position: absolute;
+    right: 0.5em;
+    top: 0.5em;
+  
+    &:hover,
+    &:focus {
+      background: #eee;
+      color: coral;
+    }
+  }
+  
+  .card-shelf {
+    max-height: 0;
+    overflow: auto;
+    transition: all 0.175s ease-in-out;
+    width: 100%;
+  }
+  
+  .card-shelf--is-open {
+    margin-top: 1em;
+    max-height: inherit;
+  }
+  
+  .card--is-edit .card-shelf--is-open {
+    margin-top: 0;
+  }
+  
+  .card-content {
+    padding: 1em;
+  }
+  
+  .card-bio {
+    margin-top: 0;
+    width: 100%;
+  
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
+  .card-fields {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .card-input {
+    background: mix(#fff, #abbaab, 90%);
+    border: 0.0625em solid mix(#fff, #abbaab, 30%);
+    border-radius: 0.3em;
+    margin: 0.25em;
+    padding: 0.5em 1em;
+    width: 100%;
+  }
+  
+  .card-input--inline {
+    display: inline-block;
+    width: 50%;
+  }
+  
+  .wrapper {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+    background: radial-gradient(circle, #ffffff, #abbaab);
+  }
+  
+  #userInfoTop {
+    margin-top: -10%;
+  }
+  
+  #user {
+    overflow: hidden;
+  }
+  
