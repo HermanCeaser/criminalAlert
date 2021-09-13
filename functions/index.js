@@ -87,7 +87,6 @@ exports.userInformartionTest = functions.https.onRequest(async (request, respons
 exports.criminalFormData = functions.https.onRequest(async (request, response) => {
 
     try {
-        let nameCri = request.body.criminalName;
         let descripcion = request.body.descripcion;
         let fecha = request.body.fecha;
         let hora = request.body.hora;
@@ -100,7 +99,6 @@ exports.criminalFormData = functions.https.onRequest(async (request, response) =
         let typeSex = request.body.typeSex;
 
         if (
-            nameCri === undefined ||
             descripcion === undefined ||
             fecha === undefined ||
             hora === undefined ||
@@ -115,7 +113,6 @@ exports.criminalFormData = functions.https.onRequest(async (request, response) =
         }
 
         let criminaldata = {
-            nombre: nameCri,
             descripcion: descripcion,
             fecha: fecha,
             hora: hora,

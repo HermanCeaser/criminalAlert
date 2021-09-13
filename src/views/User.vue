@@ -1,10 +1,5 @@
 <template>
-  <b-overlay
-    :show="loadingPage"
-    :variant="light"
-    :opacity="1"
-    rounded="sm"
-  >
+  <b-overlay :show="loadingPage" :variant="light" :opacity="1" rounded="sm">
     <div id="user">
       <div id="gradientBackground" class="gradient-custom"></div>
       <div id="userInfoTop">
@@ -206,7 +201,12 @@
     </div>
     <template #overlay>
       <div class="text-center">
-        <b-icon icon="stopwatch" font-scale="3" animation="cylon" variant="danger"></b-icon>
+        <b-icon
+          icon="stopwatch"
+          font-scale="3"
+          animation="cylon"
+          variant="danger"
+        ></b-icon>
         <p id="cancel-label">Please wait...</p>
       </div>
     </template>
@@ -216,10 +216,11 @@
 <script>
 import firebase from "firebase";
 import { db } from "../main";
-
+import User from "../js/user.js";
 require("firebase/auth");
 export default {
   name: "User",
+  mixins: [User],
   data: () => ({
     loggedIn: false,
     email: "nicholas.cage@theone.com",
@@ -340,23 +341,58 @@ export default {
         }
       });
     },
-    setUserData() {
-      this.userRef
-        .get()
-        .then((doc) => {
-          if (doc.exists) {
-            this.userData.nick = doc.data().nick;
-            this.userData.correo = doc.data().correo;
-            this.userData.reportes = doc.data().reportes;
-            this.userData.avatar = doc.data().avatar;
-            if (!this.showTop && !this.userTemp.emailVerified) {
-              this.showToast();
-            }
-          }
-        })
-        .catch((error) => {
-          console.log("Error getting document:", error);
-        });
+    deleteSelected() {
+      if (this.selected.length <= 0) {
+        this.$refs["my-modal"].hide();
+        return;
+      }
+
+      let ids = [];
+      for (let index = 0; index < this.selected.length; index++) {
+        ids[index] = this.selected[index].id;
+      }
+      console.log("user id:" + this.userID);
+      for (let index = 0; index < ids.length; index++) {
+        console.log(" id " + index + " " + ids[index]);
+      }
+
+      //first  we're going to delete the id fonr tue user list
+      const criminalInfoIDs = db
+        .collection("userCriminalInfo")
+        .doc(this.userID);
+      for (let index = 0; index < ids.length; index++) {
+        criminalInfoIDs
+          .update({
+            criminalsID: firebase.firestore.FieldValue.arrayRemove(ids[index]),
+          })
+          .then(() => {
+            //second we are going to  decrement the user criminal count
+            this.userRef
+              .update({
+                reportes: firebase.firestore.FieldValue.increment(-1),
+              })
+              .then(() => {
+                //Third we are going to delete from the criminal databasse
+                let criminalInfo = db
+                  .collection("criminalInfo")
+                  .doc(ids[index])
+                  .delete();
+
+                alert("Document successfully updated!");
+                this.$refs["my-modal"].hide();
+                this.items = [];
+                this.fillTable("criminal");
+              })
+              .catch((error) => {
+                // The document probably doesn't exist.
+                console.error("Error updating document: ", error);
+              });
+          })
+          .catch((error) => {
+            // The document probably doesn't exist.
+            console.error("Error updating document: ", error);
+          });
+      }
     },
     setupFirebase() {
       firebase.auth().onAuthStateChanged((user) => {
@@ -376,31 +412,6 @@ export default {
         .then(() => {
           this.$router.replace({ name: "login" });
         });
-    },
-    shelfToggle() {
-      this.isShelfOpen = !this.isShelfOpen;
-    },
-    editContent() {
-      if (!this.isEditing) {
-        this.isEditing = !this.isEditing;
-        this.isShelfOpen = true;
-      } else {
-        this.isEditing = !this.isEditing;
-        this.isShelfOpen = false;
-        this.loadingData = true;
-        const res = this.userRef
-          .update({
-            nick: this.userData.nick,
-          })
-          .then(() => {
-            this.$bvToast.show("my-toast");
-            this.loadingData = false;
-          })
-          .catch((error) => {
-            // The document probably doesn't exist.
-            console.error("Error updating document: ", error);
-          });
-      }
     },
     uploadImage(e) {
       if (e.target.files[0]) {
@@ -496,119 +507,13 @@ export default {
             }
             this.loadingPage = false;
             this.isBusy = false;
-          }else{
+          } else {
             this.loadingPage = false;
           }
         })
         .catch((error) => {
           console.log("Error getting document:", error);
         });
-    },
-    onRowSelected(items) {
-      this.selected = items;
-    },
-    closeModal() {
-      this.$refs.selectableTable.clearSelected();
-      this.$refs["my-modal"].hide();
-    },
-    deleteSelected() {
-      if (this.selected.length <= 0) {
-        this.$refs["my-modal"].hide();
-        return;
-      }
-
-      let ids = [];
-      for (let index = 0; index < this.selected.length; index++) {
-        ids[index] = this.selected[index].id;
-      }
-      console.log("user id:" + this.userID);
-      for (let index = 0; index < ids.length; index++) {
-        console.log(" id " + index + " " + ids[index]);
-      }
-
-      //first  we're going to delete the id fonr tue user list
-      const criminalInfoIDs = db
-        .collection("userCriminalInfo")
-        .doc(this.userID);
-      for (let index = 0; index < ids.length; index++) {
-        criminalInfoIDs
-          .update({
-            criminalsID: firebase.firestore.FieldValue.arrayRemove(ids[index]),
-          })
-          .then(() => {
-            //second we are going to  decrement the user criminal count
-            this.userRef
-              .update({
-                reportes: firebase.firestore.FieldValue.increment(-1),
-              })
-              .then(() => {
-                //Third we are going to delete from the criminal databasse
-                let criminalInfo = db
-                  .collection("criminalInfo")
-                  .doc(ids[index])
-                  .delete();
-
-                alert("Document successfully updated!");
-                this.$refs["my-modal"].hide();
-                this.items = [];
-                this.fillTable("criminal");
-              })
-              .catch((error) => {
-                // The document probably doesn't exist.
-                console.error("Error updating document: ", error);
-              });
-          })
-          .catch((error) => {
-            // The document probably doesn't exist.
-            console.error("Error updating document: ", error);
-          });
-      }
-    },
-    showModal() {
-      this.$refs["my-modal"].show();
-    },
-    showToast() {
-      const h = this.$createElement;
-      const id = this.toastId;
-      const vNodesTitle = h(
-        "div",
-        { class: ["d-flex", "flex-grow-1", "align-items-baseline", "mr-2"] },
-        [h("strong", { class: "mr-2" }, "Su correo aún no ha sido verificado!")]
-      );
-
-      // Create the custom  button
-      const $closeButton = h(
-        "b-button",
-        {
-          on: { click: () => this.sendEmail() },
-        },
-        [h("strong", { class: "mr-2" }, "Enviar correo de verificación")],
-        "enviar"
-      );
-      // Create the toast
-      this.$bvToast.toast([$closeButton], {
-        id: id,
-        title: [vNodesTitle],
-        solid: true,
-        variant: "danger",
-      });
-    },
-    sendEmail() {
-      this.$bvToast.hide(this.toastId);
-      const h = this.$createElement;
-      const vNodesMsg = h("p", { class: ["text-center", "mb-0"] }, [
-        h("strong", "Correo enviado!"),
-      ]);
-      this.$bvToast.toast([vNodesMsg], {
-        title: "Estatus",
-        solid: true,
-        variant: "success",
-      });
-      let user = firebase.auth().currentUser;
-      user
-        .sendEmailVerification()
-        .then(() => {})
-        .catch((error) => (this.error = error));
     },
   },
 };
@@ -617,12 +522,12 @@ export default {
 <style scoped lang="scss">
 @import url("https://fonts.googleapis.com/icon?family=Material+Icons");
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap");
-@import '@/scss/user.scss';
+@import "@/scss/user.scss";
 
 @media screen and (max-width: 759px) {
   #card {
     position: absolute;
-    margin-top: -65%;
+    margin-top: -55%;
     margin-left: 18%;
     z-index: 100;
   }

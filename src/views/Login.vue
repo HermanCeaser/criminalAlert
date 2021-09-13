@@ -1,7 +1,6 @@
 <template>
   <div id="login" class="">
     <div id="gradientBackground" class="gradient-custom"></div>
-
     <div class="warginCard">
       <b-row>
         <b-col></b-col>
@@ -97,9 +96,6 @@
     </div>
   </div>
 </template>
-
-
-
 <script>
 import firebase from "firebase";
 require("firebase/auth");
@@ -174,9 +170,7 @@ export default {
 
 <style scoped lang="scss">
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap");
-@import '@/scss/credentialsPages.scss';
-
-
+@import "@/scss/credentialsPages.scss";
 @media screen and (max-width: 770px) {
   .imgCard {
     width: 100%;

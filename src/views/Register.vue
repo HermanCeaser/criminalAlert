@@ -134,16 +134,13 @@
     </div>
   </div>
 </template>
-
-
-
 <script>
 import firebase from "firebase";
-import { db } from "../main";
+import Regiser from "../js/register.js";
 require("firebase/auth");
-
 export default {
   name: "register",
+  mixins: [Regiser],
   data: () => ({
     showDismissibleAlert: false,
     alertMsm: null,
@@ -215,21 +212,11 @@ export default {
         })
         .catch((error) => (this.error = error));
     },
-    validEmail: function (email) {
-      var re =
-        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      return re.test(email);
-    },
-    mesajeVerificacion: function () {
-      this.$router.replace({ name: "login" });
-    },
   },
 };
 </script>
 
 <style scoped lang="scss">
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap");
-@import '@/scss/credentialsPages.scss';
-
-
+@import "@/scss/credentialsPages.scss";
 </style>

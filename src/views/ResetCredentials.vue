@@ -91,14 +91,13 @@
     </b-modal>
   </div>
 </template>
-
-
-
 <script>
 import firebase from "firebase";
+import ResetCredentals from "../js/resetCredentials.js";
 require("firebase/auth");
 export default {
   name: "Login",
+  mixins: [ResetCredentals],
   data: () => ({
     showDismissibleAlert: false,
     alertMsm: null,
@@ -139,20 +138,13 @@ export default {
           this.alertMsm = "Correo no se encunetra registrado.";
         });
     },
-    showModal() {
-      this.$refs["my-modal"].show();
-    },
-    continuar(){
-        this.$router.replace({ name: "login" });
-    }
   },
 };
 </script>
 
 <style scoped lang="scss">
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap");
-@import '@/scss/credentialsPages.scss';
-
+@import "@/scss/credentialsPages.scss";
 
 @media screen and (max-width: 770px) {
   .imgCard {

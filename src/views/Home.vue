@@ -8,7 +8,7 @@
         <b-col></b-col>
         <b-col sm>
           <b-card
-            title="Criminales"
+            title="Crimenes"
             sub-title="registrados"
             class="animate__animated animate__backInUp delay-1"
           >
@@ -189,15 +189,63 @@
         <b-col></b-col>
       </b-row>
       <b-row>
-        <b-col></b-col>
-        <b-col>
-          <b-button v-on:click="locatorButtonPressed" variant="danger">
-            Activar ubicación
-          </b-button>
+        <b-col md="2"></b-col>
+        <b-col sm>
+          <b-form-group>
+            <b-card
+              title="Localizar ubicacion"
+              class="overflow-hidden shadow bg-white rounded"
+            >
+              <b-row>
+                <b-col md="3"></b-col>
+                <b-col sm>
+                  <b-card-text>
+                    Ingrese los datos lo más espesificos posibles para localizar
+                    su ubicación.
+                  </b-card-text>
+                </b-col>
+
+                <b-col md="3"></b-col>
+              </b-row>
+              <b-row>
+                <b-col md="3"
+                  ><b-form-input
+                    placeholder="colonia"
+                    v-model="userDireccionData.colonia"
+                  ></b-form-input
+                ></b-col>
+                <b-col md="3"
+                  ><b-form-input
+                    placeholder="calle"
+                    v-model="userDireccionData.calle"
+                  ></b-form-input
+                ></b-col>
+                <b-col md="2"
+                  ><b-form-input
+                    placeholder="#numero"
+                    v-model="userDireccionData.numero"
+                    type="number"
+                  ></b-form-input
+                ></b-col>
+                <b-col md="2"
+                  ><b-form-input
+                    placeholder="codigo postal"
+                    v-model="userDireccionData.zip"
+                    type="number"
+                  ></b-form-input
+                ></b-col>
+                <b-col md="2">
+                  <b-button v-on:click="checAddress()" variant="outline-primary"
+                    >Buscar</b-button
+                  >
+                </b-col>
+              </b-row>
+            </b-card>
+          </b-form-group>
         </b-col>
-        <b-col></b-col>
+        <b-col md="2"></b-col>
       </b-row>
-      <br /><br />
+      <br />
       <b-row>
         <b-col md="2"></b-col>
         <b-col sm>
@@ -220,14 +268,8 @@
                             alt="Responsive image"
                           ></b-img-lazy> </b-card-body
                         ><strong>
-                          {{
-                            (
-                              (statusReportCount[0] * 100) /
-                              regCriminals
-                            ).toFixed(2)
-                          }}
-                          %</strong
-                        ></b-col
+                          {{ statusReportCount[0] }}
+                        </strong></b-col
                       >
                       <b-col>
                         <b-card-body title="Violacion">
@@ -241,14 +283,8 @@
                           ></b-img-lazy>
                         </b-card-body>
                         <strong>
-                          {{
-                            (
-                              (statusReportCount[1] * 100) /
-                              regCriminals
-                            ).toFixed(2)
-                          }}
-                          %</strong
-                        >
+                          {{ statusReportCount[1] }}
+                        </strong>
                       </b-col>
                       <b-col>
                         <b-card-body title="Asalto">
@@ -262,14 +298,8 @@
                           ></b-img-lazy>
                         </b-card-body>
                         <strong>
-                          {{
-                            (
-                              (statusReportCount[2] * 100) /
-                              regCriminals
-                            ).toFixed(2)
-                          }}
-                          %</strong
-                        >
+                          {{ statusReportCount[2] }}
+                        </strong>
                       </b-col>
                       <b-col>
                         <b-card-body title="Agresion">
@@ -283,14 +313,8 @@
                           ></b-img-lazy>
                         </b-card-body>
                         <strong>
-                          {{
-                            (
-                              (statusReportCount[3] * 100) /
-                              regCriminals
-                            ).toFixed(2)
-                          }}
-                          %</strong
-                        >
+                          {{ statusReportCount[3] }}
+                        </strong>
                       </b-col>
                       <b-col>
                         <b-card-body title="Homicidio">
@@ -304,14 +328,8 @@
                           ></b-img-lazy>
                         </b-card-body>
                         <strong>
-                          {{
-                            (
-                              (statusReportCount[4] * 100) /
-                              regCriminals
-                            ).toFixed(2)
-                          }}
-                          %</strong
-                        >
+                          {{ statusReportCount[4] }}
+                        </strong>
                       </b-col>
                       <b-col>
                         <b-card-body title="AsaltoSexual">
@@ -325,14 +343,8 @@
                           ></b-img-lazy>
                         </b-card-body>
                         <strong>
-                          {{
-                            (
-                              (statusReportCount[5] * 100) /
-                              regCriminals
-                            ).toFixed(2)
-                          }}
-                          %</strong
-                        >
+                          {{ statusReportCount[5] }}
+                        </strong>
                       </b-col>
                       <b-col>
                         <b-card-body title="Robo">
@@ -346,14 +358,8 @@
                           ></b-img-lazy>
                         </b-card-body>
                         <strong>
-                          {{
-                            (
-                              (statusReportCount[7] * 100) /
-                              regCriminals
-                            ).toFixed(2)
-                          }}
-                          %</strong
-                        >
+                          {{ statusReportCount[7] }}
+                        </strong>
                       </b-col>
                       <b-col>
                         <b-card-body title="Narcotrafico">
@@ -367,14 +373,8 @@
                           ></b-img-lazy>
                         </b-card-body>
                         <strong>
-                          {{
-                            (
-                              (statusReportCount[9] * 100) /
-                              regCriminals
-                            ).toFixed(2)
-                          }}
-                          %</strong
-                        >
+                          {{ statusReportCount[9] }}
+                        </strong>
                       </b-col>
                     </b-row>
                   </b-card-body>
@@ -413,11 +413,8 @@
                             alt="Responsive image"
                           ></b-img-lazy> </b-card-body
                         ><strong>
-                          {{
-                            ((victimaHombre * 100) / regCriminals).toFixed(2)
-                          }}
-                          %</strong
-                        ></b-col
+                          {{ victimaHombre }}
+                        </strong></b-col
                       >
                       <b-col>
                         <b-card-body title="Mujer">
@@ -431,9 +428,8 @@
                           ></b-img-lazy>
                         </b-card-body>
                         <strong>
-                          {{ ((victimaMUjer * 100) / regCriminals).toFixed(2) }}
-                          %</strong
-                        >
+                          {{ victimaMUjer }}
+                        </strong>
                       </b-col>
                       <b-col>
                         <b-card-body title="Otro">
@@ -447,9 +443,8 @@
                           ></b-img-lazy>
                         </b-card-body>
                         <strong>
-                          {{ ((victimaOtros * 100) / regCriminals).toFixed(2) }}
-                          %</strong
-                        >
+                          {{ victimaOtros }}
+                        </strong>
                       </b-col>
                       <b-col>
                         <b-card-body title="Sin registro">
@@ -463,9 +458,8 @@
                           ></b-img-lazy>
                         </b-card-body>
                         <strong>
-                          {{ ((victimaNA * 100) / regCriminals).toFixed(2) }}
-                          %</strong
-                        >
+                          {{ victimaNA }}
+                        </strong>
                       </b-col>
                     </b-row>
                   </b-card-body>
@@ -505,11 +499,8 @@
                           ></b-img-lazy>
                         </b-card-body>
                         <strong>
-                          {{
-                            ((morningReports * 100) / regCriminals).toFixed(2)
-                          }}
-                          %</strong
-                        ></b-col
+                          {{ morningReports }}
+                        </strong></b-col
                       >
                       <b-col>
                         <b-card-body title="Hora de 11 a  18">
@@ -523,9 +514,8 @@
                           ></b-img-lazy>
                         </b-card-body>
                         <strong>
-                          {{ ((noonReports * 100) / regCriminals).toFixed(2) }}
-                          %</strong
-                        >
+                          {{ noonReports }}
+                        </strong>
                       </b-col>
                       <b-col>
                         <b-card-body title="Hora de 19 a  24">
@@ -539,9 +529,8 @@
                           ></b-img-lazy>
                         </b-card-body>
                         <strong>
-                          {{ ((nightReports * 100) / regCriminals).toFixed(2) }}
-                          %</strong
-                        >
+                          {{ nightReports }}
+                        </strong>
                       </b-col>
                     </b-row>
                   </b-card-body>
@@ -553,7 +542,6 @@
         </b-col>
         <b-col md="2"></b-col>
       </b-row>
-
       <br /><br />
     </div>
     <div>
@@ -563,12 +551,14 @@
     </div>
   </div>
 </template>
-
 <script>
 import axios from "axios";
+import HomeJs from "../js/home.js";
 import { db } from "../main";
 export default {
   name: "home",
+  components: {},
+  mixins: [HomeJs],
   data: () => ({
     savedLocations: [],
     userLocation: [],
@@ -579,6 +569,7 @@ export default {
     totalUsers: 0,
     totalReportUser: 0,
     userID: null,
+    userAddress: "",
     isBusy: false,
     mapLoading: false,
     userStar: "Don Señor",
@@ -596,6 +587,12 @@ export default {
       position: { lat: 0, lng: 0 },
       open: false,
       template: "",
+    },
+    userDireccionData: {
+      colonia: "",
+      calle: "",
+      numero: "",
+      zip: "",
     },
   }),
   async beforeMount() {
@@ -654,211 +651,59 @@ export default {
       this.userStar = data.userStar;
       this.userID = data.userID;
     },
-    getReportStatus: async function (data) {
-      for (let index = 0; index < data.length; index++) {
-        if (data[index].tipoCrimen == "asesinato") {
-          this.statusReportCount[0]++;
-          console.log("hola ase");
-        } else if (data[index].tipoCrimen == "violación") {
-          this.statusReportCount[1]++;
-          console.log("hola vio");
-        } else if (data[index].tipoCrimen == "asalto") {
-          this.statusReportCount[2]++;
-          console.log("hola asalto");
-        } else if (data[index].tipoCrimen == "agresión") {
-          this.statusReportCount[3]++;
-          console.log("hola agre");
-        } else if (data[index].tipoCrimen == "homicidio") {
-          this.statusReportCount[4]++;
-          console.log("hola hom");
-        } else if (data[index].tipoCrimen == "asaltoSexual") {
-          this.statusReportCount[5]++;
-          console.log("hola asalSe");
-        } else if (data[index].tipoCrimen == "violenciaDomestica") {
-          this.statusReportCount[6]++;
-          console.log("hola violenci");
-        } else if (data[index].tipoCrimen == "robo") {
-          this.statusReportCount[7]++;
-          console.log("hola robo");
-        } else if (data[index].tipoCrimen == "secuestro") {
-          this.statusReportCount[8]++;
-          console.log("hola secue");
-        } else if (data[index].tipoCrimen == "narcotráfico") {
-          this.statusReportCount[9]++;
-          console.log("hola narci");
-        }
-      }
-    },
-    getSexReportStatus: async function (data) {
-      for (let index = 0; index < data.length; index++) {
-        if (data[index].tipoSexo == "hombre") {
-          this.victimaHombre++;
-        } else if (data[index].tipoSexo == "mujer") {
-          this.victimaMUjer++;
-        } else if (data[index].tipoSexo == "otro") {
-          this.victimaOtros++;
-        } else if (data[index].tipoSexo == "ninguna") {
-          this.victimaNA++;
-        }
-      }
-      this.victima = this.getTheMostAfectedPerson([
-        this.victimaHombre,
-        this.victimaMUjer,
-        this.victimaOtros,
-      ]);
-    },
-    getHourReportStatus: async function (data) {
-      for (let index = 0; index < data.length; index++) {
-        var str = data[index].hora.slice(0, 2);
-        var hour = parseInt(str);
-        //cases reported around midnight an morning
-        if (hour >= 0 && hour <= 10) {
-          this.morningReports++;
-        } else if (hour >= 11 && hour <= 18) {
-          // cases around 11 to 6 pm
-          this.noonReports++;
-        } else if (hour >= 19 && hour <= 24) {
-          // cases around 7 to midight
-          this.nightReports++;
-        }
-      }
-    },
-    getTheMostAfectedPerson: function (list) {
-      var temp = Math.max(...list);
-      if (this.victimaHombre == temp) {
-        return "hombres";
-      } else if (this.victimaMUjer == temp) {
-        return "Mujeres";
-      } else {
-        return "LGBT+";
-      }
-    },
-    openInfoWindowTemplate: function (index, key) {
-      /* this.markerAnimationState = index;
-      this.$refs.markers[index].$markerObject.setAnimation(
-        google.maps.Animation.BOUNCE
-      );*/
-      let tempData;
-      var text = "";
-      if (key == 0) {
-        tempData = this.savedLocations[index];
-        text = "Criminal";
-      } else {
-        tempData = this.lostPersonLocations[index];
-      }
-      this.infoWindow.position = {
-        lat: tempData.geoPoint.latitude,
-        lng: tempData.geoPoint.longitude,
-      };
-      let displayInfo = `<div id="infoCriminal">
-          <h4 style="color:#ec407a;"> ${text} ${tempData.nombre}</h4>
-          <p style="color:#ec407a;"><strong>${tempData.estatus}</strong></p>
-          <p style="font-size: 15px;">${tempData.descripcion}</p>
-          <b style="color:#9e9e9e;"> Reportado ${tempData.fecha} a las ${tempData.hora}</b>
-          <a href="${tempData.referencia}" target="_blank">Referencia.</a>
-        </div>`;
-      this.infoWindow.template = displayInfo;
-      this.infoWindow.open = true;
-    },
-    locatorButtonPressed: function () {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            let obj = {
-              geoPoint: {
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-              },
-            };
-            if (this.userLocation.length > 0) {
-              this.userLocation = [];
-            } else {
-              this.userLocation.push(obj);
-              this.haversine_distance();
-            }
-          },
-          (error) => {
-            console.log(error.message);
-          }
-        );
-      } else {
-        alert("Tu brower no soporta geolocalizacion API");
-      }
-    },
-    haversine_distance: function () {
-      //we dont have to look everytime, if there aren't any updates
-      //we are going to check if the criminalsNearUser is equal to 0
-      if (this.criminalsNearUser.length > 0) {
-        for (let index = 0; index < this.criminalsNearUser.length; index++) {
-          this.craeteToast(
-            this.criminalsNearUser[index].fecha,
-            this.criminalsNearUser[index].hora
-          );
-        }
+
+    checAddress: async function () {
+      this.mapLoading = true;
+      if (this.userLocation.length > 0) {
+        this.userLocation = [];
+        this.mapLoading = false;
         return;
       }
 
-      var R = 6371.071; // Radius of the Earth in kilometers
-      var rlat1 = this.userLocation[0].geoPoint.latitude * (Math.PI / 180); // Convert degrees to radians of the user location
-      for (let index = 0; index < this.savedLocations.length; index++) {
-        var rlat2 =
-          this.savedLocations[index].geoPoint.latitude * (Math.PI / 180); // Convert degrees to radians
-        var difflat = rlat2 - rlat1; // Radian difference (latitudes)
-        var difflon =
-          (this.savedLocations[index].geoPoint.longitude -
-            this.userLocation[0].geoPoint.longitude) *
-          (Math.PI / 180); // Radian difference (longitudes)
-        var d =
-          2 *
-          R *
-          Math.asin(
-            Math.sqrt(
-              Math.sin(difflat / 2) * Math.sin(difflat / 2) +
-                Math.cos(rlat1) *
-                  Math.cos(rlat2) *
-                  Math.sin(difflon / 2) *
-                  Math.sin(difflon / 2)
-            )
-          );
-        if (d <= 2) {
-          // if  the distance is equal or less than  2 kilometros we are going to let the user know
-          this.craeteToast(
-            this.savedLocations[index].fecha,
-            this.savedLocations[index].hora
-          );
-          this.criminalsNearUser.push(this.savedLocations[index]);
-        }
+      if (
+        this.checAddressString(
+          this.userDireccionData.colonia,
+          this.userDireccionData.calle,
+          this.userDireccionData.numero,
+          this.userDireccionData.zip
+        )
+      ) {
+        this.mapLoading = false;
+        return;
       }
-    },
-    craeteToast: function (fecha, hora) {
-      // Use a shorter name for this.$createElement
-      const h = this.$createElement;
-      // Increment the toast count
-      this.count++;
-      // Create the message
-      const vNodesMsg = h("div", { class: ["text-center", "mb-0"] }, [
-        h("b-spinner", {
-          props: { type: "grow", small: true, variant: "danger" },
-        }),
-        " Se han localizado  ",
-        h("strong", " actividad "),
-        `delictiva  ` + " fecha  de reporte " + fecha + " a las " + hora,
-      ]);
-      // Create the title
-      const vNodesTitle = h(
-        "div",
-        { class: ["d-flex", "flex-grow-1", "align-items-baseline", "mr-2"] },
-        [
-          h("strong", { class: "mr-2" }, "Warning!"),
-          h("small", { class: "ml-auto text-italics" }, "5 seconds ago"),
-        ]
+
+      let address = `${this.userDireccionData.colonia}, ${this.userDireccionData.calle}, ${this.userDireccionData.numero}, ${this.userDireccionData.zip} ,Tijuana, MX`;
+      let { data } = await axios.post(
+        "https://us-central1-criminalalertdb.cloudfunctions.net/criminalGetLocation",
+        {
+          address: address,
+        }
       );
-      // Pass the VNodes as an array for message and title
-      this.$bvToast.toast([vNodesMsg], {
-        title: [vNodesTitle],
-        solid: true,
-        variant: "danger",
-      });
+      if (data === "No Results") {
+        alert("No hay resultados de la direccion");
+        this.mapLoading = true;
+        return;
+      }
+
+      if (data.address == "Tijuana, Baja California, Mexico") {
+        alert("Direccion no localizada");
+        this.mapLoading = false;
+        return;
+      }
+
+      let obj = {
+        geoPoint: {
+          latitude: data.geoPoint._latitude,
+          longitude: data.geoPoint._longitude,
+        },
+      };
+      this.userLocation.push(obj);
+      this.mapLoading = false;
+      this.haversine_distance(
+        this.savedLocations,
+        this.criminalsNearUser,
+        this.userLocation
+      );
     },
   },
 };
@@ -867,8 +712,7 @@ export default {
 <style scoped lang="scss">
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap");
 @import url("https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css");
-@import '@/scss/homePage.scss';
-
+@import "@/scss/homePage.scss";
 @media screen and (max-width: 759px) {
   #mapID {
     width: 100%;

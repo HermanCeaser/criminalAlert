@@ -25,16 +25,6 @@
               <b-overlay :show="loadingData" rounded="sm">
                 <b-row>
                   <b-col>
-                    <b-form-group class="nameCriminal" label="Nombre">
-                      <b-form-input
-                        placeholder="nombre criminal"
-                        v-model="formData.nameCri"
-                      ></b-form-input>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col>
                     <b-form-group
                       class="crimenStyle"
                       label="Descripcion del reporte"
@@ -85,10 +75,12 @@
                       ></b-form-input>
                       <b-form-input
                         placeholder="#numero"
+                        type="number"
                         v-model="formData.numero"
                       ></b-form-input>
                       <b-form-input
                         placeholder="codigo postal"
+                        type="number"
                         v-model="formData.postal"
                       ></b-form-input>
                     </b-form-group>
@@ -100,8 +92,7 @@
                       @dismiss-count-down="countDownChanged"
                     >
                       <p>
-                        Debe ingresar la colonia, calle, numero exterior y
-                        codigo postal para continuar con la busqueda.
+                        {{ imputSearchMsm }}
                       </p>
                     </b-alert>
                     <b-button v-on:click="checkMap" variant="outline-primary"
@@ -167,7 +158,11 @@
                 </b-row>
                 <b-row>
                   <b-col>
-                    <b-form-group class="referenciaStyle" label="Referencia">
+                    <b-form-group
+                      class="referenciaStyle"
+                      label="Referencia"
+                      description="La referencia debe ser de sitios confiables: zetatijuana, elsoldetijuana, tijuanainformativo, elimparcial, alfredoalvarez, afntijuana, milenio"
+                    >
                       <b-form-input
                         placeholder="link de la noticia o referencia"
                         v-model="formData.referencia"
@@ -204,11 +199,13 @@
 <script>
 import axios from "axios";
 import { db } from "../main";
+import ReportJs from "../js/reportCriminal.js";
 import firebase from "firebase";
 require("firebase/auth");
 
 export default {
   name: "checkDirrecion",
+  mixins: [ReportJs],
   data: () => ({
     userTag: null,
     savedLocations: [],
@@ -223,6 +220,7 @@ export default {
     avatarLoading: true,
     inputMsm:
       " Debe ingresar todos los datos del formulario, para poder realizar un reporte.",
+    imputSearchMsm: "",
     userAvatar:
       "https://media.istockphoto.com/vectors/default-avatar-profile-icon-grey-photo-placeholder-hand-drawn-modern-vector-id1273297997?b=1&k=6&m=1273297997&s=612x612&w=0&h=W0mwZseX1YEUPH8BJ9ra2Y-VeaUOi0nSLfQJWExiLsQ=",
     formData: {
@@ -286,15 +284,16 @@ export default {
     });
   },
   methods: {
-    checkMap: async function (event) {
+    checkMap: async function () {
       this.savedLocations = []; // we empty the array
       if (
-        !this.formData.colonia ||
-        !this.formData.calle ||
-        !this.formData.numero ||
-        !this.formData.postal
+        this.emptyInputSearchData(
+          this.formData.colonia,
+          this.formData.calle,
+          this.formData.numero,
+          this.formData.postal
+        )
       ) {
-        this.dismissCountDown = this.dismissSecs;
         return;
       }
       this.mapSearch = true;
@@ -331,7 +330,6 @@ export default {
         !this.formData.calle ||
         !this.formData.numero ||
         !this.formData.postal ||
-        !this.formData.nameCri ||
         !this.formData.descripcion ||
         !this.formData.fecha ||
         !this.formData.hora ||
@@ -347,14 +345,9 @@ export default {
         return;
       }
       //Valite if the user ener a valid http address
-      let res = this.formData.referencia.match(
-        /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
-      );
-      if (res === null) {
+      if (!this.referenceVerification(this.formData.referencia)) {
         this.dismissFormCount = this.dismissSecs;
         this.loadingData = false;
-        this.inputMsm =
-          "Debe ingresar  url valido para continuar ejemlo: www.google.com";
         return;
       }
       //Will show a message, to let know the user the data
@@ -363,7 +356,6 @@ export default {
       let { data } = await axios.post(
         "https://us-central1-criminalalertdb.cloudfunctions.net/criminalFormData",
         {
-          criminalName: this.formData.nameCri,
           descripcion: this.formData.descripcion,
           fecha: this.formData.fecha,
           hora: this.formData.hora,
@@ -398,57 +390,6 @@ export default {
 
       this.cleanForm();
     },
-    countDownChanged: function (dismissCountDown) {
-      this.dismissCountDown = dismissCountDown;
-    },
-    countDownFormChanged: function (dismissFormCount) {
-      this.dismissFormCount = dismissFormCount;
-    },
-    cleanForm: function () {
-      this.formData.colonia = "";
-      this.formData.calle = "";
-      this.formData.numero = "";
-      this.formData.postal = "";
-      this.formData.nameCri = "";
-      this.formData.descripcion = "";
-      this.formData.fecha = "";
-      this.formData.hora = "";
-      this.selected = "";
-      this.formData.referencia = "";
-      this.savedLocations = []; // we empty the array
-    },
-    showToast: function () {
-      // Use a shorter name for this.$createElement
-      const h = this.$createElement;
-      // Increment the toast count
-      this.count++;
-      // Create the message
-      const vNodesMsg = h("p", { class: ["text-center", "mb-0"] }, [
-        h("b-spinner", { props: { type: "grow", small: true } }),
-        " Registro ",
-        h("strong", "exitoso!"),
-        ` # ${this.count} `,
-        h("b-spinner", { props: { type: "grow", small: true } }),
-      ]);
-      // Create the title
-      const vNodesTitle = h(
-        "div",
-        { class: ["d-flex", "flex-grow-1", "align-items-baseline", "mr-2"] },
-        [
-          h("strong", { class: "mr-2" }, "The Title"),
-          h("small", { class: "ml-auto text-italics" }, "42 seconds ago"),
-        ]
-      );
-      // Pass the VNodes as an array for message and title
-      this.$bvToast.toast([vNodesMsg], {
-        title: [vNodesTitle],
-        solid: true,
-        variant: "info",
-      });
-    },
-    showMapDisplay: function () {
-      const h = this.$createElement;
-    },
   },
 };
 </script>
@@ -457,7 +398,7 @@ export default {
 
 <style scoped lang="scss">
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap");
-@import '@/scss/reportCriminal.scss';
+@import "@/scss/reportCriminal.scss";
 
 @media screen and (max-width: 759px) {
   #mapID {
