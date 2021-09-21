@@ -6,23 +6,36 @@ const { getSexReportStatus } = require('../src/js/testHome.js');
 const { getHourReportStatus } = require('../src/js/testHome.js');
 const { haversineDistance } = require('../src/js/testHome.js');
 
-describe('check address input string  Home page', () => {
+describe('check checAddressString  Home page', () => {
+
+    it('handle inputs', () => {
+        const result = checAddressString('camino ', 'andador', 1444, 2680);
+        expect(result).to.be.equal(false);
+    })
 
     it('handle null inputs', () => {
         const result = checAddressString();
-        expect(result).to.be.equal(0);
+        expect(result).to.be.equal(true);
     })
 
     it('handle not numeric number and zipcode  Home page', () => {
         const result = checAddressString('camino ', 'andador', 'a', '1');
-        expect(result).to.be.equal(2);
+        expect(result).to.be.equal(true);
     })
 
     it('handle negative numbers ', () => {
         const result = checAddressString('camino ', 'andador', -1, -500);
-        expect(result).to.be.equal(3);
+        expect(result).to.be.equal(true);
     })
 
+    it('handle longs numbers ', () => {
+        const result = checAddressString('camino ', 'andador', 12345678910, 1234567);
+        expect(result).to.be.equal(true);
+    })
+    it('handle decimal numbers ', () => {
+        const result = checAddressString('camino ', 'andador', 1.2345678910, 1.234567);
+        expect(result).to.be.equal(true);
+    })
 })
 
 describe('check function getTheMostAfectedGender  Home page', () => {
@@ -50,8 +63,16 @@ describe('check function getSexReportStatus  Home page', () => {
 
     it('handle null inputs', () => {
         const result = getSexReportStatus();
-        expect(result).to.be.equal(0);
+        expect(result).to.be.equal(false);
     })
+    it('handle array  length 0', () => {
+        const result = getSexReportStatus([]);
+        expect(result).to.be.equal(false);
+    }) 
+    it('handle return array  ', () => {
+        const result = getSexReportStatus(['hombre','hombre' ,'hombre', 'hombre']);
+        expect(result).to.be.contains(4)
+    }) 
 
 })
 
@@ -59,8 +80,16 @@ describe('check function getHourReportStatus  Home page', () => {
 
     it('handle null inputs', () => {
         const result = getHourReportStatus();
-        expect(result).to.be.equal(0);
+        expect(result).to.be.equal(false);
     })
+    it('handle array  length 0', () => {
+        const result = getSexReportStatus([]);
+        expect(result).to.be.equal(false);
+    }) 
+    it('handle return array  ', () => {
+        const result = getSexReportStatus(['data','data' ,'data', 'data']);
+        expect(result).to.be.contains(0)
+    }) 
 
 })
 

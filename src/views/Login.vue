@@ -27,6 +27,7 @@
                       id="fieldset-1"
                       label="Correo electronico "
                       label-for="input-1"
+                      description="usuario@mail.com"
                       valid-feedback="Thank you!"
                     >
                       <b-form-input

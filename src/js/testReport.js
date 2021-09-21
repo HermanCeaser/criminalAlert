@@ -57,7 +57,78 @@ const emptyInputSearchData = function (colonia, calle, numero, postal) {
     return false;
 }
 
+const countDownChanged = function (dismissCountDown) {
+
+    if (dismissCountDown == undefined || dismissCountDown == '') {
+        return 'VALOR NULO'
+    }
+
+    if (isNaN(dismissCountDown)) {
+        return 'NO NUMERO'
+    }
+
+    return dismissCountDown;
+}
+
+const countDownFormChanged = function (valor) {
+
+    if (valor == undefined || valor == '') {
+        return false;
+    }
+
+    if (isNaN(valor)) {
+        return false
+    }
+    return valor;
+}
+
+const validateEmptyInpputs = function (colonia, calle, numero, postal, descripcion, fecha, hora, referencia, selected, selectedType, selectedSex) {
+    if (
+        !colonia ||
+        !calle ||
+        !numero ||
+        !postal ||
+        !descripcion ||
+        !fecha ||
+        !hora ||
+        !referencia ||
+        !selected ||
+        !selectedType ||
+        !selectedSex
+    ) {
+        return false;
+    }
+
+    if (Number.isNaN(colonia) || Number.isNaN(calle) || Number.isNaN(descripcion)) {
+        return false;
+    }
+
+    if (!Number.isNaN(numero) || !Number.isNaN(postal)) {
+        return false;
+    }
+
+    return true;
+}
+
+const stateDataResponse = function(data){
+    if(data == 'No Results'){
+        return false;
+    }
+    if(data.length < 20){
+        return false;
+    }
+    if(!isNaN(data)){
+        return false;
+    }
+    return true;
+}
+
 module.exports = {
     referenceVerification,
     emptyInputSearchData,
+    countDownChanged,
+    countDownFormChanged,
+    validateEmptyInpputs,
+    stateDataResponse
+
 }

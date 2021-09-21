@@ -1,21 +1,29 @@
 
 const checAddressString = function (colonia, calle, numero, postal) {
-    if (colonia == undefined || calle == undefined || numero == undefined || postal == undefined) {
+    if (colonia == '' || calle == '' || numero == '' || postal == '') {
         //alert("Debe ingresar una todos los campos");
-        return 0;
+        return true;
     }
 
     if (isNaN(numero) || isNaN(postal)) {
         //alert("Debe ingresar campos  numericos");
-        return 2;
+        return true;
     }
 
-    if (postal < 0) {
-        //alert("Codigo postal no pertece a tijuana");
-        return 3;
+    if (numero < 0 || postal < 0) {
+        //alert("No se permiten numeros negativos");
+        return true;
+    }
+    if (numero.toString().length > 10 || postal.toString().length > 6) {
+        //alert("No se permiten numeros muy grandes");
+        return true;
+    }
+    if ((numero % 1) != 0 || (postal % 1) != 0) {
+        //alert("No se permiten numeros decimales");
+        return true;
     }
 
-    return 1;
+    return false;
 }
 
 const getTheMostAfectedPerson = function (array, men, women) {
@@ -35,44 +43,42 @@ const getTheMostAfectedPerson = function (array, men, women) {
 
 const getSexReportStatus = function (data) {
     if (data == undefined || data.length == 0)
-        return 0;
-
+        return false;
+    let victimaHombre = 0, victimaMUjer = 0, victimaOtros = 0, victimaNA = 0
     for (let index = 0; index < data.length; index++) {
-        if (data[index].tipoSexo == "hombre") {
-            this.victimaHombre++;
-        } else if (data[index].tipoSexo == "mujer") {
-            this.victimaMUjer++;
-        } else if (data[index].tipoSexo == "otro") {
-            this.victimaOtros++;
-        } else if (data[index].tipoSexo == "ninguna") {
-            this.victimaNA++;
+        if (data[index] == "hombre") {
+            victimaHombre++;
+        } else if (data[index] == "mujer") {
+            victimaMUjer++;
+        } else if (data[index] == "otro") {
+            victimaOtros++;
+        } else if (data[index] == "ninguna") {
+            victimaNA++;
         }
     }
-    this.victima = this.getTheMostAfectedPerson([
-        this.victimaHombre,
-        this.victimaMUjer,
-        this.victimaOtros,
-    ]);
+
+    return [victimaHombre, victimaMUjer, victimaOtros, victimaNA]
 }
 
-const getHourReportStatus =   function (data) {
-    if(data == undefined || data.length == 0)
-        return 0;
-
+const getHourReportStatus = function (data) {
+    if (data == undefined || data.length == 0)
+        return false;
+    let morningReports = 0, noonReports = 0, nightReports = 0
     for (let index = 0; index < data.length; index++) {
         var str = data[index].hora.slice(0, 2);
         var hour = parseInt(str);
         //cases reported around midnight an morning
         if (hour >= 0 && hour <= 10) {
-            this.morningReports++;
+            morningReports++;
         } else if (hour >= 11 && hour <= 18) {
             // cases around 11 to 6 pm
-            this.noonReports++;
+            noonReports++;
         } else if (hour >= 19 && hour <= 24) {
             // cases around 7 to midight
-            this.nightReports++;
+            nightReports++;
         }
     }
+    return [morningReports, noonReports, nightReports]
 }
 
 
