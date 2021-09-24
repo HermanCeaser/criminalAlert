@@ -27,13 +27,13 @@
                       id="fieldset-1"
                       label="Correo electronico "
                       label-for="input-1"
-                      description="usuario@mail.com"
                       valid-feedback="Thank you!"
                     >
                       <b-form-input
                         id="input-1"
                         type="email"
                         v-model="formData.correo"
+                        placeholder="email@mail.com"
                         trim
                       ></b-form-input>
                     </b-form-group>
@@ -51,6 +51,7 @@
                         id="input-1"
                         type="password"
                         v-model="formData.password"
+                        placeholder="••••••••"
                         trim
                       ></b-form-input>
                     </b-form-group>
@@ -94,6 +95,28 @@
         </b-col>
         <b-col></b-col>
       </b-row>
+    </div>
+    <div>
+      <b-modal
+        ref="user-msn"
+        hide-footer
+        id="modal-center"
+        centered
+        title="Confirmacion"
+      >
+        <div class="d-block text-center">
+          <h4>
+            <p>Usuario activo, se redirigirá a pagina de usuario</p>
+          </h4>
+        </div>
+        <b-button
+          class="mt-3"
+          variant="outline-primary"
+          block
+          @click="redirectUser"
+          >Continuar</b-button
+        >
+      </b-modal>
     </div>
   </div>
 </template>
@@ -156,7 +179,7 @@ export default {
             this.alertMsm =
               "Su correo aún no ha sido verificado, por favor revise su bandeja de entrada";
           } else {
-            this.$router.replace({ name: "user" });
+            this.$refs["user-msn"].show();
           }
         })
         .catch((error) => {
@@ -164,6 +187,9 @@ export default {
           this.error = error;
           this.alertMsm = "usuario o contraseña incorrectos!";
         });
+    },
+    redirectUser: function () {
+      this.$router.replace({ name: "user" });
     },
   },
 };

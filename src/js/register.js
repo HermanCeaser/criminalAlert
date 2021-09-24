@@ -7,6 +7,10 @@ export default {
         },
         mesajeVerificacion: function () {
             this.$router.replace({ name: "login" });
+        },
+        emailAlreadyUseMsm: function () {
+            this.showDismissibleAlert = this.dismissSecs;
+            this.alertMsm = 'Correo ingresado ya esta en uso'
         }
     }
 }

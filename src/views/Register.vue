@@ -168,7 +168,7 @@ export default {
       if (this.formData.password.length > 0) {
         return "Porfavor ingrese contraseña minimo 8 caracteres";
       }
-      return "Porfavor ingrese  una conttraseña";
+      return "Porfavor ingrese  una conttraseña de 8 caracteres";
     },
     invalidConfirmPassFeedback() {
       return "Porfavor ingrese  la misna conttraseña";
@@ -210,7 +210,10 @@ export default {
             .then(() => {})
             .catch((error) => (this.error = error));
         })
-        .catch((error) => (this.error = error));
+        .catch((error) => {
+          this.error = error;
+          this.emailAlreadyUseMsm();
+        });
     },
   },
 };

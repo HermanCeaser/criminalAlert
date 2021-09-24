@@ -76,7 +76,7 @@ export default {
         },
 
         getTheMostAfectedPerson: function (list) {
-            if (array == undefined || array.length < 0)
+            if (list == undefined || list.length < 0)
                 return false;
             let temp = Math.max(...list);
             if (this.victimaHombre == temp) {
