@@ -7,6 +7,19 @@ export default {
                     "Debe ingresar todos los campos para poder buscar";
                 return true;
             }
+            const invalidColinia = colonia.match(
+                /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
+            );
+            const invalidCalle = calle.match(
+                /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
+            );
+            if(calle != null || invalidCalle != null){
+                this.dismissCountDown = this.dismissSecs;
+                this.imputSearchMsm =
+                    "Debe ingresar una direccion o colonia, validos";
+                return true;
+            }
+            
             if (isNaN(numero) || isNaN(postal)) {
                 this.dismissCountDown = this.dismissSecs;
                 this.imputSearchMsm =
@@ -31,6 +44,7 @@ export default {
                     "No se permiten valores decimales en el numero o codigo postal ";
                 return true;
             }
+
             return false;
         },
         referenceVerification: function (referencia = "google.com") {
