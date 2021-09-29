@@ -13,13 +13,13 @@ export default {
             const invalidCalle = calle.match(
                 /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
             );
-            if(calle != null || invalidCalle != null){
+            if (calle != null || invalidCalle != null) {
                 this.dismissCountDown = this.dismissSecs;
                 this.imputSearchMsm =
                     "Debe ingresar una direccion o colonia, validos";
                 return true;
             }
-            
+
             if (isNaN(numero) || isNaN(postal)) {
                 this.dismissCountDown = this.dismissSecs;
                 this.imputSearchMsm =
@@ -58,13 +58,13 @@ export default {
             );
             if (result == null) {
                 this.inputMsm =
-                "Debe ingresar  url valido para continuar";
+                    "Debe ingresar  url valido para continuar";
                 return false;
             }
 
             if (!result.toString().toLowerCase().includes('tijuana')) {
                 this.inputMsm =
-                "url ingresado no cumple con nuestras normas, url debe ser de una pagina de noticieros de  tijuana por ejemplo:zetatijuana, elsoldetijuana, tijuanainformativo, elimparcial, afntijuana, milenio";
+                    "url ingresado no cumple con nuestras normas, url debe ser de una pagina de noticieros de  tijuana por ejemplo:zetatijuana, elsoldetijuana, tijuanainformativo, elimparcial, afntijuana, milenio";
                 return false;
             }
 
@@ -75,7 +75,7 @@ export default {
                 result.toString().toLowerCase().includes('alfredoalvarez') ||
                 result.toString().toLowerCase().includes('afntijuana') ||
                 result.toString().toLowerCase().includes('milenio')) == false) {
-                    this.inputMsm =
+                this.inputMsm =
                     "url ingresado no cumple con nuestras normas, url debe ser de una pagina de noticieros de  tijuana por ejemplo:zetatijuana, elsoldetijuana, tijuanainformativo, elimparcial, afntijuana, milenio";
                 return false;
             }
@@ -100,6 +100,8 @@ export default {
             this.selected = "";
             this.formData.referencia = "";
             this.savedLocations = [];
+            this.selectedType = '';
+            this.selectedSex = '';
         },
         showToast: function () {
             // Use a shorter name for this.$createElement
@@ -130,7 +132,7 @@ export default {
                 variant: "info",
             });
         },
-        showMapDisplay: function () {
+        showMapDisplay: function () {//not use
             const h = this.$createElement;
         },
     }

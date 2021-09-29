@@ -234,7 +234,7 @@
                     type="number"
                   ></b-form-input
                 ></b-col>
-                <b-col md="2">
+                <b-col md="1">
                   <b-button v-on:click="checAddress()" variant="outline-primary"
                     >Buscar</b-button
                   >
@@ -600,7 +600,7 @@ export default {
     this.getCriminalLocations();
 
     //get a request with the information of the lost Persons
-    this.getLostPersonLocation();
+    //this.getLostPersonLocation();
 
     //Find out ho has reported the most criminals
     this.getTotalReports();
@@ -655,9 +655,15 @@ export default {
     checAddress: async function () {
       this.mapLoading = true;
       if (this.userLocation.length > 0) {
-        this.userLocation = [];
-        this.mapLoading = false;
-        return;
+        let tempAddres = `${this.userDireccionData.colonia}, ${this.userDireccionData.calle}, ${this.userDireccionData.numero}, ${this.userDireccionData.zip} ,Tijuana, MX`;
+        if (tempAddres.includes(this.userAddress)) {
+          alert("La ubicacion ya fue ingresada");
+          this.mapLoading = false;
+          return;
+        } else {
+          this.userLocation = [];
+          this.mapLoading = false;
+        }
       }
 
       if (
@@ -672,11 +678,11 @@ export default {
         return;
       }
 
-      let address = `${this.userDireccionData.colonia}, ${this.userDireccionData.calle}, ${this.userDireccionData.numero}, ${this.userDireccionData.zip} ,Tijuana, MX`;
+      this.userAddress = `${this.userDireccionData.colonia}, ${this.userDireccionData.calle}, ${this.userDireccionData.numero}, ${this.userDireccionData.zip} ,Tijuana, MX`;
       let { data } = await axios.post(
         "https://us-central1-criminalalertdb.cloudfunctions.net/criminalGetLocation",
         {
-          address: address,
+          address: this.userAddress,
         }
       );
       if (data === "No Results") {
@@ -696,6 +702,7 @@ export default {
           latitude: data.geoPoint._latitude,
           longitude: data.geoPoint._longitude,
         },
+        address: data.address,
       };
       this.userLocation.push(obj);
       this.mapLoading = false;
