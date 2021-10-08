@@ -13,7 +13,6 @@
 
 <script>
 import ResponsiveNavigation from "@/components/ResponsiveNavigation";
-
 export default {
   components: {
     ResponsiveNavigation,
@@ -21,32 +20,33 @@ export default {
   data: () => ({
     navLinks: [
       {
-        text: "Map",
+        text: "Mapa",
         path: "/map",
         icon: "ion-ios-navigate",
       },
       {
-        text: "Report",
+        text: "Reportar",
         path: "/reportCriminal",
         icon: "ion-ios-create",
       },
       {
-        text: "About",
+        text: "Nosotros",
         path: "/about",
         icon: "ion-ios-people",
       },
       {
-        text: "Login",
+        text: "Ingresar",
         path: "/login",
         icon: "ion-md-contact",
       },
       {
-        text: "User",
+        text: "usuario",
         path: "/user",
         icon: "ion-ios-walk",
       },
     ],
   }),
+
 };
 </script>
 
@@ -71,9 +71,4 @@ body {
   text-align: center;
   color: #2c3e50;
 }
-
-
-
-
-
 </style>

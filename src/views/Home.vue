@@ -604,6 +604,7 @@ export default {
 
     //Find out ho has reported the most criminals
     this.getTotalReports();
+
   },
   methods: {
     getCriminalLocations: async function () {

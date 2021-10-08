@@ -49,6 +49,8 @@
                       <b-form-datepicker
                         id="example-datepicker"
                         v-model="formData.fecha"
+                        :min="minDate"
+                        :max="maxDate"
                         class="mb-2"
                       ></b-form-datepicker>
                       <b-form-timepicker
@@ -264,6 +266,8 @@ export default {
       { value: "noIdentificado", text: "sin indetificar" },
       { value: "ninguna", text: "ninguna victima" },
     ],
+    minDate: new Date("January 01, 2021 00:00:00"),
+    maxDate: new Date("December 31, 2021 11:59:59"),
   }),
   beforeMount() {
     //will get te currnet user , so we can get his avatar to display
@@ -309,8 +313,15 @@ export default {
         alert("No hay resultados de la direccion");
         this.mapSearch = false;
         return;
+      } else if (data.address == "Tijuana, Baja California, Mexico") {
+        this.dismissCountDown = this.dismissSecs;
+        this.imputSearchMsm =
+          "Direccion no localizada, debe ingresar una datos validos";
+        this.mapSearch = false;
+        return;
       } else {
         this.mapSearch = false;
+        console.log(data.address);
       }
 
       //Will massage data
@@ -326,10 +337,6 @@ export default {
     },
     handleFormSubmit: async function () {
       if (
-        !this.formData.colonia ||
-        !this.formData.calle ||
-        !this.formData.numero ||
-        !this.formData.postal ||
         !this.formData.descripcion ||
         !this.formData.fecha ||
         !this.formData.hora ||
@@ -340,10 +347,19 @@ export default {
       ) {
         this.dismissFormCount = this.dismissSecs;
         this.loadingData = false;
+
         this.inputMsm =
           "Debe ingresar todos los datos del formulario, para poder realizar un reporte.";
         return;
       }
+
+      if (this.savedLocations.length == 0) {
+        console.log("hola");
+        this.dismissFormCount = this.dismissSecs;
+        this.inputMsm = "Debe ingresar una ubicacion valida, para continuar";
+        return;
+      }
+
       //Valite if the user ener a valid http address
       if (!this.referenceVerification(this.formData.referencia)) {
         this.dismissFormCount = this.dismissSecs;

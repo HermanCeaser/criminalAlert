@@ -78,11 +78,9 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
     let isAuthenticated = firebase.auth().currentUser;
-
     if (isAuthenticated !== null) {
         isAuthenticated = isAuthenticated.emailVerified;
     }
-
     if (requiresAuth && !isAuthenticated) {
         next("/login");
     } else {

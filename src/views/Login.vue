@@ -129,6 +129,7 @@ export default {
     showDismissibleAlert: false,
     alertMsm: null,
     dismissSecs: 5,
+    userSignin: false,
     formData: {
       correo: "",
       password: "",
@@ -166,6 +167,13 @@ export default {
         this.alertMsm = "Debe ingresar usuario  y contraseña para continuar!";
         return;
       }
+
+      if (firebase.auth().currentUser == null) {
+        this.userSignin = false;
+      } else {
+        this.userSignin = true;
+      }
+
       firebase
         .auth()
         .signInWithEmailAndPassword(
@@ -179,7 +187,11 @@ export default {
             this.alertMsm =
               "Su correo aún no ha sido verificado, por favor revise su bandeja de entrada";
           } else {
-            this.$refs["user-msn"].show();
+            if (this.userSignin) {
+              this.$refs["user-msn"].show();
+            } else {
+              this.$router.replace({ name: "user" });
+            }
           }
         })
         .catch((error) => {

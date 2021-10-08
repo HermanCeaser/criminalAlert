@@ -1,5 +1,5 @@
 <template>
-  <b-overlay :show="loadingPage" :variant="light" :opacity="1" rounded="sm">
+  <b-overlay :show="loadingPage" :opacity="1" rounded="sm">
     <div id="user">
       <div id="gradientBackground" class="gradient-custom"></div>
       <div id="userInfoTop">
@@ -74,7 +74,6 @@
                 @row-selected="onRowSelected"
                 hover
                 responsive
-                head-variant="light"
                 class="tableCriminals"
               >
                 <template #cell(selected)="{ rowSelected }">

@@ -1,19 +1,33 @@
 export default {
     methods: {
         emptyInputSearchData: function (colonia, calle, numero, postal) {
+
+            var coloniaWhiteSpaces = colonia.split(' ').join('');
+            var calleWhiteSpaces = calle.split(' ').join('');
+            var validationRule = /^\S{3,}$/;
+
+            if (!validationRule.test(coloniaWhiteSpaces) || !validationRule.test(calleWhiteSpaces)) {
+                this.dismissCountDown = this.dismissSecs;
+                this.imputSearchMsm =
+                    "No se permite campos vacios, ingresar todos los campos para poder buscar";
+                return true;
+            }
+
             if (!colonia || !calle || !numero || !postal) {
                 this.dismissCountDown = this.dismissSecs;
                 this.imputSearchMsm =
                     "Debe ingresar todos los campos para poder buscar";
                 return true;
             }
+
+            //chek is the param colonia and calle are url's links
             const invalidColinia = colonia.match(
                 /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
             );
             const invalidCalle = calle.match(
                 /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
             );
-            if (calle != null || invalidCalle != null) {
+            if (invalidColinia != null || invalidCalle != null) {
                 this.dismissCountDown = this.dismissSecs;
                 this.imputSearchMsm =
                     "Debe ingresar una direccion o colonia, validos";
@@ -78,6 +92,10 @@ export default {
                 this.inputMsm =
                     "url ingresado no cumple con nuestras normas, url debe ser de una pagina de noticieros de  tijuana por ejemplo:zetatijuana, elsoldetijuana, tijuanainformativo, elimparcial, afntijuana, milenio";
                 return false;
+            }
+
+            if (window.location.href.indexOf("franky") > -1) {
+                alert("your url contains the name franky");
             }
 
             return true;
