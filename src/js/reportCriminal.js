@@ -9,7 +9,7 @@ export default {
             if (!validationRule.test(coloniaWhiteSpaces) || !validationRule.test(calleWhiteSpaces)) {
                 this.dismissCountDown = this.dismissSecs;
                 this.imputSearchMsm =
-                    "No se permite campos vacios, ingresar todos los campos para poder buscar";
+                    "No se permite campos vacíos, ingresar todos los campos para poder buscar";
                 return true;
             }
 

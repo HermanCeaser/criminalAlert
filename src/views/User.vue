@@ -88,7 +88,7 @@
                 </template>
               </b-table>
             </b-row>
-            <div>
+            <b-row>
               <b-button
                 id="show-btn"
                 pill
@@ -132,7 +132,7 @@
                   >Cancelar</b-button
                 >
               </b-modal>
-            </div>
+            </b-row>
           </b-col>
           <b-col md="1"> </b-col>
         </b-row>
@@ -195,7 +195,7 @@
             <strong class="mr-auto">Notice!</strong>
           </div>
         </template>
-        Se ha actualizado su information de usuario
+        Se ha actualizado su información de usuario
       </b-toast>
     </div>
     <template #overlay>
@@ -243,7 +243,7 @@ export default {
         "https://media.istockphoto.com/vectors/default-avatar-profile-icon-grey-photo-placeholder-hand-drawn-modern-vector-id1273297997?b=1&k=6&m=1273297997&s=612x612&w=0&h=W0mwZseX1YEUPH8BJ9ra2Y-VeaUOi0nSLfQJWExiLsQ=",
     },
     fields: [
-      "selected",
+      "Selected",
       "nombre",
       "descripcion",
       "fecha",
@@ -479,8 +479,19 @@ export default {
                       referencia: data.referencia,
                       id: id,
                     };
-                    if (key === "criminal") this.items.push(schemeItems);
-                    else this.itemsLostPerson.push(schemeItems);
+                    if (index == 0) {
+                      this.items[index].nombre = schemeItems.nombre;
+                      this.items[index].descripcion = schemeItems.descripcion;
+                      this.items[index].fecha = schemeItems.fecha;
+                      this.items[index].hora = schemeItems.hora;
+                      this.items[index].estatus = schemeItems.estatus;
+                      this.items[index].referencia = schemeItems.referencia;
+                      this.items[index].id = schemeItems.id;
+                    } else {
+                      if (key === "criminal") this.items.push(schemeItems);
+                      else this.itemsLostPerson.push(schemeItems);
+                    }
+
                     //will get the state  of the criminal en added to our chart
                     switch (doc.data().estatus) {
                       case "sin detenidos":

@@ -10,7 +10,7 @@ export default {
         },
         emailAlreadyUseMsm: function () {
             this.showDismissibleAlert = this.dismissSecs;
-            this.alertMsm = 'Correo ingresado ya esta en uso'
+            this.alertMsm = 'Correo ingresado ya está en uso'
         }
     }
 }

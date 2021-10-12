@@ -93,11 +93,11 @@
                 </b-form>
                 <br />
                 <b-row>
-                  <b-col> <p>tienes cuenta?</p> </b-col>
+                  <b-col> <p>¿Tienes cuenta?</p> </b-col>
                 </b-row>
                 <b-row>
                   <b-col>
-                    <router-link to="/login">ingresa</router-link>
+                    <router-link to="/login">Ingresa</router-link>
                   </b-col>
                 </b-row>
               </b-card-body>
@@ -166,26 +166,26 @@ export default {
     },
     invalidPassFeedback() {
       if (this.formData.password.length > 0) {
-        return "Porfavor ingrese contraseña minimo 8 caracteres";
+        return "Por favor ingrese contraseña mínima 8 caracteres";
       }
-      return "Porfavor ingrese  una conttraseña de 8 caracteres";
+      return "Por favor ingrese  una contraseña de 8 caracteres";
     },
     invalidConfirmPassFeedback() {
-      return "Porfavor ingrese  la misna conttraseña";
+      return "Por favor ingrese  la misma contraseña";
     },
 
     invalidFeedbackEmail() {
       if (this.formData.correo > 0) {
         return "";
       }
-      return "Porfavor ingrese  un correo ejemplo: flores@gmail.com";
+      return "Por favor ingrese  un correo ejemplo: correo@gmail.com";
     },
   },
   methods: {
     pressed: async function () {
       if (!this.formData.correo || !this.formData.password) {
         this.showDismissibleAlert = this.dismissSecs;
-        this.alertMsm = "Debe ingresar correo  y contraseña para continuar!";
+        this.alertMsm = "¡Debe ingresar correo y contraseña para continuar!";
         return;
       } else if (this.formData.password !== this.formData.confirmPassword) {
         this.showDismissibleAlert = this.dismissSecs;
@@ -193,7 +193,7 @@ export default {
         return;
       } else if (!this.validEmail(this.formData.correo)) {
         this.showDismissibleAlert = this.dismissSecs;
-        this.alertMsm = "Ingrese un correo valido";
+        this.alertMsm = "Ingrese un correo válido";
         return;
       }
       firebase

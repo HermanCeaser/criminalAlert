@@ -18,14 +18,14 @@
                 >
                   {{ alertMsm }}
                 </b-alert>
-                <h1>Iniciar sesion</h1>
+                <h1>Iniciar sesión</h1>
               </b-card-text>
               <b-form @submit.prevent="pressed">
                 <b-row>
                   <b-col>
                     <b-form-group
                       id="fieldset-1"
-                      label="Correo electronico "
+                      label="Correo electrónico"
                       label-for="input-1"
                       valid-feedback="Thank you!"
                     >
@@ -74,16 +74,16 @@
               <b-row>
                 <b-col>
                   <p>
-                    Olvidaste
+                    ¿Olvidaste
                     <router-link class="routerClass" to="/resetCredentials"
-                      >contreaseña?</router-link
+                      >contraseña?</router-link
                     >
                   </p>
                 </b-col>
               </b-row>
               <b-row>
                 <b-col>
-                  <router-link to="/register">Registrate</router-link>
+                  <router-link to="/register">Registrar</router-link>
                 </b-col>
               </b-row>
               <b-row><br /></b-row>
@@ -138,7 +138,7 @@ export default {
   beforeMount() {
     this.showDismissibleAlert = this.dismissSecs;
     this.alertMsm =
-      "Para poder reportar criminales o ingresar a usuario, tienes que estar registrado";
+      "Para poder reportar criminales o ingresar a usuario, tienes que estar registrado.";
   },
   computed: {
     stateEmail() {
@@ -149,22 +149,22 @@ export default {
     },
     invalidPassFeedback() {
       if (this.formData.password.length > 0) {
-        return "Porfavor ingrese contraseña minimo 8 caracteres";
+        return "Por favor ingrese contraseña mínima 8 caracteres";
       }
-      return "Porfavor ingrese  una conttraseña";
+      return "Por favor ingrese  una contraseña";
     },
     invalidFeedbackEmail() {
       if (this.formData.correo.length > 0) {
         return "";
       }
-      return "Porfavor ingrese  un correo ejemplo: flores@gmail.com";
+      return "Por favor ingrese  un correo ejemplo: correo@gmail.com";
     },
   },
   methods: {
     pressed: async function () {
       if (!this.formData.correo || !this.formData.password) {
         this.showDismissibleAlert = this.dismissSecs;
-        this.alertMsm = "Debe ingresar usuario  y contraseña para continuar!";
+        this.alertMsm = "¡Debe ingresar usuario y contraseña para continuar!";
         return;
       }
 
@@ -185,7 +185,7 @@ export default {
           if (!user) {
             this.showDismissibleAlert = this.dismissSecs;
             this.alertMsm =
-              "Su correo aún no ha sido verificado, por favor revise su bandeja de entrada";
+              "Su correo aún no ha sido verificado, por favor revise su bandeja de entrada.";
           } else {
             if (this.userSignin) {
               this.$refs["user-msn"].show();
@@ -197,7 +197,7 @@ export default {
         .catch((error) => {
           this.showDismissibleAlert = this.dismissSecs;
           this.error = error;
-          this.alertMsm = "usuario o contraseña incorrectos!";
+          this.alertMsm = "¡Usuario o contraseña incorrectos!";
         });
     },
     redirectUser: function () {

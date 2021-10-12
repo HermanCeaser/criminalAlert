@@ -27,7 +27,7 @@
                   <b-col>
                     <b-form-group
                       class="crimenStyle"
-                      label="Descripcion del reporte"
+                      label="Descripción del reporte"
                     >
                       <b-form-textarea
                         id="textarea"
@@ -52,10 +52,12 @@
                         :min="minDate"
                         :max="maxDate"
                         class="mb-2"
+                        placeholder="Ingrese una fecha"
                       ></b-form-datepicker>
                       <b-form-timepicker
                         v-model="formData.hora"
                         locale="en"
+                        placeholder="Ingrese una hora"
                       ></b-form-timepicker>
                     </b-form-group>
                   </b-col>
@@ -64,7 +66,7 @@
                   <b-col>
                     <b-form-group
                       class="direccionStyle"
-                      label="Direccion"
+                      label="Dirección"
                       description="Si no se cuenta con el numero o codigo postal ingresar 0"
                     >
                       <b-form-input

@@ -96,7 +96,7 @@ export default {
                 //cases reported around midnight an morning
                 if (hour >= 0 && hour <= 10) {
                     this.morningReports++;
-                } else if (hour >= 11 && hour <= 18) {
+                } else if (hour >= 10 && hour <= 18) {
                     // cases around 11 to 6 pm
                     this.noonReports++;
                 } else if (hour >= 19 && hour <= 24) {

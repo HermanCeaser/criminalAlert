@@ -193,14 +193,14 @@
         <b-col sm>
           <b-form-group>
             <b-card
-              title="Localizar ubicacion"
+              title="Localizar ubicación"
               class="overflow-hidden shadow bg-white rounded"
             >
               <b-row>
                 <b-col md="3"></b-col>
                 <b-col sm>
                   <b-card-text>
-                    Ingrese los datos lo más espesificos posibles para localizar
+                    Ingrese los datos lo más específicos posibles para localizar
                     su ubicación.
                   </b-card-text>
                 </b-col>
@@ -272,7 +272,7 @@
                         </strong></b-col
                       >
                       <b-col>
-                        <b-card-body title="Violacion">
+                        <b-card-body title="Violación">
                           <b-img-lazy
                             src="https://image.flaticon.com/icons/png/512/4741/4741147.png"
                             class="victimImg"
@@ -302,7 +302,7 @@
                         </strong>
                       </b-col>
                       <b-col>
-                        <b-card-body title="Agresion">
+                        <b-card-body title="Agresión">
                           <b-img-lazy
                             src="https://image.flaticon.com/icons/png/512/3348/3348151.png"
                             class="victimImg"
@@ -362,7 +362,7 @@
                         </strong>
                       </b-col>
                       <b-col>
-                        <b-card-body title="Narcotrafico">
+                        <b-card-body title="Narcotráfico">
                           <b-img-lazy
                             src="https://image.flaticon.com/icons/png/512/1546/1546140.png"
                             class="victimImg"
@@ -397,7 +397,7 @@
                 <b-col sm>
                   <b-card-body title="Victimas">
                     <b-card-text>
-                      De acuerdo con nuestros datos sobre él incide de victimas
+                      De acuerdo con nuestros datos sobre él incide de víctimas
                       afectadas, tenemos que en promedio los más afectados por
                       actividades delictivas son <strong>{{ victima }}</strong>
                     </b-card-text>
@@ -488,7 +488,7 @@
                     </b-card-text>
                     <b-row>
                       <b-col>
-                        <b-card-body title="Hora de 0 a 10">
+                        <b-card-body title="Hora de 0 am a 10:59 am">
                           <b-img-lazy
                             src="https://image.flaticon.com/icons/png/512/1113/1113776.png"
                             class="victimImg"
@@ -503,7 +503,7 @@
                         </strong></b-col
                       >
                       <b-col>
-                        <b-card-body title="Hora de 11 a  18">
+                        <b-card-body title="Hora de 11 am a  18:59 pm">
                           <b-img-lazy
                             src="https://image.flaticon.com/icons/png/512/4517/4517048.png"
                             class="victimImg"
@@ -518,7 +518,7 @@
                         </strong>
                       </b-col>
                       <b-col>
-                        <b-card-body title="Hora de 19 a  24">
+                        <b-card-body title="Hora de 19 pm a  24:59 pm">
                           <b-img-lazy
                             src="https://image.flaticon.com/icons/png/512/5438/5438725.png"
                             class="victimImg"
@@ -604,7 +604,6 @@ export default {
 
     //Find out ho has reported the most criminals
     this.getTotalReports();
-
   },
   methods: {
     getCriminalLocations: async function () {
