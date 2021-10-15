@@ -66,13 +66,14 @@
           <b-col md="8">
             <b-row>
               <b-table
-                sticky-header
+                sticky-header="400px"
                 :fields="fields"
                 :items="items"
                 ref="selectableTable"
                 selectable
                 @row-selected="onRowSelected"
                 hover
+                fixed
                 responsive
                 class="tableCriminals"
               >
