@@ -130,6 +130,7 @@ export default {
     alertMsm: null,
     dismissSecs: 5,
     userSignin: false,
+    error: "",
     formData: {
       correo: "",
       password: "",
@@ -140,40 +141,17 @@ export default {
     this.alertMsm =
       "Para poder reportar criminales o ingresar a usuario, tienes que estar registrado.";
   },
-  computed: {
-    stateEmail() {
-      return this.formData.correo.length >= 4;
-    },
-    statePassword() {
-      return this.formData.password.length >= 8;
-    },
-    invalidPassFeedback() {
-      if (this.formData.password.length > 0) {
-        return "Por favor ingrese contraseña mínima 8 caracteres";
-      }
-      return "Por favor ingrese  una contraseña";
-    },
-    invalidFeedbackEmail() {
-      if (this.formData.correo.length > 0) {
-        return "";
-      }
-      return "Por favor ingrese  un correo ejemplo: correo@gmail.com";
-    },
-  },
+  computed: {},
   methods: {
     pressed: async function () {
-      if (!this.formData.correo || !this.formData.password) {
-        this.showDismissibleAlert = this.dismissSecs;
-        this.alertMsm = "¡Debe ingresar usuario y contraseña para continuar!";
-        return;
-      }
+
+      if(this.verifyCorrectInputData())return;
 
       if (firebase.auth().currentUser == null) {
         this.userSignin = false;
       } else {
         this.userSignin = true;
       }
-
       firebase
         .auth()
         .signInWithEmailAndPassword(
@@ -182,23 +160,34 @@ export default {
         )
         .then((data) => {
           const user = firebase.auth().currentUser.emailVerified;
-          if (!user) {
-            this.showDismissibleAlert = this.dismissSecs;
-            this.alertMsm =
-              "Su correo aún no ha sido verificado, por favor revise su bandeja de entrada.";
-          } else {
-            if (this.userSignin) {
-              this.$refs["user-msn"].show();
-            } else {
-              this.$router.replace({ name: "user" });
-            }
-          }
+          this.verifyUserEmailState(user);
         })
         .catch((error) => {
           this.showDismissibleAlert = this.dismissSecs;
           this.error = error;
           this.alertMsm = "¡Usuario o contraseña incorrectos!";
         });
+    },
+    verifyCorrectInputData: function () {
+      if (!this.formData.correo || !this.formData.password) {
+        this.showDismissibleAlert = this.dismissSecs;
+        this.alertMsm = "¡Debe ingresar usuario y contraseña para continuar!";
+        return true;
+      }
+      return false;
+    },
+    verifyUserEmailState: function (user) {
+      if (!user) {
+        this.showDismissibleAlert = this.dismissSecs;
+        this.alertMsm =
+          "Su correo aún no ha sido verificado, por favor revise su bandeja de entrada.";
+      } else {
+        if (this.userSignin) {
+          this.$refs["user-msn"].show();
+        } else {
+          this.$router.replace({ name: "user" });
+        }
+      }
     },
     redirectUser: function () {
       this.$router.replace({ name: "user" });

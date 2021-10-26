@@ -44,11 +44,6 @@ export const db = Firestore();
 //router
 Vue.config.productionTip = false
 
-
-
-
-
-
 let app;
 
 firebase.auth().onAuthStateChanged(user => {

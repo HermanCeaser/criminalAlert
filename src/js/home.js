@@ -1,4 +1,3 @@
-
 export default {
     methods: {
         craeteToast: function (fecha, hora) {
@@ -133,38 +132,13 @@ export default {
         haversine_distance: function (savedLocations, criminalsNearUser, userLocation) {
             //we dont have to look everytime, if there aren't any updates
             //we are going to check if the criminalsNearUser is equal to 0
-            if (criminalsNearUser.length > 0) {
-                for (let index = 0; index < criminalsNearUser.length; index++) {
-                    this.craeteToast(
-                        criminalsNearUser[index].fecha,
-                        criminalsNearUser[index].hora
-                    );
-                }
+            if (this.checkIfCriminalsNearUserExist(criminalsNearUser)) {
                 return;
             }
-
             var R = 6371.071; // Radius of the Earth in kilometers
             var rlat1 = userLocation[0].geoPoint.latitude * (Math.PI / 180); // Convert degrees to radians of the user location
             for (let index = 0; index < savedLocations.length; index++) {
-                var rlat2 =
-                    savedLocations[index].geoPoint.latitude * (Math.PI / 180); // Convert degrees to radians
-                var difflat = rlat2 - rlat1; // Radian difference (latitudes)
-                var difflon =
-                    (savedLocations[index].geoPoint.longitude -
-                        userLocation[0].geoPoint.longitude) *
-                    (Math.PI / 180); // Radian difference (longitudes)
-                var d =
-                    2 *
-                    R *
-                    Math.asin(
-                        Math.sqrt(
-                            Math.sin(difflat / 2) * Math.sin(difflat / 2) +
-                            Math.cos(rlat1) *
-                            Math.cos(rlat2) *
-                            Math.sin(difflon / 2) *
-                            Math.sin(difflon / 2)
-                        )
-                    );
+                var d = this.convertUserLocation(R, rlat1, savedLocations, index, userLocation);
                 if (d <= 2) {
                     // if  the distance is equal or less than  2 kilometros we are going to let the user know
                     this.craeteToast(
@@ -175,16 +149,49 @@ export default {
                 }
             }
         },
+        convertUserLocation: function (R, rlat1, savedLocations, index, userLocation ) {
+            var rlat2 =
+                savedLocations[index].geoPoint.latitude * (Math.PI / 180); // Convert degrees to radians
+            var difflat = rlat2 - rlat1; // Radian difference (latitudes)
+            var difflon =
+                (savedLocations[index].geoPoint.longitude -
+                    userLocation[0].geoPoint.longitude) *
+                (Math.PI / 180); // Radian difference (longitudes)
+            var d =
+                2 *
+                R *
+                Math.asin(
+                    Math.sqrt(
+                        Math.sin(difflat / 2) * Math.sin(difflat / 2) +
+                        Math.cos(rlat1) *
+                        Math.cos(rlat2) *
+                        Math.sin(difflon / 2) *
+                        Math.sin(difflon / 2)
+                    )
+                );
+            return d;
+        },
+        checkIfCriminalsNearUserExist: function (criminalsNearUser) {
+            if (criminalsNearUser.length > 0) {
+                for (let index = 0; index < criminalsNearUser.length; index++) {
+                    this.craeteToast(
+                        criminalsNearUser[index].fecha,
+                        criminalsNearUser[index].hora
+                    );
+                }
+                return true;
+            }
+            return false;
+        },
+
         openInfoWindowTemplate: function (index, key) {
             /* this.markerAnimationState = index;
             this.$refs.markers[index].$markerObject.setAnimation(
               google.maps.Animation.BOUNCE
             );*/
             let tempData;
-            var text = "";
             if (key == 0) {
                 tempData = this.savedLocations[index];
-                text = "Criminal";
             } else {
                 tempData = this.lostPersonLocations[index];
             }
@@ -214,16 +221,60 @@ export default {
                 alert("No se permiten numeros negativos");
                 return true;
             }
-            if(numero.toString().length > 10 || postal.toString().length > 6){
+            if (numero.toString().length > 10 || postal.toString().length > 6) {
                 alert("No se permiten numeros muy grandes");
                 return true;
             }
-            if((numero % 1) != 0 || (postal % 1) != 0 ){
+            if ((numero % 1) != 0 || (postal % 1) != 0) {
                 alert("No se permiten numeros decimales");
                 return true;
             }
 
             return false;
+        },
+        isUserLocation: function () {
+            if (this.userLocation.length > 0) {
+                let tempAddres = `${this.userDireccionData.colonia}, ${this.userDireccionData.calle}, ${this.userDireccionData.numero}, ${this.userDireccionData.zip} ,Tijuana, MX`;
+                if (tempAddres.includes(this.userAddress)) {
+                    alert("La ubicacion ya fue ingresada");
+                    this.mapLoading = false;
+                    return true;
+                } else {
+                    this.userLocation = [];
+                    this.mapLoading = false;
+                    return false;
+                }
+            }
+            return false;
+        },
+        verifyDataState: function (data) {
+            if (data === "No Results") {
+                alert("No hay resultados de la direccion");
+                this.mapLoading = true;
+                return true;
+            }
+            if (data.address == "Tijuana, Baja California, Mexico") {
+                alert("Direccion no localizada");
+                this.mapLoading = false;
+                return true;
+            }
+            return false;
+        },
+        setUserLocation: function (data) {
+            let obj = {
+                geoPoint: {
+                    latitude: data.geoPoint._latitude,
+                    longitude: data.geoPoint._longitude,
+                },
+                address: data.address,
+            };
+            this.userLocation.push(obj);
+            this.mapLoading = false;
+            this.haversine_distance(
+                this.savedLocations,
+                this.criminalsNearUser,
+                this.userLocation
+            );
         },
     }
 

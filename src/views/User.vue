@@ -224,7 +224,6 @@ export default {
   data: () => ({
     loggedIn: false,
     email: "nicholas.cage@theone.com",
-    bio: "Back in my day...",
     isShelfOpen: false,
     isEditing: false,
     userID: null,

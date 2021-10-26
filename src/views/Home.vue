@@ -59,7 +59,10 @@
             <b-row no-gutters>
               <b-col md="6">
                 <b-card-text>
-                  <p>{{ userStar }}</p>
+                  <p>
+                    <strong>{{ userStar }}</strong> con un total de
+                    {{ totalReportUser }} reportes
+                  </p>
                 </b-card-text>
               </b-col>
               <b-col md="6"
@@ -554,10 +557,8 @@
 <script>
 import axios from "axios";
 import HomeJs from "../js/home.js";
-import { db } from "../main";
 export default {
   name: "home",
-  components: {},
   mixins: [HomeJs],
   data: () => ({
     savedLocations: [],
@@ -570,7 +571,6 @@ export default {
     totalReportUser: 0,
     userID: null,
     userAddress: "",
-    isBusy: false,
     mapLoading: false,
     userStar: "Don Señor",
     icon: "../assets/criIcon.png",
@@ -624,18 +624,6 @@ export default {
         this.getHourReportStatus(this.savedLocations);
       }
     },
-    getLostPersonLocation: async function () {
-      //this.mapLoading = true;
-      let { data } = await axios.post(
-        "https://us-central1-criminalalertdb.cloudfunctions.net/lostPersonMapInfo"
-      );
-      if (data === "NO RESULTS") {
-        //this.mapLoading = false;
-      } else {
-        //this.mapLoading = false;
-        this.lostPersonLocations = data;
-      }
-    },
     getTotalReports: async function () {
       //Find out ho has reported the most criminals
       let { data } = await axios.post(
@@ -649,22 +637,13 @@ export default {
       //user ho has reported the most criminasl
       this.totalUsers = data.totalUsers;
       this.userStar = data.userStar;
+      this.totalReportUser = data.regCriminals;
       this.userID = data.userID;
     },
 
     checAddress: async function () {
       this.mapLoading = true;
-      if (this.userLocation.length > 0) {
-        let tempAddres = `${this.userDireccionData.colonia}, ${this.userDireccionData.calle}, ${this.userDireccionData.numero}, ${this.userDireccionData.zip} ,Tijuana, MX`;
-        if (tempAddres.includes(this.userAddress)) {
-          alert("La ubicacion ya fue ingresada");
-          this.mapLoading = false;
-          return;
-        } else {
-          this.userLocation = [];
-          this.mapLoading = false;
-        }
-      }
+      if (this.isUserLocation()) return;
 
       if (
         this.checAddressString(
@@ -685,32 +664,8 @@ export default {
           address: this.userAddress,
         }
       );
-      if (data === "No Results") {
-        alert("No hay resultados de la direccion");
-        this.mapLoading = true;
-        return;
-      }
-
-      if (data.address == "Tijuana, Baja California, Mexico") {
-        alert("Direccion no localizada");
-        this.mapLoading = false;
-        return;
-      }
-
-      let obj = {
-        geoPoint: {
-          latitude: data.geoPoint._latitude,
-          longitude: data.geoPoint._longitude,
-        },
-        address: data.address,
-      };
-      this.userLocation.push(obj);
-      this.mapLoading = false;
-      this.haversine_distance(
-        this.savedLocations,
-        this.criminalsNearUser,
-        this.userLocation
-      );
+      if (this.verifyDataState(data)) return;
+      this.setUserLocation(data);
     },
   },
 };

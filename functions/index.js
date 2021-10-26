@@ -211,7 +211,7 @@ exports.criminalMapInfo = functions.https.onRequest(async (request, response) =>
     }
 });
 
-exports.lostPersonMapInfo = functions.https.onRequest(async (request, response) => {
+exports.lostPersonMapInfo = functions.https.onRequest(async (request, response) => {//remover
 
     try {
 

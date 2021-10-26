@@ -9,7 +9,7 @@ export default {
                         this.userData.correo = doc.data().correo;
                         this.userData.reportes = doc.data().reportes;
                         this.userData.avatar = doc.data().avatar;
-                        if (!this.showTop && !this.userTemp.emailVerified) {
+                        if (!this.showTop && !this.userTemp.emailVerified) {//nunca se va a ejecutar
                             this.showToast();
                         }
                     }
@@ -53,7 +53,7 @@ export default {
         showModal() {
             this.$refs["my-modal"].show();
         },
-        showToast() {
+        /*showToast() {//remover
             const h = this.$createElement;
             const id = this.toastId;
             const vNodesTitle = h(
@@ -78,8 +78,8 @@ export default {
                 solid: true,
                 variant: "danger",
             });
-        },
-        sendEmail() {
+        },*/
+        /*sendEmail() {//remover
             this.$bvToast.hide(this.toastId);
             const h = this.$createElement;
             const vNodesMsg = h("p", { class: ["text-center", "mb-0"] }, [
@@ -95,6 +95,6 @@ export default {
                 .sendEmailVerification()
                 .then(() => { })
                 .catch((error) => (this.error = error));
-        },
+        },*/
     }
 }

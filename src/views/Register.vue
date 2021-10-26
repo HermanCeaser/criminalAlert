@@ -145,6 +145,7 @@ export default {
     showDismissibleAlert: false,
     alertMsm: null,
     dismissSecs: 5,
+    error: "",
     formData: {
       correo: "",
       password: "",
@@ -173,7 +174,6 @@ export default {
     invalidConfirmPassFeedback() {
       return "Por favor ingrese  la misma contraseña";
     },
-
     invalidFeedbackEmail() {
       if (this.formData.correo > 0) {
         return "";
@@ -183,19 +183,8 @@ export default {
   },
   methods: {
     pressed: async function () {
-      if (!this.formData.correo || !this.formData.password) {
-        this.showDismissibleAlert = this.dismissSecs;
-        this.alertMsm = "¡Debe ingresar correo y contraseña para continuar!";
-        return;
-      } else if (this.formData.password !== this.formData.confirmPassword) {
-        this.showDismissibleAlert = this.dismissSecs;
-        this.alertMsm = "Las dos contraseñas deben coincidir ";
-        return;
-      } else if (!this.validEmail(this.formData.correo)) {
-        this.showDismissibleAlert = this.dismissSecs;
-        this.alertMsm = "Ingrese un correo válido";
-        return;
-      }
+      if (this.verifyUserInput()) return;
+
       firebase
         .auth()
         .createUserWithEmailAndPassword(
@@ -214,6 +203,23 @@ export default {
           this.error = error;
           this.emailAlreadyUseMsm();
         });
+    },
+    verifyUserInput: function () {
+      if (!this.formData.correo || !this.formData.password) {
+        this.showDismissibleAlert = this.dismissSecs;
+        this.alertMsm = "¡Debe ingresar correo y contraseña para continuar!";
+        return true;
+      } else if (this.formData.password !== this.formData.confirmPassword) {
+        this.showDismissibleAlert = this.dismissSecs;
+        this.alertMsm = "Las dos contraseñas deben coincidir ";
+        return true;
+      } else if (!this.validEmail(this.formData.correo)) {
+        this.showDismissibleAlert = this.dismissSecs;
+        this.alertMsm = "Ingrese un correo válido";
+        return true;
+      } else {
+        return false;
+      }
     },
   },
 };

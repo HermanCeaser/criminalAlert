@@ -107,23 +107,12 @@ export default {
     },
   }),
   beforeMount() {},
-  computed: {
-    stateEmail() {
-      return this.formData.correo.length >= 4;
-    },
-    invalidFeedbackEmail() {
-      if (this.formData.correo.length > 0) {
-        return "";
-      }
-      return "Porfavor ingrese  un correo ejemplo: mail@gmail.com";
-    },
-  },
+  computed: {},
   methods: {
     pressed: async function () {
       if (!this.formData.correo) {
         this.showDismissibleAlert = this.dismissSecs;
         this.alertMsm = "Debe ingresar su correo para continuar!";
-
         return;
       }
       firebase
