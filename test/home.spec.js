@@ -13,6 +13,16 @@ describe('check checAddressString  Home page', () => {
         expect(result).to.be.equal(false);
     })
 
+    it('handle empty inputs', () => {
+        const result = checAddressString('', '',  123, 123);
+        expect(result).to.be.equal(true);
+    })
+
+    it('handle inputs', () => {
+        const result = checAddressString('camino ', 'andador', 1444, 2680);
+        expect(result).to.be.equal(false);
+    })
+
     it('handle null inputs', () => {
         const result = checAddressString();
         expect(result).to.be.equal(true);
@@ -33,7 +43,7 @@ describe('check checAddressString  Home page', () => {
         expect(result).to.be.equal(true);
     })
     it('handle decimal numbers ', () => {
-        const result = checAddressString('camino ', 'andador', 1.2345678910, 1.234567);
+        const result = checAddressString('camino ', 'andador', 1.234, 1.23);
         expect(result).to.be.equal(true);
     })
 })

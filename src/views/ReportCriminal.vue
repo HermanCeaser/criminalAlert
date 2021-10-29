@@ -334,7 +334,7 @@ export default {
       };
       //add to saved locations to update map
       this.savedLocations.push(obj);
-    },
+    },  
     handleFormSubmit: async function () {
       if (
         !this.formData.descripcion ||
@@ -354,7 +354,6 @@ export default {
       }
 
       if (this.savedLocations.length == 0) {
-        console.log("hola");
         this.dismissFormCount = this.dismissSecs;
         this.inputMsm = "Debe ingresar una ubicacion valida, para continuar";
         return;

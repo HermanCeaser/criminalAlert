@@ -26,9 +26,7 @@ export default {
 
         validateDecimalNumbers: function (numero, postal) {
             if ((numero % 1) != 0 || (postal % 1) != 0) {
-                this.dismissCountDown = this.dismissSecs;
-                this.imputSearchMsm =
-                    "No se permiten valores decimales en el numero o codigo postal ";
+                this.createNoticeMessage(1)
                 return true;
             }
             return false;
@@ -36,9 +34,7 @@ export default {
 
         validateLongNumbers: function (numero, postal) {
             if (numero.toString().length > 10 || postal.toString().length > 6) {
-                this.dismissCountDown = this.dismissSecs;
-                this.imputSearchMsm =
-                    "No se permiten valores grandes en el numero o codigo postal ";
+                this.createNoticeMessage(2)
                 return true;
             }
             return false;
@@ -46,9 +42,7 @@ export default {
 
         validateEmptyInputs: function (validationRule, coloniaWhiteSpaces, calleWhiteSpaces) {
             if (!validationRule.test(coloniaWhiteSpaces) || !validationRule.test(calleWhiteSpaces)) {
-                this.dismissCountDown = this.dismissSecs;
-                this.imputSearchMsm =
-                    "No se permite campos vacíos, ingresar todos los campos para poder buscar";
+                this.createNoticeMessage(3)
                 return true;
             }
             return false;
@@ -56,9 +50,7 @@ export default {
 
         valiteNegativeNumbers: function (numero, postal) {
             if (numero < 0 || postal < 0) {
-                this.dismissCountDown = this.dismissSecs;
-                this.imputSearchMsm =
-                    "No se permiten valores negativos en el numero o codigo postal ";
+                this.createNoticeMessage(4)
                 return true;
             }
             return false;
@@ -66,9 +58,7 @@ export default {
 
         validateNumbers: function (numero, postal) {
             if (isNaN(numero) || isNaN(postal)) {
-                this.dismissCountDown = this.dismissSecs;
-                this.imputSearchMsm =
-                    "Debe ingresar valores numericos en el numero  y codigo postal";
+                this.createNoticeMessage(5)
                 return true;
             }
             return false;
@@ -82,6 +72,36 @@ export default {
                 return true;
             }
             return false;
+        },
+
+        createNoticeMessage: function (value) {
+            this.dismissCountDown = this.dismissSecs;
+            switch (value) {
+                case 1:
+                    this.imputSearchMsm =
+                        "No se permiten valores decimales en el numero o codigo postal ";
+                    break;
+                case 2:
+                    this.imputSearchMsm =
+                        "No se permiten valores grandes en el numero o codigo postal ";
+                    break;
+                case 3:
+                    this.imputSearchMsm =
+                        "No se permite campos vacíos, ingresar todos los campos para poder buscar";
+                    break;
+                case 4:
+                    this.imputSearchMsm =
+                        "No se permiten valores negativos en el numero o codigo postal ";
+                    break;
+                case 5:
+                    this.imputSearchMsm =
+                        "Debe ingresar valores numericos en el numero  y codigo postal";
+                    break;
+                default:
+                    this.imputSearchMsm =
+                        "Error on value";
+                    break;
+            }
         },
 
         validateAddress: function (colonia, calle) {

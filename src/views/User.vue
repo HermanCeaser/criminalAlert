@@ -410,6 +410,9 @@ export default {
         .signOut()
         .then(() => {
           this.$router.replace({ name: "login" });
+        })
+        .catch((error) => {
+          console.error("Error loggin out: ", error);
         });
     },
     uploadImage(e) {
@@ -480,35 +483,13 @@ export default {
                       id: id,
                     };
                     if (index == 0) {
-                      this.items[index].nombre = schemeItems.nombre;
-                      this.items[index].descripcion = schemeItems.descripcion;
-                      this.items[index].fecha = schemeItems.fecha;
-                      this.items[index].hora = schemeItems.hora;
-                      this.items[index].estatus = schemeItems.estatus;
-                      this.items[index].referencia = schemeItems.referencia;
-                      this.items[index].id = schemeItems.id;
+                      this.setDataTable(index, schemeItems);
                     } else {
                       if (key === "criminal") this.items.push(schemeItems);
                       else this.itemsLostPerson.push(schemeItems);
                     }
-
                     //will get the state  of the criminal en added to our chart
-                    switch (doc.data().estatus) {
-                      case "sin detenidos":
-                        this.tempSinDetenidos++;
-                        this.chart.sinDetenidos = this.tempSinDetenidos;
-                        break;
-                      case "en proceso":
-                        this.indexEnProceso++;
-                        this.chart.enProceso = this.indexEnProceso;
-                        break;
-                      case "en carcel":
-                        this.indexEnCarcel++;
-                        this.chart.enCarcel = this.indexEnCarcel;
-                        break;
-                      default:
-                        break;
-                    }
+                    this.setCriminalStatus(doc.data().estatus);
                   }
                 })
                 .catch((error) => {
@@ -524,6 +505,34 @@ export default {
         .catch((error) => {
           console.log("Error getting document:", error);
         });
+    },
+    setCriminalStatus: function (estatus) {
+      switch (estatus) {
+        case "sin detenidos":
+          this.tempSinDetenidos++;
+          this.chart.sinDetenidos = this.tempSinDetenidos;
+          break;
+        case "en proceso":
+          this.indexEnProceso++;
+          this.chart.enProceso = this.indexEnProceso;
+          break;
+        case "en carcel":
+          this.indexEnCarcel++;
+          this.chart.enCarcel = this.indexEnCarcel;
+          break;
+        default:
+          console.log("estatus no encotrado");
+          break;
+      }
+    },
+    setDataTable: function (index, schemeItems) {
+      this.items[index].nombre = schemeItems.nombre;
+      this.items[index].descripcion = schemeItems.descripcion;
+      this.items[index].fecha = schemeItems.fecha;
+      this.items[index].hora = schemeItems.hora;
+      this.items[index].estatus = schemeItems.estatus;
+      this.items[index].referencia = schemeItems.referencia;
+      this.items[index].id = schemeItems.id;
     },
   },
 };
