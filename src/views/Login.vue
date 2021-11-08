@@ -159,8 +159,8 @@ export default {
           this.formData.password
         )
         .then((data) => {
-          const user = firebase.auth().currentUser.emailVerified;
-          this.verifyUserEmailState(user);
+          const emailVerified = firebase.auth().currentUser.emailVerified;
+          this.verifyUserEmailState(emailVerified);
         })
         .catch((error) => {
           this.showDismissibleAlert = this.dismissSecs;
@@ -176,8 +176,8 @@ export default {
       }
       return false;
     },
-    verifyUserEmailState: function (user) {
-      if (!user) {
+    verifyUserEmailState: function (emailVerified) {
+      if (!emailVerified) {
         this.showDismissibleAlert = this.dismissSecs;
         this.alertMsm =
           "Su correo aún no ha sido verificado, por favor revise su bandeja de entrada.";

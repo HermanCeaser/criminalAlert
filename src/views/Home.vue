@@ -552,6 +552,27 @@
         <p class="text-center">Copyright copy 2021</p>
       </div>
     </div>
+    <div>
+      <b-modal
+        ref="user-msn"
+        hide-footer
+        id="modal-center"
+        centered
+        title="Reporte"
+      >
+        <div class="d-block text-center">
+          <h4>
+            <p>Ayudamos a mejorar la información que se presenta. Que calificaion le darias a este reporte:</p>
+          </h4>
+        </div>
+        <b-button
+          class="mt-3"
+          variant="outline-primary"
+          block
+          >Continuar</b-button
+        >
+      </b-modal>
+    </div>
   </div>
 </template>
 <script>
@@ -583,6 +604,7 @@ export default {
     morningReports: 0,
     noonReports: 0,
     nightReports: 0,
+    counter: 0,
     infoWindow: {
       position: { lat: 0, lng: 0 },
       open: false,
@@ -608,20 +630,34 @@ export default {
   methods: {
     getCriminalLocations: async function () {
       this.mapLoading = true;
+
       let { data } = await axios.post(
         "https://us-central1-criminalalertdb.cloudfunctions.net/criminalMapInfo"
       );
+
       if (data === "NO RESULTS") {
         console.log("problem with map loading");
+        this.mapLoading = false;
+        return;
+      } else if (data == undefined) {
+        console.log("problem with map loading");
+        this.mapLoading = false;
+        return;
       } else {
         this.mapLoading = false;
         this.savedLocations = data;
         //set a counter for all the criminals register
         this.regCriminals = this.savedLocations.length;
         // get the report status of every crime
-        this.getReportStatus(this.savedLocations);
-        this.getSexReportStatus(this.savedLocations);
-        this.getHourReportStatus(this.savedLocations);
+        this.getReportStatus(
+          this.savedLocations == null ? 0 : this.savedLocations
+        );
+        this.getSexReportStatus(
+          this.savedLocations == null ? 0 : this.savedLocations
+        );
+        this.getHourReportStatus(
+          this.savedLocations == null ? 0 : this.savedLocations
+        );
       }
     },
     getTotalReports: async function () {
@@ -640,7 +676,9 @@ export default {
       this.totalReportUser = data.regCriminals;
       this.userID = data.userID;
     },
-
+    myFunction: function () {
+      alert("hola test");
+    },
     checAddress: async function () {
       this.mapLoading = true;
       if (this.isUserLocation()) return;
@@ -675,6 +713,9 @@ export default {
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap");
 @import url("https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css");
 @import "@/scss/homePage.scss";
+div.image:before {
+  content: url(http://placehold.it/350x150);
+}
 @media screen and (max-width: 759px) {
   #mapID {
     width: 100%;

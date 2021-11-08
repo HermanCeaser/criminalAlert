@@ -276,7 +276,10 @@ export default {
       let email = this.user.email;
       let userSepatator = email.split("@");
       this.userTag = userSepatator[0];
+    }else{
+      console.log("user do not exist")
     }
+
     const userRef = db.collection("user").doc(this.user.uid);
     userRef.get().then(async (docSnapshot) => {
       if (docSnapshot.exists) {
@@ -309,7 +312,7 @@ export default {
           address: address,
         }
       );
-      if (data === "No Results") {
+      if (data == "No Results") {
         alert("No hay resultados de la direccion");
         this.mapSearch = false;
         return;
@@ -353,7 +356,7 @@ export default {
         return;
       }
 
-      if (this.savedLocations.length == 0) {
+      if (this.savedLocations.length <= 0) {
         this.dismissFormCount = this.dismissSecs;
         this.inputMsm = "Debe ingresar una ubicacion valida, para continuar";
         return;
@@ -383,6 +386,10 @@ export default {
           typeSex: this.selectedSex,
         }
       );
+      if(data == undefined){
+        alert("Problemas al ingresar los datos a la base de datos");
+        return;
+      }
       if (data === "No Results") {
         alert("Problemas al ingresar los datos a la base de datos");
         return;

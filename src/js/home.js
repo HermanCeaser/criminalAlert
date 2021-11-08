@@ -149,7 +149,7 @@ export default {
                 }
             }
         },
-        convertUserLocation: function (R, rlat1, savedLocations, index, userLocation ) {
+        convertUserLocation: function (R, rlat1, savedLocations, index, userLocation) {
             var rlat2 =
                 savedLocations[index].geoPoint.latitude * (Math.PI / 180); // Convert degrees to radians
             var difflat = rlat2 - rlat1; // Radian difference (latitudes)
@@ -199,14 +199,20 @@ export default {
                 lat: tempData.geoPoint.latitude,
                 lng: tempData.geoPoint.longitude,
             };
+
             let displayInfo = `<div id="infoCriminal">
                 <h4 style="color:#ec407a;"> ${tempData.estatus.toUpperCase()} </h4>
                 <p style="font-size: 15px;">${tempData.descripcion}</p>
                 <b style="color:#9e9e9e;"> Reportado ${tempData.fecha} a las ${tempData.hora}</b>
                 <a href="${tempData.referencia}" target="_blank">Referencia.</a>
               </div>`;
+
             this.infoWindow.template = displayInfo;
             this.infoWindow.open = true;
+            this.test();
+        },
+        test: function(){
+            this.$refs["user-msn"].show();
         },
         checAddressString: function (colonia, calle, numero, postal) {
             if (colonia == "" || calle == "" || numero == "" || postal == "") {
@@ -234,8 +240,8 @@ export default {
         },
         isUserLocation: function () {
             if (this.userLocation.length > 0) {
-                let tempAddres = `${this.userDireccionData.colonia}, ${this.userDireccionData.calle}, ${this.userDireccionData.numero}, ${this.userDireccionData.zip} ,Tijuana, MX`;
-                if (tempAddres.includes(this.userAddress)) {
+                let currentAddres = `${this.userDireccionData.colonia}, ${this.userDireccionData.calle}, ${this.userDireccionData.numero}, ${this.userDireccionData.zip} ,Tijuana, MX`;
+                if (currentAddres.includes(this.userAddress)) {
                     alert("La ubicacion ya fue ingresada");
                     this.mapLoading = false;
                     return true;
