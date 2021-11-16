@@ -6,62 +6,135 @@
         <b-row>
           <b-col md="1"></b-col>
           <b-col md="2">
-            <b-overlay :show="loadingData" rounded="sm">
-              <div id="card" v-bind:class="cardStates" class="card">
-                <div class="card-info">
-                  <div class="card-image">
-                    <img
-                      v-bind:src="userData.avatar"
-                      class="card-avatar card-avatar--circle"
-                    />
-                  </div>
-                  <div class="card-fields">
-                    <h1 v-show="!isEditing" class="card-name">
-                      {{ userData.nick }}
-                    </h1>
-                    <input
-                      v-show="isEditing"
-                      type="text"
-                      v-model="userData.nick"
-                      class="card-input"
-                      placeholder="Ingrese su nick"
-                    />
-                  </div>
-                  <button
-                    v-on:click="shelfToggle"
-                    v-bind:disabled="isEditing"
-                    v-bind:class="toggleOpen"
-                    class="card-button card-expander"
-                    aria-label="expand-shelf"
-                  >
-                    <i class="material-icons" aria-hidden="true">add</i>
-                  </button>
-                </div>
-                <div class="card-shelf" v-bind:class="shelfIsOpen">
-                  <div class="card-content">
-                    <div class="card-fields">
-                      <p v-show="!isEditing" class="card-bio">
-                        Haz reportado a {{ userData.reportes }} criminales
-                      </p>
+            <b-row>
+              <b-col>
+                <b-overlay :show="loadingData" rounded="sm">
+                  <div id="card" v-bind:class="cardStates" class="card">
+                    <div class="card-info">
+                      <div class="card-image">
+                        <img
+                          v-bind:src="userData.avatar"
+                          class="card-avatar card-avatar--circle"
+                        />
+                      </div>
+                      <div class="card-fields">
+                        <h1 v-show="!isEditing" class="card-name">
+                          {{ userData.nick }}
+                        </h1>
+                        <input
+                          v-show="isEditing"
+                          type="text"
+                          v-model="userData.nick"
+                          class="card-input"
+                          placeholder="Ingrese su nick"
+                        />
+                      </div>
+                      <div class="card-fields">
+                        <input
+                          v-show="isEditing"
+                          type="file"
+                          class="card-input"
+                          @change="uploadImage"
+                        />
+                      </div>
+                      <button
+                        v-on:click="shelfToggle"
+                        v-bind:disabled="isEditing"
+                        v-bind:class="toggleOpen"
+                        class="card-button card-expander"
+                        aria-label="expand-shelf"
+                      >
+                        <i class="material-icons" aria-hidden="true">add</i>
+                      </button>
                     </div>
+                    <div class="card-shelf" v-bind:class="shelfIsOpen">
+                      <div class="card-content">
+                        <div class="card-fields">
+                          <p v-show="!isEditing" class="card-bio">
+                            Haz reportado a {{ userData.reportes }} criminales
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      v-on:click="editContent"
+                      class="card-button card-edit"
+                    >
+                      <i
+                        v-show="!isEditing"
+                        class="material-icons"
+                        aria-hidden="true"
+                        >create</i
+                      >
+                      <i
+                        v-show="isEditing"
+                        class="material-icons"
+                        aria-hidden="true"
+                        >save</i
+                      >
+                    </button>
                   </div>
-                </div>
-                <button v-on:click="editContent" class="card-button card-edit">
-                  <i
-                    v-show="!isEditing"
-                    class="material-icons"
-                    aria-hidden="true"
-                    >create</i
+                </b-overlay>
+              </b-col>
+            </b-row>
+            <br /><br />
+            <b-row>
+              <b-overlay :show="loadingDataComment" rounded="sm">
+                <b-col>
+                  <b-card
+                    id="criminalCard"
+                    header="CriminalAlert"
+                    header-tag="header"
+                    footer=""
+                    footer-tag="footer"
+                    title="Comentarios"
                   >
-                  <i
-                    v-show="isEditing"
-                    class="material-icons"
-                    aria-hidden="true"
-                    >save</i
-                  >
-                </button>
-              </div>
-            </b-overlay>
+                    <b-form>
+                      <b-row>
+                        <b-col>
+                          <b-form-group
+                            class="crimenStyle"
+                            label="Bríndanos una breve opinión sobre tu experiencia con la pagina."
+                          >
+                            <b-form-textarea
+                              id="textarea"
+                              placeholder="opinion..."
+                              rows="3"
+                              v-model="comment"
+                              max-rows="6"
+                            ></b-form-textarea>
+                          </b-form-group>
+                          <b-form-group>
+                            <h4>Califíquenos</h4>
+                          </b-form-group>
+                          <b-form-group
+                            label="Marque las casillas para indicar cuantas estrellas le dará a la página. 
+                            Una casilla seleccionada = 1 estrella, dos casillas seleccionadas = 2 estrellas etc."
+                            v-slot="{ ariaDescribedby }"
+                          >
+                            <b-form-checkbox-group
+                              id="checkbox-group-1"
+                              v-model="selectedStar"
+                              :options="optionsStar"
+                              :aria-describedby="ariaDescribedby"
+                              name="flavour-1"
+                            ></b-form-checkbox-group>
+                          </b-form-group>
+                        </b-col>
+                        <b-button
+                          id="show-btn"
+                          pill
+                          block
+                          variant="info"
+                          @click="saveUserComments"
+                          >guardar</b-button
+                        >
+                      </b-row>
+                    </b-form>
+                  </b-card>
+                </b-col>
+              </b-overlay>
+            </b-row>
           </b-col>
           <b-col md="8">
             <b-row>
@@ -94,6 +167,190 @@
                 id="show-btn"
                 pill
                 block
+                variant="info"
+                v-b-modal.modal-update
+                >actualizar</b-button
+              >
+              <b-modal
+                ref="my-update"
+                hide-footer
+                id="modal-update"
+                centered
+                title="Registros seran actualizados"
+              >
+                <div class="d-block text-center">
+                  <div v-if="selected.length > 0">
+                    <div :key="index" v-for="(item, index) in selected">
+                      {{ index + 1 }} - {{ item.nombre }} fecha:
+                      {{ item.fecha }} estatus:
+                      {{ item.estatus }}
+                    </div>
+                  </div>
+                  <div v-else>
+                    <h4>Seleccione registros para actualizar</h4>
+                  </div>
+                </div>
+                <b-button
+                  class="mt-3"
+                  variant="outline-danger"
+                  block
+                  @click="updateSelected"
+                  >Continuar</b-button
+                >
+                <b-button
+                  class="mt-2"
+                  variant="outline-warning"
+                  block
+                  @click="closeModal"
+                  >Cancelar</b-button
+                >
+              </b-modal>
+              <b-modal
+                ref="my-update-second"
+                hide-footer
+                id="modal-update-second"
+                scrollable
+                centered
+                title="Registros"
+              >
+                <div class="d-block text-center">
+                  <div v-if="formObjects.length > 0">
+                    <div :key="i" v-for="(item, i) in formObjects">
+                      <b-card
+                        title="Reporte"
+                        tag="article"
+                        style="max-width: 30rem"
+                        class="mb-2"
+                      >
+                        {{ i + 1 }}
+                        <b-form>
+                          <b-row>
+                            <b-col>
+                              <b-form-group
+                                class=""
+                                label="Descripción del reporte"
+                              >
+                                <b-form-textarea
+                                  id="textarea"
+                                  placeholder="describir crimen..."
+                                  v-model="formObjects[i].descripcion"
+                                  rows="3"
+                                  max-rows="6"
+                                ></b-form-textarea>
+                              </b-form-group>
+                            </b-col>
+                          </b-row>
+                          <b-row>
+                            <b-col>
+                              <b-form-group
+                                class="fechaHoraStyle"
+                                label="Fecha y hora"
+                                description="Ingresar fecha y hora de cuando ocurrió el suceso"
+                              >
+                                <b-form-datepicker
+                                  id="example-datepicker"
+                                  :min="minDate"
+                                  :max="maxDate"
+                                  class="mb-2"
+                                  v-model="formObjects[i].fecha"
+                                  placeholder="Ingrese una fecha"
+                                ></b-form-datepicker>
+                                <b-form-timepicker
+                                  locale="en"
+                                  placeholder="Ingrese una hora"
+                                  v-model="formObjects[i].hora"
+                                ></b-form-timepicker>
+                              </b-form-group>
+                            </b-col>
+                          </b-row>
+                          <b-row>
+                            <b-col>
+                              <b-form-group
+                                class="estatusStyle"
+                                label="Estatus del reporte"
+                              >
+                                <b-form-select
+                                  v-model="selectedState"
+                                  :options="optionState"
+                                ></b-form-select>
+                              </b-form-group>
+                            </b-col>
+                          </b-row>
+                          <b-row>
+                            <b-col>
+                              <b-form-group
+                                class="referenciaStyle"
+                                label="Referencia"
+                                description="La referencia debe ser de sitios confiables: zetatijuana, elsoldetijuana, tijuanainformativo, elimparcial, alfredoalvarez, afntijuana, milenio"
+                              >
+                                <b-form-input
+                                  v-model="formObjects[i].referencia"
+                                  placeholder="link de la noticia o referencia"
+                                ></b-form-input>
+                              </b-form-group>
+                            </b-col>
+                          </b-row>
+                        </b-form>
+                      </b-card>
+                    </div>
+                  </div>
+                  <div v-else>
+                    <h4>Seleccione registros para actualizar</h4>
+                  </div>
+                  <div>
+                    <b-card
+                      title=""
+                      tag="article"
+                      style="max-width: 30rem"
+                      class="mb-2"
+                    >
+                      <b-card-text>
+                        <h3>Seguridad</h3>
+                        <b-alert
+                          id="alert"
+                          variant="info"
+                          dismissible
+                          fade
+                          :show="showDismissibleAlert"
+                          @dismissed="showDismissibleAlert = false"
+                        >
+                          {{ alertMsm }}
+                        </b-alert>
+                      </b-card-text>
+                      <b-form>
+                        <b-form-group
+                          id="fieldset-2"
+                          label="Ingrese su correo  para poder realizar la actualizacion"
+                          label-for="input-1"
+                          valid-feedback="Thank you!"
+                        >
+                          <b-form-input
+                            id="input-1"
+                            type="email"
+                            v-model="email"
+                            placeholder="email@mail.com"
+                            trim
+                          ></b-form-input>
+                        </b-form-group>
+                      </b-form>
+                      <b-button
+                        class="mt-3"
+                        variant="outline-danger"
+                        @click="editReport"
+                        block
+                        >Continuar</b-button
+                      >
+                    </b-card>
+                  </div>
+                </div>
+              </b-modal>
+            </b-row>
+            <br />
+            <b-row>
+              <b-button
+                id="show-btn"
+                pill
+                block
                 variant="danger"
                 v-b-modal.modal-center
                 @click="showModal"
@@ -106,32 +363,68 @@
                 centered
                 title="Reportes seran borados de la base de datos"
               >
-                <div class="d-block text-center">
-                  <div v-if="selected.length > 0">
-                    <div :key="index" v-for="(item, index) in selected">
-                      {{ index + 1 }} - {{ item.nombre }} fecha:
-                      {{ item.fecha }} estatus:
-                      {{ item.estatus }}
+                <b-card
+                  title=""
+                  tag="article"
+                  style="max-width: 30rem"
+                  class="mb-2"
+                >
+                  <div class="d-block text-center">
+                    <div v-if="selected.length > 0">
+                      <div :key="index" v-for="(item, index) in selected">
+                        {{ index + 1 }} - {{ item.nombre }} fecha:
+                        {{ item.fecha }} estatus:
+                        {{ item.estatus }}
+                      </div>
+                    </div>
+                    <div v-else>
+                      <h4>Seleccione registros a borrar</h4>
                     </div>
                   </div>
-                  <div v-else>
-                    <h4>Seleccione registros a borrar</h4>
-                  </div>
-                </div>
-                <b-button
-                  class="mt-3"
-                  variant="outline-danger"
-                  block
-                  @click="deleteSelected"
-                  >Continuar</b-button
-                >
-                <b-button
-                  class="mt-2"
-                  variant="outline-warning"
-                  block
-                  @click="closeModal"
-                  >Cancelar</b-button
-                >
+                  <br />
+                  <b-card-text>
+                    <b-alert
+                      id="alert"
+                      variant="info"
+                      dismissible
+                      fade
+                      :show="showDismissibleAlert"
+                      @dismissed="showDismissibleAlert = false"
+                    >
+                      {{ alertMsm }}
+                    </b-alert>
+                  </b-card-text>
+                  <b-form>
+                    <b-form-group
+                      id="fieldset-2"
+                      label="Ingrese su correo  para poder realizar la actualizacion"
+                      label-for="input-1"
+                      valid-feedback="Thank you!"
+                    >
+                      <b-form-input
+                        id="input-1"
+                        type="email"
+                        v-model="email"
+                        placeholder="email@mail.com"
+                        trim
+                      ></b-form-input>
+                    </b-form-group>
+                  </b-form>
+                  <b-button
+                    class="mt-3"
+                    variant="outline-danger"
+                    @click="deleteSelected"
+                    block
+                    >Continuar</b-button
+                  >
+                  <b-button
+                    class="mt-2"
+                    variant="outline-warning"
+                    block
+                    @click="closeModal"
+                    >Cancelar</b-button
+                  >
+                </b-card>
               </b-modal>
             </b-row>
           </b-col>
@@ -140,6 +433,7 @@
         <br />
         <br />
         <br />
+
         <!--
         <b-row>
           <b-col md="1"></b-col>
@@ -223,18 +517,32 @@ export default {
   mixins: [User],
   data: () => ({
     loggedIn: false,
-    email: "nicholas.cage@theone.com",
+    email: "",
+    showDismissibleAlert: false,
+    alertMsm: null,
     isShelfOpen: false,
     isEditing: false,
+    selectedFile: "",
     userID: null,
     userRef: null,
     userTemp: null,
     isBusy: true,
     showTop: false,
     toastId: "-1",
+    loadingDataComment: false,
     verificationMsm: "",
     loadingData: false,
     loadingPage: false,
+    formObjects: [],
+    dismissSecs: 5,
+    comment: "",
+    formData: {
+      descripcion: "",
+      fecha: "",
+      hora: "",
+      selected: "",
+      referencia: "",
+    },
     userData: {
       nick: "",
       correo: "nicholas.cage@theone.com",
@@ -253,7 +561,6 @@ export default {
     ],
     items: [
       {
-        nombre: "",
         descripcion: "",
         fecha: "",
         hora: "",
@@ -264,7 +571,6 @@ export default {
     ],
     itemsLostPerson: [
       {
-        nombre: "",
         descripcion: "",
         fecha: "",
         hora: "",
@@ -274,6 +580,16 @@ export default {
       },
     ],
     selected: [],
+    selectedUpdate: [
+      {
+        descripcion: "",
+        fecha: "",
+        hora: "",
+        estatus: "",
+        referencia: "",
+        id: "",
+      },
+    ],
     chart: [
       {
         sinDetenidos: 0,
@@ -284,6 +600,22 @@ export default {
     tempSinDetenidos: 0,
     indexEnProceso: 0,
     indexEnCarcel: 0,
+    minDate: new Date("January 01, 2021 00:00:00"),
+    maxDate: new Date("December 31, 2021 11:59:59"),
+    selectedState: null,
+    optionState: [
+      { value: null, text: "Seleccione una opcion" },
+      { value: "sin detenidos", text: "sin detenidos" },
+      { value: "en proceso", text: "en proceso" },
+      { value: "en carcel", text: "en carcel" },
+    ],
+    selectedStar: [], // Must be an array reference!
+    optionsStar: [
+      { text: "★", value: "1" },
+      { text: "★", value: "2" },
+      { text: "★", value: "3" },
+      { text: "★", value: "4" },
+    ],
   }),
   mounted() {
     this.userTemp = firebase.auth().currentUser;
@@ -340,19 +672,46 @@ export default {
         }
       });
     },
+
+    closeModal() {
+      this.$refs["my-modal"].hide();
+      this.$refs["my-update"].hide();
+
+      for (let index = 0; index < this.selected.length; index++) {
+        console.log(this.selected[index]);
+      }
+    },
+    updateSelected() {
+      if (this.selected.length <= 0) {
+        this.$refs["my-modal"].hide();
+        this.$refs["my-update"].hide();
+        return;
+      }
+      this.formObjects = [];
+      for (let index = 0; index < this.selected.length; index++) {
+        this.formObjects.push(this.selected[index]);
+      }
+
+      console.log(this.formObjects);
+      this.showUpdateModal();
+    },
+    showUpdateModal() {
+      this.$refs["my-update"].hide();
+      this.$refs["my-update-second"].show();
+    },
     deleteSelected() {
       if (this.selected.length <= 0) {
         this.$refs["my-modal"].hide();
+        this.$refs["my-update"].hide();
         return;
       }
+
+      if (this.verifyCorrectInputData()) return;
+      if (!this.verifyEmail()) return;
 
       let ids = [];
       for (let index = 0; index < this.selected.length; index++) {
         ids[index] = this.selected[index].id;
-      }
-      console.log("user id:" + this.userID);
-      for (let index = 0; index < ids.length; index++) {
-        console.log(" id " + index + " " + ids[index]);
       }
 
       //first  we're going to delete the id fonr tue user list
@@ -392,6 +751,52 @@ export default {
             console.error("Error updating document: ", error);
           });
       }
+    },
+    editReport() {
+      if (this.verifyCorrectInputData()) return;
+      if (!this.verifyEmail()) return;
+
+      if (this.formObjects.length > 0) {
+        for (let index = 0; index < this.formObjects.length; index++) {
+          let criminalInfo = db
+            .collection("criminalInfo")
+            .doc(this.formObjects[index].id)
+            .update({
+              descripcion: this.formObjects[index].descripcion,
+              fecha: this.formObjects[index].fecha,
+              hora: this.formObjects[index].hora,
+              estatus: this.formObjects[index].estatus,
+              referencia: this.formObjects[index].referencia,
+            })
+            .then(() => {
+              this.$bvToast.show("my-toast");
+              this.loadingData = false;
+            })
+            .catch((error) => {
+              // The document probably doesn't exist.
+              console.error("Error updating document: ", error);
+            });
+        }
+      }
+
+      this.$refs["my-update-second"].hide();
+      return;
+    },
+    verifyCorrectInputData: function () {
+      if (!this.email) {
+        this.showDismissibleAlert = this.dismissSecs;
+        this.alertMsm = "¡Debe ingresar su correo para continuar!";
+        return true;
+      }
+      return false;
+    },
+    verifyEmail: function () {
+      if (this.email.localeCompare(this.userTemp.email) == 0) {
+        return true;
+      }
+      this.showDismissibleAlert = this.dismissSecs;
+      this.alertMsm = "¡Su correo no concuerda con nuestros registros!";
+      return false;
     },
     setupFirebase() {
       firebase.auth().onAuthStateChanged((user) => {
@@ -506,6 +911,7 @@ export default {
           console.log("Error getting document:", error);
         });
     },
+
     setCriminalStatus: function (estatus) {
       switch (estatus) {
         case "sin detenidos":
@@ -541,13 +947,14 @@ export default {
 <style scoped lang="scss">
 @import url("https://fonts.googleapis.com/icon?family=Material+Icons");
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap");
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
 @import "@/scss/user.scss";
 
 @media screen and (max-width: 759px) {
   #card {
     position: absolute;
-    margin-top: -55%;
-    margin-left: 18%;
+    margin-top: -50%;
+    margin-left: 20%;
     z-index: 100;
   }
 

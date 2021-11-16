@@ -125,16 +125,16 @@ exports.criminalFormData = functions.https.onRequest(async (request, response) =
                 longitude
             }
         }
-        
+
         let res;
 
-        if(typeCrime !== "secuestro"){
-             res = await db.collection('criminalInfo').add(criminaldata);
-        }else{
-             res = await db.collection('lostPersondata').add(criminaldata);
+        if (typeCrime !== "secuestro") {
+            res = await db.collection('criminalInfo').add(criminaldata);
+        } else {
+            res = await db.collection('lostPersondata').add(criminaldata);
         }
 
-        
+
         console.log(res.id)
         let criminalID = res.id;
 
@@ -186,7 +186,14 @@ exports.criminalMapInfo = functions.https.onRequest(async (request, response) =>
     try {
 
         const criminalSnap = await db.collection("criminalInfo").get();
-        let savedLocations = [];
+        const userSnap = await db.collection("user").get();
+       
+
+        let criminalData = {
+            location: [],
+            id: [],
+            userIds: [],
+        }
         if (criminalSnap.empty) {
             //no results
             return cors(request, response, () => {
@@ -196,11 +203,16 @@ exports.criminalMapInfo = functions.https.onRequest(async (request, response) =>
 
         //save the data of the criminals in a que
         criminalSnap.docs.forEach((doc) => {
-            savedLocations.push(doc.data());
+            criminalData.location.push(doc.data());
+            criminalData.id.push(doc.id);
+        });
+        
+        userSnap.docs.forEach((doc) => {
+            criminalData.userIds.push(doc.id)
         });
 
         return cors(request, response, () => {
-            response.status(200).send(savedLocations);
+            response.status(200).send(criminalData);
         });
 
     } catch (error) {
@@ -290,4 +302,94 @@ exports.userCriminalInfo = functions.https.onRequest(async (request, response) =
 
 
 
+exports.userCriminalRatings = functions.https.onRequest(async (request, response) => {
 
+    try {
+        let reportId = request.body.reportId;
+        let userCriminalReportState = request.body.userReportState;
+        let userId = request.body.userId;
+
+        let key = false;
+        const userRef = db.collection("userCriminalRatings").doc(userId);
+        userRef.get().then(async (docSnapshot) => {
+            if (docSnapshot.exists) {
+                if (docSnapshot.data().criminalsID.length > 0) {
+                    let tempData = docSnapshot.data();
+                    for (let index = 0; index < tempData.criminalsID.length; index++) {
+                        if (tempData.criminalsID[index].id == reportId) {
+                            key = true;
+                            if (tempData.criminalsID[index].rating == userCriminalReportState) {
+                                return cors(request, response, () => {
+                                    response.status(200).send("SAME");
+                                });
+                            } else {
+                                tempData.criminalsID[index].rating = userCriminalReportState;
+
+                                tempData.criminalsID[index].dislike = userCriminalReportState
+                                    ? tempData.criminalsID[index].dislike - 1
+                                    : tempData.criminalsID[index].dislike + 1;
+
+                                tempData.criminalsID[index].like = userCriminalReportState
+                                    ? tempData.criminalsID[index].like + 1
+                                    : tempData.criminalsID[index].like - 1;
+                                userRef
+                                    .update({
+                                        criminalsID: tempData.criminalsID,
+                                    })
+                                    .then(async function () {
+                                        console.log("update input not the same: ");
+                                        return cors(request, response, () => {
+                                            response.status(200).send("UPDATE NOT SAME");
+                                        });
+                                    });
+                            }
+                        }
+                    }
+                }
+                if (!this.key) {
+                    userRef
+                        .update({
+                            criminalsID: admin.firestore.FieldValue.arrayUnion({
+                                id: reportId,
+                                like: userCriminalReportState ? 1 : 0,
+                                dislike: userCriminalReportState ? 0 : 1,
+                                rating: userCriminalReportState,
+                            }),
+                        })
+                        .then(async function () {
+                            console.log("agregar reporte no  existe: ");
+                            return cors(request, response, () => {
+                                response.status(200).send("USER REPORT ADDED");
+                            });
+                        });
+                }
+            } else {
+                let criminalsID = {
+                    id: reportId,
+                    like: userCriminalReportState ? 1 : 0,
+                    dislike: userCriminalReportState ? 0 : 1,
+                    rating: userCriminalReportState,
+                };
+                let data = {
+                    criminalsID: [criminalsID],
+                };
+                console.log("creando nuevo usuario rating");
+                const newUser = await db
+                    .collection("userCriminalRatings")
+                    .doc(userId)
+                    .set(data);
+            }
+        });
+
+        return cors(request, response, () => {
+            response.status(200).send("NEW USER REPORT");
+        });
+
+
+    } catch (error) {
+        return cors(request, response, () => {
+            console.log(error);
+            response.status(500).send();
+        });
+    }
+});

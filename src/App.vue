@@ -35,12 +35,17 @@ export default {
         icon: "ion-ios-people",
       },
       {
+        text: "Comentarios",
+        path: "/comentarios",
+        icon: "ion-ios-mail",
+      },
+      {
         text: "Ingresar",
         path: "/login",
         icon: "ion-md-contact",
       },
       {
-        text: "usuario",
+        text: "Usuario",
         path: "/user",
         icon: "ion-ios-walk",
       },

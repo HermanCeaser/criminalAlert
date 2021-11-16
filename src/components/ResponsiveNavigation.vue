@@ -7,7 +7,7 @@
             <img :src="imagePath" height="43px" width="40px" />
           </figure>
 
-          <li v-for="(link, index) in navLinks" :key="index">
+          <li v-for="(link, index) in navLinks" :key="index" @click="hideHav">
             <router-link
               :to="link.path"
               :style="{ color: linkColor || '#DDD' }"
@@ -28,6 +28,7 @@
   </nav>
 </template>
 
+
 <script>
 export default {
   props: ["navLinks", "linkColor", "hoverBackground", "imagePath"],
@@ -35,6 +36,10 @@ export default {
     toggleNav() {
       const nav = this.$refs.nav.classList;
       nav.contains("active") ? nav.remove("active") : nav.add("active");
+    },
+    hideHav() {
+      const nav = this.$refs.nav.classList;
+      nav.remove("active");
     },
   },
 };
@@ -110,8 +115,6 @@ nav {
   font-family: "Roboto", sans-serif;
   display: none;
 }
-
-
 
 @media screen and (max-width: 759px) {
   nav {

@@ -14,7 +14,7 @@
   }
   
   .victimImg {
-    width: 50%;
+    width: 100px;
     height: auto;
   }
   
@@ -109,4 +109,50 @@
       rgba(114, 175, 211, 0.4)
     );
   }
+
+  .card-button {
+    align-items: center;
+    border: 0;
+    cursor: pointer;
+    display: flex;
+    user-select: none;
   
+    > .material-icons {
+      font-size: 2em;
+    }
+   
+    
+  }
+  
+  .card-button[disabled] {
+    cursor: stop;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  
+  .card-expander {
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 0.75em 0 rgba(#abbaab, 0.55);
+    bottom: 0;
+    color: coral;
+    font-size: 1.2em;
+    left: 50%;
+    padding: 0.5em;
+    position: absolute;
+    transform: translate3d(-50%, 50%, 0);
+    transition: all 0.175s ease-in-out;
+  
+    &:hover,
+    &:focus {
+      box-shadow: 0 0.3em 2em 0 rgba(#abbaab, 0.75);
+    }
+  }
+
+  i.icon_thumb_down_color{
+    color: rgb(202, 60, 60);
+  }
+  
+  i.icon_thumb_up_color{
+    color: rgb(50, 107, 214);
+  }

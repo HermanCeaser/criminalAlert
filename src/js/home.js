@@ -209,9 +209,10 @@ export default {
 
             this.infoWindow.template = displayInfo;
             this.infoWindow.open = true;
-            this.test();
+            this.currentReportSelected = index;
+            //this.test();
         },
-        test: function(){
+        test: function () {
             this.$refs["user-msn"].show();
         },
         checAddressString: function (colonia, calle, numero, postal) {
@@ -281,6 +282,45 @@ export default {
                 this.criminalsNearUser,
                 this.userLocation
             );
+        },
+        ratingStateToast: function (state = false) {
+            // Use a shorter name for this.$createElement
+            const h = this.$createElement;
+            // Increment the toast count
+            this.count++;
+            // Create the message
+            let ratingState = ""
+            let variant = "info";
+            
+            if(state){
+                ratingState = "exito!";
+                variant = "info";
+            }else{
+                ratingState = "PROBLEMAS, no se ralizo el registro"
+                variant = "danger";
+            }
+            const vNodesMsg = h("p", { class: ["text-center", "mb-0"] }, [
+                h("b-spinner", { props: { type: "grow", small: true } }),
+                " Calificacion registrada con  ",
+                h("strong", ratingState),
+                ` # ${this.count} `,
+                h("b-spinner", { props: { type: "grow", small: true } }),
+            ]);
+            // Create the title
+            const vNodesTitle = h(
+                "div",
+                { class: ["d-flex", "flex-grow-1", "align-items-baseline", "mr-2"] },
+                [
+                    h("strong", { class: "mr-2" }, "The Title"),
+                    h("small", { class: "ml-auto text-italics" }, "42 seconds ago"),
+                ]
+            );
+            // Pass the VNodes as an array for message and title
+            this.$bvToast.toast([vNodesMsg], {
+                title: [vNodesTitle],
+                solid: true,
+                variant: variant,
+            });
         },
     }
 

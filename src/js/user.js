@@ -21,11 +21,15 @@ export default {
         shelfToggle() {
             this.isShelfOpen = !this.isShelfOpen;
         },
+        onFileSelected() {
+            this.selectedFile = event.target.files[0];
+        },
         editContent() {
             if (!this.isEditing) {
                 this.isEditing = !this.isEditing;
                 this.isShelfOpen = true;
             } else {
+
                 this.isEditing = !this.isEditing;
                 this.isShelfOpen = false;
                 this.loadingData = true;
@@ -42,6 +46,68 @@ export default {
                         console.error("Error updating document: ", error);
                     });
             }
+        },
+        saveUserComments: function () {
+            let rating = this.getUserPageRating();
+            this.loadingDataComment = true;
+            const res = this.userRef;
+
+            if (!this.comment && rating != 0) {
+                res
+                    .update({
+                        calificación: rating,
+                    })
+                    .then(() => {
+                        this.$bvToast.show("my-toast");
+                        this.loadingDataComment = false;
+                    })
+                    .catch((error) => {
+                        // The document probably doesn't exist.
+                        console.error("Error updating document: ", error);
+                        this.loadingDataComment = false;
+                    });
+            } else if (rating == 0 && this.comment) {
+                res
+                    .update({
+                        comentario: this.comment,
+                    })
+                    .then(() => {
+                        this.$bvToast.show("my-toast");
+                        this.loadingDataComment = false;
+                    })
+                    .catch((error) => {
+                        // The document probably doesn't exist.
+                        console.error("Error updating document: ", error);
+                        this.loadingDataComment = false;
+                    });
+            } else if (rating != 0 && this.comment) {
+                res
+                    .update({
+                        comentario: this.comment,
+                        calificación: rating,
+                    })
+                    .then(() => {
+                        this.$bvToast.show("my-toast");
+                        this.loadingDataComment = false;
+                    })
+                    .catch((error) => {
+                        // The document probably doesn't exist.
+                        console.error("Error updating document: ", error);
+                        this.loadingDataComment = false;
+                    });
+            }
+
+
+
+
+        },
+        getUserPageRating: function () {
+            let index = 0;
+            this.selectedStar.forEach(element => {
+                index++;
+            });
+
+            return index;
         },
         onRowSelected(items) {
             this.selected = items;

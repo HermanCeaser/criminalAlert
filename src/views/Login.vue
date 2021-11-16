@@ -130,6 +130,8 @@ export default {
     alertMsm: null,
     dismissSecs: 5,
     userSignin: false,
+    currentUser: null,
+    newUer: null,
     error: "",
     formData: {
       correo: "",
@@ -144,14 +146,15 @@ export default {
   computed: {},
   methods: {
     pressed: async function () {
+      if (this.verifyCorrectInputData()) return;
 
-      if(this.verifyCorrectInputData())return;
-
+      this.currentUser = firebase.auth().currentUser;
       if (firebase.auth().currentUser == null) {
         this.userSignin = false;
       } else {
         this.userSignin = true;
       }
+
       firebase
         .auth()
         .signInWithEmailAndPassword(
@@ -159,6 +162,7 @@ export default {
           this.formData.password
         )
         .then((data) => {
+          this.newUer = firebase.auth().currentUser;
           const emailVerified = firebase.auth().currentUser.emailVerified;
           this.verifyUserEmailState(emailVerified);
         })
@@ -183,7 +187,11 @@ export default {
           "Su correo aún no ha sido verificado, por favor revise su bandeja de entrada.";
       } else {
         if (this.userSignin) {
-          this.$refs["user-msn"].show();
+          if (this.currentUser.email.localeCompare(this.newUer.email) == 0){
+            this.$refs["user-msn"].show();
+          }else{
+            this.$router.replace({ name: "user" });
+          }
         } else {
           this.$router.replace({ name: "user" });
         }

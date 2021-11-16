@@ -396,7 +396,6 @@ export default {
       }
       //increment te report's from the user
       const userRef = db.collection("user").doc(this.user.uid);
-      // Atomically increment the population of the city by 50.
       const resTem = await userRef
         .update({
           reportes: firebase.firestore.FieldValue.increment(1),
@@ -427,7 +426,6 @@ export default {
     width: 100%;
     height: 400px;
   }
-
   #avatarID {
     z-index: 2;
     border: 15px solid white;
@@ -435,7 +433,7 @@ export default {
   }
 
   #avatarPick {
-    margin-top: 20%;
+    margin-top: 13%;
     position: absolute;
     right: 20%;
     top: -0%;
@@ -443,9 +441,8 @@ export default {
   }
   .avatar {
     width: 100%;
-    height: 300px;
+    height: 380px;
   }
-
   .formContainer {
     margin-top: -40%;
     margin-bottom: 3%;

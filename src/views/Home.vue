@@ -124,6 +124,22 @@
                     @closeclick="infoWindow.open = false"
                   >
                     <div v-html="infoWindow.template"></div>
+                    <br />
+                    <div>
+                      <p>Califica la veracidad de esta noticia:</p>
+                      <i
+                        @click="saveUserLike(true)"
+                        class="material-icons icon_thumb_up_color"
+                        aria-hidden="true"
+                        >thumb_up</i
+                      >
+                      <i
+                        @click="saveUserLike(false)"
+                        class="material-icons icon_thumb_down_color"
+                        aria-hidden="true"
+                        >thumb_down</i
+                      >
+                    </div>
                   </gmap-info-window>
                 </div>
                 <div v-if="lostPersonLocations.length > 0">
@@ -368,6 +384,7 @@
                         <b-card-body title="Narcotráfico">
                           <b-img-lazy
                             src="https://image.flaticon.com/icons/png/512/1546/1546140.png"
+                            id="narcotrafico"
                             class="victimImg"
                             thumbnail
                             fluid
@@ -562,14 +579,15 @@
       >
         <div class="d-block text-center">
           <h4>
-            <p>Ayudamos a mejorar la información que se presenta. Que calificaion le darias a este reporte:</p>
+            <p>Dede ser ingresar a su cuenta para calificar noticias</p>
           </h4>
         </div>
         <b-button
+          @click="closeModalRating"
           class="mt-3"
           variant="outline-primary"
           block
-          >Continuar</b-button
+          >cerrar</b-button
         >
       </b-modal>
     </div>
@@ -578,11 +596,15 @@
 <script>
 import axios from "axios";
 import HomeJs from "../js/home.js";
+import { db } from "../main";
+import firebase from "firebase";
+require("firebase/auth");
 export default {
   name: "home",
   mixins: [HomeJs],
   data: () => ({
     savedLocations: [],
+    savedLocationsIds: [],
     userLocation: [],
     lostPersonLocations: [],
     criminalsNearUser: [],
@@ -605,11 +627,16 @@ export default {
     noonReports: 0,
     nightReports: 0,
     counter: 0,
+    currentReportSelected: 0,
+    userLike: false,
     infoWindow: {
       position: { lat: 0, lng: 0 },
       open: false,
       template: "",
     },
+    userIds: [],
+    key: false,
+    keySame: false,
     userDireccionData: {
       colonia: "",
       calle: "",
@@ -645,9 +672,12 @@ export default {
         return;
       } else {
         this.mapLoading = false;
-        this.savedLocations = data;
+        this.savedLocations = data.location;
+        this.savedLocationsIds = data.id;
+        this.userIds = data.userIds;
         //set a counter for all the criminals register
         this.regCriminals = this.savedLocations.length;
+
         // get the report status of every crime
         this.getReportStatus(
           this.savedLocations == null ? 0 : this.savedLocations
@@ -658,6 +688,57 @@ export default {
         this.getHourReportStatus(
           this.savedLocations == null ? 0 : this.savedLocations
         );
+        //get report rating
+        this.getReportsRatings(this.userIds);
+      }
+    },
+    getReportsRatings: async function (userIds) {
+      let ratingArray = [
+        {
+          id: "",
+          likes: 0,
+          dislikes: 0,
+        },
+      ];
+
+      const ratingRef = await db.collection("userCriminalRatings").get();
+      ratingRef.docs.forEach((doc) => {
+        for (let index = 0; index < userIds.length; index++) {
+          if (userIds[index] == doc.id) {
+            console.log("Found: " + index);
+            for (
+              let index = 0;
+              index < doc.data().criminalsID.length;
+              index++
+            ) {
+              let data = doc.data().criminalsID[index];
+              let isThere = false;
+              let tempIndex = 0;
+              for (let index = 0; index < ratingArray.length; index++) {
+                if (ratingArray[index].id == data.id) {
+                  isThere = true;
+                  tempIndex = index;
+                  break;
+                }
+              }
+              if (!isThere) {
+                let temp = {
+                  id: data.id,
+                  likes: data.like,
+                  dislikes: data.dislike,
+                };
+                ratingArray.push(temp);
+              } else {
+                ratingArray[tempIndex].likes += data.like;
+                ratingArray[tempIndex].dislikes += data.dislike;
+              }
+            }
+          }
+        }
+      });
+
+      for (let index = 0; index < ratingArray.length; index++) {
+        console.log(ratingArray[index]);
       }
     },
     getTotalReports: async function () {
@@ -678,6 +759,106 @@ export default {
     },
     myFunction: function () {
       alert("hola test");
+    },
+    saveUserLike: async function (userRating) {
+      this.key = false;
+      let currentUser = firebase.auth().currentUser;
+      if (currentUser == null) {
+        this.$refs["user-msn"].show();
+        return;
+      }
+      let { data } = await axios.post(
+        "https://us-central1-criminalalertdb.cloudfunctions.net/userCriminalRatings",
+        {
+          reportId: this.savedLocationsIds[this.currentReportSelected],
+          userReportState: userRating,
+          userId: currentUser.uid,
+        }
+      );
+      if (data) {
+        //create toast
+        this.ratingStateToast(true);
+      } else {
+        this.ratingStateToast(false);
+      }
+
+      /*const userRef = db.collection("userCriminalRatings").doc(currentUser.uid);
+      userRef.get().then(async (docSnapshot) => {
+        if (docSnapshot.exists) {
+          console.log("usuario existe");
+          if (docSnapshot.data().criminalsID.length > 0) {
+            console.log("arreglo existe");
+            let tempData = docSnapshot.data();
+            for (let index = 0; index < tempData.criminalsID.length; index++) {
+              if (
+                tempData.criminalsID[index].id ==
+                this.savedLocationsIds[this.currentReportSelected]
+              ) {
+                console.log("reporte ya existe");
+                this.key = true;
+                if (tempData.criminalsID[index].rating == userRating) {
+                  console.log("input the same");
+                  return;
+                } else {
+                  tempData.criminalsID[index].rating = userRating;
+
+                  tempData.criminalsID[index].dislike = userRating
+                    ? tempData.criminalsID[index].dislike - 1
+                    : tempData.criminalsID[index].dislike + 1;
+
+                  tempData.criminalsID[index].like = userRating
+                    ? tempData.criminalsID[index].like + 1
+                    : tempData.criminalsID[index].like - 1;
+                  userRef
+                    .update({
+                      criminalsID: tempData.criminalsID,
+                    })
+                    .then(async function () {
+                      console.log("update input not the same: ");
+                      return;
+                    });
+                }
+              }
+            }
+          }
+          if (!this.key) {
+            console.log("reporte no  existe");
+            userRef
+              .update({
+                criminalsID: firebase.firestore.FieldValue.arrayUnion({
+                  id: this.savedLocationsIds[this.currentReportSelected],
+                  like: userRating ? 1 : 0,
+                  dislike: userRating ? 0 : 1,
+                  rating: userRating,
+                }),
+              })
+              .then(async function () {
+                console.log("agregar reporte no  existe: ");
+                return;
+              });
+          }
+        } else {
+          let criminalsID = {
+            id: this.savedLocationsIds[this.currentReportSelected],
+            like: userRating ? 1 : 0,
+            dislike: userRating ? 0 : 1,
+            rating: userRating,
+          };
+          let data = {
+            criminalsID: [criminalsID],
+          };
+          console.log("creando nuevo usuario rating");
+          const newUser = await db
+            .collection("userCriminalRatings")
+            .doc(currentUser.uid)
+            .set(data);
+          return;
+        }
+      });*/
+    },
+
+    closeModalRating: function () {
+      this.$refs["user-msn"].hide();
     },
     checAddress: async function () {
       this.mapLoading = true;
@@ -712,6 +893,7 @@ export default {
 <style scoped lang="scss">
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap");
 @import url("https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css");
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
 @import "@/scss/homePage.scss";
 div.image:before {
   content: url(http://placehold.it/350x150);
