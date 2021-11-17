@@ -79,7 +79,11 @@
             </b-row>
             <br /><br />
             <b-row>
-              <b-overlay :show="loadingDataComment" rounded="sm">
+              <b-overlay
+                :show="loadingDataComment"
+                rounded="sm"
+                class="comments"
+              >
                 <b-col>
                   <b-card
                     id="criminalCard"
@@ -551,12 +555,10 @@ export default {
     },
     fields: [
       "Selected",
-      "nombre",
       "descripcion",
       "fecha",
       "hora",
       "estatus",
-      "referencia",
     ],
     items: [
       {
@@ -955,6 +957,13 @@ export default {
     margin-top: -50%;
     margin-left: 20%;
     z-index: 100;
+  }
+  .comments {
+    position: absolute;
+    margin-top: -5%;
+    margin-left: 20%;
+    z-index: 100;
+    padding-bottom: 10px;
   }
 
   #logOut {

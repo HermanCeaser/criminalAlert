@@ -140,10 +140,14 @@
                           >thumb_down</i
                         >
                       </p>
-                      <h6>
-                        <b-badge pill variant="primary">{{ like }}</b-badge>
-                        <b-badge pill variant="danger">{{ dislike }}</b-badge>
-                      </h6>
+                      <h4>
+                        <b-badge pill class="bagde_thumb_up_color">{{
+                          like
+                        }}</b-badge>
+                        <b-badge pill class="bagde_thumb_down_color">{{
+                          dislike
+                        }}</b-badge>
+                      </h4>
                     </div>
                   </gmap-info-window>
                 </div>
@@ -761,14 +765,25 @@ export default {
       alert("hola test");
     },
     saveUserLike: async function (userRating) {
-      this.key = false;
       let currentUser = firebase.auth().currentUser;
-      userRating ? (this.like += 1) : (this.dislike += 1);
-
       if (currentUser == null) {
         this.$refs["user-msn"].show();
         return;
       }
+
+      if(userRating){
+        this.like += 1;
+        if(this.dislike > 0){
+          this.dislike -= 1;
+        }
+      }else{
+        this.dislike += 1;
+        if(this.like > 0){
+          this.like -= 1;
+        }
+      }
+
+      
       /*let { data } = await axios.post(
         "https://us-central1-criminalalertdb.cloudfunctions.net/userCriminalRatings",
         {
@@ -800,6 +815,7 @@ export default {
                 this.key = true;
                 if (tempData.criminalsID[index].rating == userRating) {
                   console.log("input the same");
+                  this.key = false;
                   return;
                 } else {
                   tempData.criminalsID[index].rating = userRating;
@@ -816,6 +832,7 @@ export default {
                     })
                     .then(async function () {
                       console.log("update input not the same: ");
+                      this.key = false;
                       return;
                     });
                 }
@@ -835,6 +852,7 @@ export default {
               })
               .then(async function () {
                 console.log("agregar reporte no  existe: ");
+                this.key = false;
                 return;
               });
           }
@@ -853,9 +871,11 @@ export default {
             .collection("userCriminalRatings")
             .doc(currentUser.uid)
             .set(data);
+          this.key = false;
           return;
         }
       });
+
     },
 
     closeModalRating: function () {

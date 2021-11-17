@@ -192,6 +192,7 @@ export default {
             let tempData;
             this.like = 0;
             this.dislike = 0;
+            this.key = true;
             if (key == 0) {
                 tempData = this.savedLocations[index];
             } else {

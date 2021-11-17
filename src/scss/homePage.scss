@@ -150,9 +150,27 @@
   }
 
   i.icon_thumb_down_color{
-    color: rgb(202, 60, 60);
+    color: #f85a60;
+    &:hover,
+    &:focus {
+      color: #c34044;
+    }
   }
   
   i.icon_thumb_up_color{
-    color: rgb(50, 107, 214);
+    color: #37ecba;
+    &:hover,
+    &:focus {
+      color: #25af88;
+    }
+  }
+
+.bagde_thumb_down_color{
+    color: #f85a60;
+  
+  }
+
+.bagde_thumb_up_color{
+    color: #37ecba;
+   
   }
