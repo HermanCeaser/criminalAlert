@@ -108,17 +108,15 @@
                             <h4>Califíquenos</h4>
                           </b-form-group>
                           <b-form-group
-                            label="Marque las casillas para indicar cuantas estrellas le dará a la página. 
-                            Una casilla seleccionada = 1 estrella, dos casillas seleccionadas = 2 estrellas etc."
+                            label="Proporcione una calificacion de su experiencia con la pagina"
                             v-slot="{ ariaDescribedby }"
                           >
-                            <b-form-checkbox-group
-                              id="checkbox-group-1"
-                              v-model="selectedStar"
-                              :options="optionsStar"
+                            <b-form-rating
+                              v-model="valueRating"
+                              color="rgb(64, 192, 128)"
                               :aria-describedby="ariaDescribedby"
-                              name="flavour-1"
-                            ></b-form-checkbox-group>
+                              class="mb-2"
+                            ></b-form-rating>
                           </b-form-group>
                         </b-col>
                         <b-button
@@ -535,6 +533,7 @@ export default {
     loadingPage: false,
     formObjects: [],
     dismissSecs: 5,
+    valueRating: 0,
     comment: "",
     formData: {
       descripcion: "",

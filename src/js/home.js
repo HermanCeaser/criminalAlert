@@ -190,11 +190,22 @@ export default {
               google.maps.Animation.BOUNCE
             );*/
             let tempData;
+            this.like = 0;
+            this.dislike = 0;
             if (key == 0) {
                 tempData = this.savedLocations[index];
             } else {
                 tempData = this.lostPersonLocations[index];
             }
+            
+            for (let j = 0; j < this.ratingArray.length; j++) {
+               if(this.ratingArray[j].id == this.savedLocationsIds[index]){
+                    this.like = this.ratingArray[j].likes;
+                    this.dislike = this.ratingArray[j].dislikes;
+                    break;
+               }
+            }
+           
             this.infoWindow.position = {
                 lat: tempData.geoPoint.latitude,
                 lng: tempData.geoPoint.longitude,
@@ -291,11 +302,11 @@ export default {
             // Create the message
             let ratingState = ""
             let variant = "info";
-            
-            if(state){
+
+            if (state) {
                 ratingState = "exito!";
                 variant = "info";
-            }else{
+            } else {
                 ratingState = "PROBLEMAS, no se ralizo el registro"
                 variant = "danger";
             }

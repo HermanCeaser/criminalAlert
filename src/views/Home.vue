@@ -124,21 +124,26 @@
                     @closeclick="infoWindow.open = false"
                   >
                     <div v-html="infoWindow.template"></div>
-                    <br />
                     <div>
-                      <p>Califica la veracidad de esta noticia:</p>
-                      <i
-                        @click="saveUserLike(true)"
-                        class="material-icons icon_thumb_up_color"
-                        aria-hidden="true"
-                        >thumb_up</i
-                      >
-                      <i
-                        @click="saveUserLike(false)"
-                        class="material-icons icon_thumb_down_color"
-                        aria-hidden="true"
-                        >thumb_down</i
-                      >
+                      <p>
+                        Califica la veracidad de esta noticia:
+                        <i
+                          @click="saveUserLike(true)"
+                          class="material-icons icon_thumb_up_color"
+                          aria-hidden="true"
+                          >thumb_up</i
+                        >
+                        <i
+                          @click="saveUserLike(false)"
+                          class="material-icons icon_thumb_down_color"
+                          aria-hidden="true"
+                          >thumb_down</i
+                        >
+                      </p>
+                      <h6>
+                        <b-badge pill variant="primary">{{ like }}</b-badge>
+                        <b-badge pill variant="danger">{{ dislike }}</b-badge>
+                      </h6>
                     </div>
                   </gmap-info-window>
                 </div>
@@ -629,6 +634,8 @@ export default {
     counter: 0,
     currentReportSelected: 0,
     userLike: false,
+    like: 0,
+    dislike: 0,
     infoWindow: {
       position: { lat: 0, lng: 0 },
       open: false,
@@ -636,13 +643,19 @@ export default {
     },
     userIds: [],
     key: false,
-    keySame: false,
     userDireccionData: {
       colonia: "",
       calle: "",
       numero: "",
       zip: "",
     },
+    ratingArray: [
+      {
+        id: "",
+        likes: 0,
+        dislikes: 0,
+      },
+    ],
   }),
   async beforeMount() {
     //get a request with the information of the criminals
@@ -693,19 +706,10 @@ export default {
       }
     },
     getReportsRatings: async function (userIds) {
-      let ratingArray = [
-        {
-          id: "",
-          likes: 0,
-          dislikes: 0,
-        },
-      ];
-
       const ratingRef = await db.collection("userCriminalRatings").get();
       ratingRef.docs.forEach((doc) => {
         for (let index = 0; index < userIds.length; index++) {
           if (userIds[index] == doc.id) {
-            console.log("Found: " + index);
             for (
               let index = 0;
               index < doc.data().criminalsID.length;
@@ -714,8 +718,8 @@ export default {
               let data = doc.data().criminalsID[index];
               let isThere = false;
               let tempIndex = 0;
-              for (let index = 0; index < ratingArray.length; index++) {
-                if (ratingArray[index].id == data.id) {
+              for (let index = 0; index < this.ratingArray.length; index++) {
+                if (this.ratingArray[index].id == data.id) {
                   isThere = true;
                   tempIndex = index;
                   break;
@@ -727,19 +731,15 @@ export default {
                   likes: data.like,
                   dislikes: data.dislike,
                 };
-                ratingArray.push(temp);
+                this.ratingArray.push(temp);
               } else {
-                ratingArray[tempIndex].likes += data.like;
-                ratingArray[tempIndex].dislikes += data.dislike;
+                this.ratingArray[tempIndex].likes += data.like;
+                this.ratingArray[tempIndex].dislikes += data.dislike;
               }
             }
           }
         }
       });
-
-      for (let index = 0; index < ratingArray.length; index++) {
-        console.log(ratingArray[index]);
-      }
     },
     getTotalReports: async function () {
       //Find out ho has reported the most criminals
@@ -763,11 +763,13 @@ export default {
     saveUserLike: async function (userRating) {
       this.key = false;
       let currentUser = firebase.auth().currentUser;
+      userRating ? (this.like += 1) : (this.dislike += 1);
+
       if (currentUser == null) {
         this.$refs["user-msn"].show();
         return;
       }
-      let { data } = await axios.post(
+      /*let { data } = await axios.post(
         "https://us-central1-criminalalertdb.cloudfunctions.net/userCriminalRatings",
         {
           reportId: this.savedLocationsIds[this.currentReportSelected],
@@ -780,9 +782,9 @@ export default {
         this.ratingStateToast(true);
       } else {
         this.ratingStateToast(false);
-      }
+      }*/
 
-      /*const userRef = db.collection("userCriminalRatings").doc(currentUser.uid);
+      const userRef = db.collection("userCriminalRatings").doc(currentUser.uid);
       userRef.get().then(async (docSnapshot) => {
         if (docSnapshot.exists) {
           console.log("usuario existe");
@@ -801,7 +803,6 @@ export default {
                   return;
                 } else {
                   tempData.criminalsID[index].rating = userRating;
-
                   tempData.criminalsID[index].dislike = userRating
                     ? tempData.criminalsID[index].dislike - 1
                     : tempData.criminalsID[index].dislike + 1;
@@ -854,7 +855,7 @@ export default {
             .set(data);
           return;
         }
-      });*/
+      });
     },
 
     closeModalRating: function () {

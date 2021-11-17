@@ -48,14 +48,13 @@ export default {
             }
         },
         saveUserComments: function () {
-            let rating = this.getUserPageRating();
             this.loadingDataComment = true;
             const res = this.userRef;
 
-            if (!this.comment && rating != 0) {
+            if (!this.comment && this.valueRating != 0) {
                 res
                     .update({
-                        calificación: rating,
+                        calificación: this.valueRating,
                     })
                     .then(() => {
                         this.$bvToast.show("my-toast");
@@ -66,7 +65,7 @@ export default {
                         console.error("Error updating document: ", error);
                         this.loadingDataComment = false;
                     });
-            } else if (rating == 0 && this.comment) {
+            } else if (this.valueRating == 0 && this.comment) {
                 res
                     .update({
                         comentario: this.comment,
@@ -80,11 +79,11 @@ export default {
                         console.error("Error updating document: ", error);
                         this.loadingDataComment = false;
                     });
-            } else if (rating != 0 && this.comment) {
+            } else if (this.valueRating != 0 && this.comment) {
                 res
                     .update({
                         comentario: this.comment,
-                        calificación: rating,
+                        calificación: this.valueRating,
                     })
                     .then(() => {
                         this.$bvToast.show("my-toast");
@@ -96,18 +95,6 @@ export default {
                         this.loadingDataComment = false;
                     });
             }
-
-
-
-
-        },
-        getUserPageRating: function () {
-            let index = 0;
-            this.selectedStar.forEach(element => {
-                index++;
-            });
-
-            return index;
         },
         onRowSelected(items) {
             this.selected = items;
