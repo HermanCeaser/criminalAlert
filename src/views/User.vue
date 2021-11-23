@@ -429,8 +429,34 @@
                 </b-card>
               </b-modal>
             </b-row>
+            <br />
+            <b-row>
+              <b-col sm="4"></b-col>
+              <b-col sm="5">
+                <b-card no-body class="overflow-hidden card_link" hover>
+                  <b-row no-gutters>
+                    <b-col md="6">
+                      <b-card-img
+                        src="https://picsum.photos/400/400/?image=20"
+                        alt="Image"
+                        class="rounded-0"
+                      ></b-card-img>
+                    </b-col>
+                    <b-col md="6">
+                      <b-card-body title="Criminal Alert">
+                        <b-card-text>
+                          Descarga nuestra web App, para dispositivos móviles
+                          Android o IPhone. <b-link href="https://gonative.io/share/onyzqw" target="_blank">Link</b-link>
+                        </b-card-text>
+                      </b-card-body>
+                    </b-col>
+                  </b-row>
+                </b-card>
+              </b-col>
+              <b-col sm="3"></b-col>
+            </b-row>
           </b-col>
-          <b-col md="1"> </b-col>
+          <b-col> </b-col>
         </b-row>
         <br />
         <br />
@@ -553,13 +579,7 @@ export default {
       avatar:
         "https://media.istockphoto.com/vectors/default-avatar-profile-icon-grey-photo-placeholder-hand-drawn-modern-vector-id1273297997?b=1&k=6&m=1273297997&s=612x612&w=0&h=W0mwZseX1YEUPH8BJ9ra2Y-VeaUOi0nSLfQJWExiLsQ=",
     },
-    fields: [
-      "Selected",
-      "descripcion",
-      "fecha",
-      "hora",
-      "estatus",
-    ],
+    fields: ["Selected", "descripcion", "fecha", "hora", "estatus"],
     items: [
       {
         descripcion: "",
@@ -964,6 +984,10 @@ export default {
     margin-left: 20%;
     z-index: 100;
     padding-bottom: 10px;
+  }
+
+  .card_link {
+    max-width: 550px;
   }
 
   #logOut {
