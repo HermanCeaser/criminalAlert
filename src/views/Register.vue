@@ -160,10 +160,16 @@ export default {
       return this.formData.password.length >= 8;
     },
     stateConfrimPassword() {
-      return (
-        this.formData.password === this.formData.confirmPassword &&
-        this.formData.password >= 8
-      );
+      if (!this.formData.password || !this.formData.confirmPassword)
+        return false;
+      if (
+        this.formData.password.localeCompare(this.formData.confirmPassword) != 0
+      )
+        return false;
+
+      if (this.formData.confirmPassword.length < 8) return false;
+
+      return true;
     },
     invalidPassFeedback() {
       if (this.formData.password.length > 0) {
@@ -172,6 +178,9 @@ export default {
       return "Por favor ingrese  una contraseña de 8 caracteres";
     },
     invalidConfirmPassFeedback() {
+      if (this.formData.confirmPassword.length > 0) {
+        return "Por favor ingrese contraseña mínima 8 caracteres";
+      }
       return "Por favor ingrese  la misma contraseña";
     },
     invalidFeedbackEmail() {
