@@ -446,7 +446,12 @@
                       <b-card-body title="Criminal Alert">
                         <b-card-text>
                           Descarga nuestra web App, para dispositivos móviles
-                          Android o IPhone. <b-link href="https://gonative.io/share/onyzqw" target="_blank">Link</b-link>
+                          Android o IPhone.
+                          <b-link
+                            href="https://gonative.io/share/onyzqw"
+                            target="_blank"
+                            >Link</b-link
+                          >
                         </b-card-text>
                       </b-card-body>
                     </b-col>
@@ -845,6 +850,11 @@ export default {
       if (e.target.files[0]) {
         this.loadingData = true;
         let file = e.target.files[0];
+        if (!this.validateImage(file)) {
+          this.loadingData = false;
+          return;
+        }
+
         var storageRef = firebase
           .storage()
           .ref("userProfilePic/" + this.userID + "_" + file.name);
@@ -875,6 +885,17 @@ export default {
           }
         );
       }
+    },
+    validateImage(file) {
+      let formData = new FormData();
+      formData.append("Filedata", file);
+
+      let t = file.type.split("/").pop().toLowerCase();
+      if (t != "jpeg" && t != "jpg" && t != "png" && t != "bmp" && t != "gif") {
+        alert("Por favor escoja una imagen valida");
+        return false;
+      }
+      return true;
     },
     fillTable(key) {
       this.loadingPage = true;

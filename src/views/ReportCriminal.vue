@@ -276,8 +276,8 @@ export default {
       let email = this.user.email;
       let userSepatator = email.split("@");
       this.userTag = userSepatator[0];
-    }else{
-      console.log("user do not exist")
+    } else {
+      console.log("user do not exist");
     }
 
     const userRef = db.collection("user").doc(this.user.uid);
@@ -337,7 +337,7 @@ export default {
       };
       //add to saved locations to update map
       this.savedLocations.push(obj);
-    },  
+    },
     handleFormSubmit: async function () {
       if (
         !this.formData.descripcion ||
@@ -359,6 +359,13 @@ export default {
       if (this.savedLocations.length <= 0) {
         this.dismissFormCount = this.dismissSecs;
         this.inputMsm = "Debe ingresar una ubicacion valida, para continuar";
+        return;
+      }
+
+      if (this.validateDescriptionWhiteSpaces(this.formData.descripcion)) {
+        this.dismissFormCount = this.dismissSecs;
+        this.inputMsm =
+          "Debe ingresar todos los datos del formulario, para poder realizar un reporte.";
         return;
       }
 
@@ -386,7 +393,7 @@ export default {
           typeSex: this.selectedSex,
         }
       );
-      if(data == undefined){
+      if (data == undefined) {
         alert("Problemas al ingresar los datos a la base de datos");
         return;
       }
