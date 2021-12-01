@@ -125,21 +125,27 @@
                   >
                     <div v-html="infoWindow.template"></div>
                     <div>
-                      <p>
-                        Califica la veracidad de esta noticia:
-                        <i
-                          @click="saveUserLike(true)"
-                          class="material-icons icon_thumb_up_color"
-                          aria-hidden="true"
-                          >thumb_up</i
-                        >
-                        <i
-                          @click="saveUserLike(false)"
-                          class="material-icons icon_thumb_down_color"
-                          aria-hidden="true"
-                          >thumb_down</i
-                        >
-                      </p>
+                      <p>Califica la veracidad de esta noticia:</p>
+                      <b-button
+                        @click="saveUserLike(true)"
+                        class="material-icons"
+                        aria-hidden="true"
+                        pill
+                        variant="outline-success"
+                        :disabled="isActiveLike"
+                      >
+                        thumb_up
+                      </b-button>
+                      <b-button
+                        @click="saveUserLike(false)"
+                        class="material-icons"
+                        pill
+                        variant="outline-danger"
+                        aria-hidden="true"
+                        :disabled="isActiveDislike"
+                      >
+                        thumb_down
+                      </b-button>
                       <h4>
                         <b-badge pill class="bagde_thumb_up_color">{{
                           like
@@ -588,7 +594,7 @@
       >
         <div class="d-block text-center">
           <h4>
-            <p>Dede ser ingresar a su cuenta para calificar noticias</p>
+            <p>{{ likeMsm }}</p>
           </h4>
         </div>
         <b-button
@@ -615,6 +621,7 @@ export default {
     savedLocations: [],
     savedLocationsIds: [],
     userLocation: [],
+    likeMsm: "",
     lostPersonLocations: [],
     criminalsNearUser: [],
     statusReportCount: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -639,6 +646,8 @@ export default {
     currentReportSelected: 0,
     userLike: false,
     like: 0,
+    isActiveLike: false,
+    isActiveDislike: false,
     dislike: 0,
     infoWindow: {
       position: { lat: 0, lng: 0 },
@@ -660,6 +669,9 @@ export default {
         dislikes: 0,
       },
     ],
+    currentUser: null,
+    userRef: null,
+    userCriminalRatings: [],
   }),
   async beforeMount() {
     //get a request with the information of the criminals
@@ -707,9 +719,17 @@ export default {
         );
         //get report rating
         this.getReportsRatings(this.userIds);
+        this.currentUser = await firebase.auth().currentUser;
+        if (this.currentUser !== null) {
+          this.userRef = await db
+            .collection("userCriminalRatings")
+            .doc(this.currentUser.uid);
+          await this.getUserRatingSnapShoot();
+        }
       }
     },
     getReportsRatings: async function (userIds) {
+      this.ratingArray = [];
       const ratingRef = await db.collection("userCriminalRatings").get();
       ratingRef.docs.forEach((doc) => {
         for (let index = 0; index < userIds.length; index++) {
@@ -764,26 +784,70 @@ export default {
     myFunction: function () {
       alert("hola test");
     },
+
+    getUserRatingSnapShoot: function () {
+      this.userCriminalRatings = [];
+      this.userRef.get().then(async (docSnapshot) => {
+        if (docSnapshot.exists) {
+          if (docSnapshot.data().criminalsID.length > 0) {
+            this.userCriminalRatings = docSnapshot.data();
+          }
+        }
+      });
+    },
+
+    verifyIfUserAlreadyVoted: function (userRating) {
+      if (this.userCriminalRatings.criminalsID === undefined) {
+        return false;
+      }
+      console.log("Test:" + this.userCriminalRatings.criminalsID);
+      console.log("Test2:" + this.userCriminalRatings);
+      for (
+        let index = 0;
+        index < this.userCriminalRatings.criminalsID.length;
+        index++
+      ) {
+        if (
+          this.userCriminalRatings.criminalsID[index].id ==
+          this.savedLocationsIds[this.currentReportSelected]
+        ) {
+          if (
+            this.userCriminalRatings.criminalsID[index].rating == userRating
+          ) {
+            return true;
+          }
+        }
+      }
+      return false;
+    },
+
     saveUserLike: async function (userRating) {
-      let currentUser = firebase.auth().currentUser;
-      if (currentUser == null) {
+      this.key = false;
+      if (this.currentUser == null) {
+        this.likeMsm = "Dede  ingresar a su cuenta para calificar noticias";
         this.$refs["user-msn"].show();
         return;
       }
 
-      if(userRating){
+      if (this.verifyIfUserAlreadyVoted(userRating)) {
+        this.likeMsm =
+          "No se permiten realizar más de un voto por la misma opción";
+        this.$refs["user-msn"].show();
+        return;
+      }
+
+      if (userRating) {
         this.like += 1;
-        if(this.dislike > 0){
+        if (this.dislike > 0) {
           this.dislike -= 1;
         }
-      }else{
+      } else {
         this.dislike += 1;
-        if(this.like > 0){
+        if (this.like > 0) {
           this.like -= 1;
         }
       }
 
-      
       /*let { data } = await axios.post(
         "https://us-central1-criminalalertdb.cloudfunctions.net/userCriminalRatings",
         {
@@ -798,84 +862,91 @@ export default {
       } else {
         this.ratingStateToast(false);
       }*/
+      if (this.userCriminalRatings.criminalsID === undefined) {
+        let criminalsID = {
+          id: this.savedLocationsIds[this.currentReportSelected],
+          like: userRating ? 1 : 0,
+          dislike: userRating ? 0 : 1,
+          rating: userRating,
+        };
+        let data = {
+          criminalsID: [criminalsID],
+        };
+        const newUser = db
+          .collection("userCriminalRatings")
+          .doc(this.currentUser.uid)
+          .set(data)
+          .then(() => {
+            this.getCriminalLocations();
+            return;
+          });
+        return;
+      }
 
-      const userRef = db.collection("userCriminalRatings").doc(currentUser.uid);
-      userRef.get().then(async (docSnapshot) => {
-        if (docSnapshot.exists) {
-          console.log("usuario existe");
-          if (docSnapshot.data().criminalsID.length > 0) {
-            console.log("arreglo existe");
-            let tempData = docSnapshot.data();
-            for (let index = 0; index < tempData.criminalsID.length; index++) {
-              if (
-                tempData.criminalsID[index].id ==
-                this.savedLocationsIds[this.currentReportSelected]
-              ) {
-                console.log("reporte ya existe");
-                this.key = true;
-                if (tempData.criminalsID[index].rating == userRating) {
-                  console.log("input the same");
-                  this.key = false;
-                  return;
-                } else {
-                  tempData.criminalsID[index].rating = userRating;
-                  tempData.criminalsID[index].dislike = userRating
-                    ? tempData.criminalsID[index].dislike - 1
-                    : tempData.criminalsID[index].dislike + 1;
+      if (this.userCriminalRatings.criminalsID.length > 0) {
+        for (
+          let index = 0;
+          index < this.userCriminalRatings.criminalsID.length;
+          index++
+        ) {
+          if (
+            this.userCriminalRatings.criminalsID[index].id ==
+            this.savedLocationsIds[this.currentReportSelected]
+          ) {
+            this.key = true;
+            this.userCriminalRatings.criminalsID[index].rating = userRating;
+            this.userCriminalRatings.criminalsID[index].dislike = userRating
+              ? this.userCriminalRatings.criminalsID[index].dislike - 1
+              : this.userCriminalRatings.criminalsID[index].dislike + 1;
 
-                  tempData.criminalsID[index].like = userRating
-                    ? tempData.criminalsID[index].like + 1
-                    : tempData.criminalsID[index].like - 1;
-                  userRef
-                    .update({
-                      criminalsID: tempData.criminalsID,
-                    })
-                    .then(async function () {
-                      console.log("update input not the same: ");
-                      this.key = false;
-                      return;
-                    });
-                }
-              }
-            }
-          }
-          if (!this.key) {
-            console.log("reporte no  existe");
-            userRef
+            this.userCriminalRatings.criminalsID[index].like = userRating
+              ? this.userCriminalRatings.criminalsID[index].like + 1
+              : this.userCriminalRatings.criminalsID[index].like - 1;
+
+            this.userRef
               .update({
-                criminalsID: firebase.firestore.FieldValue.arrayUnion({
-                  id: this.savedLocationsIds[this.currentReportSelected],
-                  like: userRating ? 1 : 0,
-                  dislike: userRating ? 0 : 1,
-                  rating: userRating,
-                }),
+                criminalsID: this.userCriminalRatings.criminalsID,
               })
-              .then(async function () {
-                console.log("agregar reporte no  existe: ");
-                this.key = false;
-                return;
+              .then(() => {
+                this.getCriminalLocations();
               });
           }
-        } else {
-          let criminalsID = {
-            id: this.savedLocationsIds[this.currentReportSelected],
-            like: userRating ? 1 : 0,
-            dislike: userRating ? 0 : 1,
-            rating: userRating,
-          };
-          let data = {
-            criminalsID: [criminalsID],
-          };
-          console.log("creando nuevo usuario rating");
-          const newUser = await db
-            .collection("userCriminalRatings")
-            .doc(currentUser.uid)
-            .set(data);
-          this.key = false;
-          return;
         }
-      });
+        if (!this.key) {
+          this.userRef
+            .update({
+              criminalsID: firebase.firestore.FieldValue.arrayUnion({
+                id: this.savedLocationsIds[this.currentReportSelected],
+                like: userRating ? 1 : 0,
+                dislike: userRating ? 0 : 1,
+                rating: userRating,
+              }),
+            })
+            .then(() => {
+              this.getCriminalLocations();
+            });
+        }
+      } else {
+        let criminalsID = {
+          id: this.savedLocationsIds[this.currentReportSelected],
+          like: userRating ? 1 : 0,
+          dislike: userRating ? 0 : 1,
+          rating: userRating,
+        };
+        let data = {
+          criminalsID: [criminalsID],
+        };
+        const newUser = db
+          .collection("userCriminalRatings")
+          .doc(this.currentUser.uid)
+          .set(data)
+          .then(() => {
+            this.getCriminalLocations();
+          });
+      }
 
+      //this.getReportsRatings(this.userIds);
+      //this.getUserRatingSnapShoot();
     },
 
     closeModalRating: function () {

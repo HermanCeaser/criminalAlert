@@ -132,6 +132,9 @@ export default {
         haversine_distance: function (savedLocations, criminalsNearUser, userLocation) {
             //we dont have to look everytime, if there aren't any updates
             //we are going to check if the criminalsNearUser is equal to 0
+            console.log("SavedLocations: "  + savedLocations.length);
+            console.log("criminalsNearUser: "  + criminalsNearUser.length);
+            console.log("userLocation: "  + criminalsNearUser.length);
             if (this.checkIfCriminalsNearUserExist(criminalsNearUser)) {
                 return;
             }
@@ -288,6 +291,7 @@ export default {
                 address: data.address,
             };
             this.userLocation.push(obj);
+            console.log("tamaño: " + this.userLocation.length);
             this.mapLoading = false;
             this.haversine_distance(
                 this.savedLocations,
